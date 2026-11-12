@@ -148,15 +148,18 @@ recomposition. Checked scenes still need branch and transition review.
 
 - [ ] **Meteor Falls and Mt. Chimney** — Meteor Falls / cable car / Mt. Chimney.
   Camera: Meteor Falls confrontation recorded; summit opening rejected by
-  terrain visibility checks, as did the battle return; both need recomposition.
-  Cable car still needs
+  terrain visibility checks, as did the battle return. A scenic retest runs but
+  exposes black gaps in the mountain; its attempted close actor handoff is also
+  rejected. Recompose after investigating the terrain. Cable car still needs
   direction. Environment: **check** each map and villain-team state. Stage the
   Meteorite theft, opposing teams, ascent, Maxie battle and recovery.
 
 - [ ] **Flannery and the Go-Goggles** — Lavaridge Gym / town. Camera: first
   battle recorded, but heavy steam obscures the shot. The rival gift completes
-  in gameplay view after the terrain check rejects the close camera; it needs
-  recomposition. Environment: **assets exist** for the shared Gym exterior;
+  in gameplay view after the terrain check rejects the close camera. Both a
+  normal scenic anchor and a closer scenic test were rejected as well; the
+  experiments were discarded and the safe fallback remains. Environment:
+  **assets exist** for the shared Gym exterior;
   Gym interior and rival scene **check**. Separate the victory from the gift.
 
 - [x] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
