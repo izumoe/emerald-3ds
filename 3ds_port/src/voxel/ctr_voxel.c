@@ -273,7 +273,15 @@ static VoxelGpuVertex *sStaging;       /* chunk uploads, linear */
 static unsigned sStagingUsed, sChunkUploads;
 static VoxelGpuVertex *sDynamic;       /* billboards and shadows, linear */
 static VoxelBuilder sBuilder;
-static VoxelCamera sCamera;
+static VoxelCamera sCamera, sFollowCamera;
+static VoxelDirector sDirector;
+static struct {
+    unsigned a,b;
+    bool active, follow, returning;
+    float x,z,ground, smoothX,smoothZ,smoothGround;
+    float offsetX,offsetZ;
+} sScriptCamera;
+static float sCinemaBars;
 /* The swoop's share of the camera this frame (CtrVoxel_SetSwoop), and the
  * orthographic end of its projection: half the 2D field in tiles. */
 static float sSwoop;
@@ -2412,6 +2420,7 @@ fail:
 
 void CtrVoxel_Shutdown(void)
 {
+    CtrVoxel_CancelCamera();
     LampsRelease(true);
     StreamStop();
     AtlasJobCancel();
@@ -5210,6 +5219,7 @@ bool CtrVoxel_IsAvailableForBattle(void)
 
 void CtrVoxel_BeginBattle(void)
 {
+    CtrVoxel_CancelCamera();
     if (!sReady || sBattle.on)
         return;
     memset(&sBattle, 0, sizeof(sBattle));
@@ -5789,6 +5799,338 @@ static void LogParts(void)
     sPartFrames = 0;
 }
 
+bool CtrVoxel_PlayCamera(const VoxelCameraShot *shots, unsigned count, unsigned returnFrames)
+{
+    if (!CtrSettings_Voxel() || !CtrVoxel_IsAvailable() || sBattle.on || sSwoop > 0.0f) return false;
+    if (!VoxelDirector_Begin(&sDirector, &sCamera, shots, count, returnFrames)) return false;
+    sFollowCamera = sCamera;
+    return true;
+}
+bool CtrVoxel_PlayCameraDemo(void)
+{
+    /* Establish, gently push in, then let the automatic return settle. */
+    static const VoxelCameraShot shots[] = {
+        {1.5f, -1.0f, 1.10f, 3.0f, 90, 45,0},
+        {0.5f, -0.5f, 0.90f, 1.0f, 120, 60,0},
+    };
+    return CtrVoxel_PlayCamera(shots, 2, 90);
+}
+/* Interior rooms are front cutaways. Check the known room segment; the
+ * space beyond its south edge is empty, not an unknown outdoor connection. */
+static bool CameraActorRay(float x,float y,float z,float ex,float ey,float ez)
+{
+#if CTR_VOXEL_LIGHTING
+    const VoxelMapInstance *map=VoxelWorld_Instance(0);
+    if (map && (map->indoor || VoxelWorld_Underground()) && ez>=map->originY+map->height
+        && x>=map->originX && x<map->originX+map->width
+        && z>=map->originY && z<map->originY+map->height)
+    {
+        float t=(map->originY+map->height-0.01f-z)/(ez-z);
+        float edgeX=x+(ex-x)*t,edgeY=y+(ey-y)*t;
+        if (edgeX<map->originX || edgeX>=map->originX+map->width || edgeY<0.02f || ey<0.02f)
+            return false;
+        return VoxelLighting_CameraClear(x,y,z,edgeX,edgeY,map->originY+map->height-0.01f);
+    }
+    return VoxelLighting_CameraClear(x,y,z,ex,ey,ez);
+#else
+    (void)x;(void)y;(void)z;(void)ex;(void)ey;(void)ez;
+    return false;
+#endif
+}
+bool CtrVoxel_CameraMapReady(void)
+{
+    int group=-1,num=-1;
+    VoxelWorld_GetLocation(&group,&num);
+    return CtrVoxel_IsAvailable() && group==sMeshMapGroup && num==sMeshMapNum;
+}
+/* Evaluate the actual eased path, not only its destination. A failed or
+ * unavailable check removes the tilt; no repeated focus movement while reading. */
+static bool ConversationPathClear(const VoxelCameraShot *shot, float playerX, float playerZ,
+                                   float npcDeltaX, float npcDeltaZ, const VoxelCamera *anchor, const unsigned *actors)
+{
+#if CTR_VOXEL_LIGHTING
+    VoxelDirector probe = {0};
+    VoxelCamera pose = sCamera;
+    if (!VoxelDirector_Begin(&probe, &sCamera, shot, 1, 60)) return false;
+    if (anchor) probe.anchor=*anchor;
+    VoxelDirector_Hold(&probe);
+    for (unsigned frame=0; frame<=shot->move; ++frame)
+    {
+        if (frame) VoxelDirector_Step(&probe, &sCamera, &pose);
+        if (frame % 12 != 0 && frame != shot->move) continue;
+        for (unsigned actor=0; actor<2; ++actor)
+        {
+            float x=playerX+0.5f+actor*npcDeltaX;
+            float z=playerZ+0.5f+actor*npcDeltaZ;
+            float base=anchor?anchor->ground:sCamera.ground;
+            float head=0.9f, torso=0.45f, side=0.18f;
+            float yaw=pose.yaw*(3.14159265358979323846f/180.0f);
+            if (actors)
+            {
+                float hw,height;
+                if (!VoxelEntities_GetCameraBounds(actors[actor],&pose,&x,&base,&z,&hw,&height)) return false;
+                head=height*0.90f;torso=height*0.60f;side=hw*0.35f;
+            }
+            for (unsigned ray=0;ray<3;++ray)
+            {
+                float offset=ray==0?-side:ray==1?side:0;
+                float rx=x+cosf(yaw)*offset,rz=z-sinf(yaw)*offset;
+                float y=base+(ray==2?torso:head);
+                if (!CameraActorRay(rx,y,rz,pose.x,pose.y,pose.z))
+                {
+                    CtrLog_Write(CTR_LOG_VIDEO,"CAMERA occlusion: frame=%u actor=%u at %.2f,%.2f,%.2f eye %.2f,%.2f,%.2f",
+                                 frame,actor,rx,y,rz,pose.x,pose.y,pose.z);
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+#else
+    (void)shot; (void)playerX; (void)playerZ; (void)npcDeltaX; (void)npcDeltaZ; (void)anchor; (void)actors;
+    return false;
+#endif
+}
+bool CtrVoxel_BeginConversationStyled(float npcDeltaX, float npcDeltaZ, bool important)
+{
+    float playerX, playerZ;
+    VoxelCameraShot shot;
+    int push = CtrSettings_GetInt("camera_dialogue_push", important ? 20 : 15);
+    if (!CtrSettings_Voxel() || !CtrVoxel_IsAvailable() || sBattle.on || sSwoop > 0.0f || sDirector.active) return false;
+    push = push < 0 ? 0 : push > 20 ? 20 : push;
+    if (!isfinite(npcDeltaX) || !isfinite(npcDeltaZ)
+        || fabsf(npcDeltaX) + fabsf(npcDeltaZ) > 2.0f) return false;
+    VoxelEntities_GetPlayerWorldPos(&playerX, &playerZ);
+    /* One endpoint and one easing clock: pan, dolly and pitch start and land
+     * together. No intermediate pose, overshoot or pause before the reading hold. */
+    shot = (VoxelCameraShot){playerX + 0.5f + npcDeltaX*0.5f - sCamera.targetX,
+                             playerZ + npcDeltaZ*0.5f + 0.7f - sCamera.targetZ,
+                             1.0f - push/100.0f, 0.0f, important ? 90 : 54, 0,0};
+    if (important)
+    {
+        uint64_t checkedAt = svcGetSystemTick();
+        bool clear = false;
+        if (CtrSettings_GetInt("camera_dialogue_tilt", 1) != 0)
+        {
+            shot.pitch = 4.0f;
+            clear = ConversationPathClear(&shot,playerX,playerZ,npcDeltaX,npcDeltaZ,NULL,NULL);
+            if (!clear) shot.pitch = 0.0f;
+        }
+        if (!clear && !ConversationPathClear(&shot,playerX,playerZ,npcDeltaX,npcDeltaZ,NULL,NULL))
+        {
+            CtrLog_Write(CTR_LOG_VIDEO, "CAMERA story shot skipped: visibility blocked or unknown");
+            return false;
+        }
+        CtrLog_Write(CTR_LOG_VIDEO, "CAMERA visibility check: %.2f ms", MsSince(checkedAt));
+    }
+    if (!CtrVoxel_PlayCamera(&shot, 1, 60)) return false;
+    VoxelDirector_Hold(&sDirector);
+    CtrLog_Write(CTR_LOG_VIDEO, "CAMERA dialogue: important=%u push=%d tilt=%.0f move=%u",
+                 important, push, shot.pitch, shot.move);
+    return true;
+}
+bool CtrVoxel_BeginConversation(float npcDeltaX, float npcDeltaZ)
+{
+    return CtrVoxel_BeginConversationStyled(npcDeltaX,npcDeltaZ,false);
+}
+void CtrVoxel_EndConversation(void)
+{
+    VoxelDirector_Release(&sDirector, &sCamera);
+}
+/* Shared overworld battle lead-in, handed directly to the stock transition.
+ * Preserve the shown angles, target an actual trainer only when supplied,
+ * and cap distance from the gameplay baseline rather than compounding zoom. */
+bool CtrVoxel_BeginBattlePush(unsigned other)
+{
+    if (!CtrSettings_Voxel() || !CtrVoxel_IsAvailable() || sBattle.on || sSwoop>0) return false;
+    float ax,az,ag,bx,bz,bg;
+    if (!VoxelEntities_GetLocalWorldPos(255,&ax,&az,&ag)) return false;
+    if (!VoxelEntities_GetLocalWorldPos(other,&bx,&bz,&bg) || fabsf(ag-bg)>0.25f)
+    { bx=ax; bz=az; bg=ag; }
+    VoxelCamera follow=sDirector.active?sFollowCamera:sCamera;
+    VoxelCamera anchor=sCamera;
+    anchor.targetX=(ax+bx)*0.5f+0.5f;
+    anchor.targetZ=(az+bz)*0.5f+0.7f;
+    anchor.ground=(ag+bg)*0.5f;
+    anchor.distance=fminf(sCamera.distance,follow.distance*0.80f);
+    VoxelCameraShot shot={0,0,1,0,30,0,0};
+    if (!ConversationPathClear(&shot,ax,az,bx-ax,bz-az,&anchor,NULL))
+    {
+        CtrLog_Write(CTR_LOG_VIDEO,"CAMERA battle push skipped: visibility blocked/unknown");
+        return false;
+    }
+    VoxelDirector_Cancel(&sDirector);
+    if (!VoxelDirector_Begin(&sDirector,&sCamera,&shot,1,60)) return false;
+    sDirector.anchor=anchor;
+    VoxelDirector_Hold(&sDirector);
+    sFollowCamera=follow;
+    sScriptCamera.active=true; sScriptCamera.follow=false; sScriptCamera.returning=false;
+    CtrLog_Write(CTR_LOG_VIDEO,"CAMERA battle push: 30 frames, distance %.3f -> %.3f, baseline %.3f",
+                 sCamera.distance,anchor.distance,follow.distance);
+    return true;
+}
+static bool ScriptPairPosition(float *x,float *z,float *ground)
+{
+    float ax,az,ag,bx,bz,bg;
+    if (!VoxelEntities_GetLocalWorldPos(sScriptCamera.a,&ax,&az,&ag)
+        || !VoxelEntities_GetLocalWorldPos(sScriptCamera.b,&bx,&bz,&bg)) return false;
+    *x = (ax+bx)*0.5f+0.5f+sScriptCamera.offsetX;
+    *z = (az+bz)*0.5f+0.7f+sScriptCamera.offsetZ; *ground = (ag+bg)*0.5f;
+    return true;
+}
+void CtrVoxel_ScriptPair(unsigned a,unsigned b) { sScriptCamera.a=a; sScriptCamera.b=b; sScriptCamera.follow=false;
+    sScriptCamera.offsetX=sScriptCamera.offsetZ=0; }
+void CtrVoxel_GetScriptPair(unsigned *a,unsigned *b) { *a=sScriptCamera.a; *b=sScriptCamera.b; }
+void CtrVoxel_ScriptFollow(bool enabled) { sScriptCamera.follow=enabled; }
+void CtrVoxel_ScriptOffset(int x,int z)
+{
+    sScriptCamera.offsetX=(x<-32?-32:x>32?32:x)/16.0f;
+    sScriptCamera.offsetZ=(z<-32?-32:z>32?32:z)/16.0f;
+}
+float CtrVoxel_CinemaBars(void)
+{
+    if (!CtrSettings_GetInt("camera_cinema_bars",1)) return 0;
+    return sCinemaBars*sCinemaBars*(3-2*sCinemaBars);
+}
+static bool ScriptMove(unsigned frames,int distance,int pitch,int yaw,int yawLimit)
+{
+    float x,z,ground;
+    if (!CtrSettings_Voxel() || !CtrVoxel_IsAvailable() || sBattle.on || sSwoop>0 || !frames || frames>3600
+        || !ScriptPairPosition(&x,&z,&ground)) return false;
+    VoxelCamera follow = sDirector.active ? sFollowCamera : sCamera;
+    /* Retarget from the displayed pose, preserving the independent gameplay view. */
+    distance = distance<50 ? 50 : distance>120 ? 120 : distance;
+    pitch = pitch < -8 ? -8 : pitch>8 ? 8 : pitch;
+    yaw = yaw < -yawLimit ? -yawLimit : yaw>yawLimit ? yawLimit : yaw;
+    VoxelCamera anchor=follow;
+    anchor.targetX=x; anchor.targetZ=z; anchor.ground=ground;
+    VoxelCameraShot shot = {0,0,distance/100.0f,pitch,frames,0,yaw};
+    float ax=0,az=0,ag=0,bx=0,bz=0,bg=0;
+    unsigned actors[2]={sScriptCamera.a,sScriptCamera.b};
+    bool foundA=VoxelEntities_GetLocalWorldPos(sScriptCamera.a,&ax,&az,&ag);
+    bool foundB=VoxelEntities_GetLocalWorldPos(sScriptCamera.b,&bx,&bz,&bg);
+    if (!foundA || !foundB
+        || fabsf(ag-bg)>0.25f
+        || !ConversationPathClear(&shot,ax,az,bx-ax,bz-az,&anchor,actors))
+    {
+        CtrLog_Write(CTR_LOG_VIDEO,"CAMERA script shot skipped: visibility blocked or unknown");
+        CtrLog_Write(CTR_LOG_VIDEO,"CAMERA pair: %u/%u found=%u/%u at %.2f,%.2f ground %.2f / %.2f,%.2f ground %.2f",
+                     sScriptCamera.a,sScriptCamera.b,(unsigned)foundA,(unsigned)foundB,ax,az,ag,bx,bz,bg);
+        return false;
+    }
+    CtrLog_Write(CTR_LOG_VIDEO,"CAMERA retarget: moving=%u fromYaw=%.2f",
+                 VoxelDirector_Moving(&sDirector),sCamera.yaw);
+    VoxelDirector_Cancel(&sDirector);
+    if (!VoxelDirector_Begin(&sDirector,&sCamera,&shot,1,60)) return false;
+    sDirector.anchor=anchor;
+    VoxelDirector_Hold(&sDirector);
+    sFollowCamera=follow;
+    sScriptCamera.active=true; sScriptCamera.returning=false;
+    sScriptCamera.x=sScriptCamera.smoothX=x;
+    sScriptCamera.z=sScriptCamera.smoothZ=z;
+    sScriptCamera.ground=sScriptCamera.smoothGround=ground;
+    CtrLog_Write(CTR_LOG_VIDEO,"CAMERA script move: frames=%u distance=%d pitch=%d yaw=%d",frames,distance,pitch,yaw);
+    return true;
+}
+bool CtrVoxel_ScriptMove(unsigned frames,int distance,int pitch,int yaw)
+{
+    return ScriptMove(frames,distance,pitch,yaw,30);
+}
+bool CtrVoxel_ScriptOrbit(unsigned frames,int distance,int pitch,int heading)
+{
+    heading=heading<30?30:heading>150?150:heading;
+    CtrLog_Write(CTR_LOG_VIDEO,"CAMERA orbit: heading=%.2f -> %d over %u frames",
+                 90.0f-sCamera.yaw,heading,frames);
+    return ScriptMove(frames,distance,pitch,90-heading,60);
+}
+/* Scenic anchors are local to the current map, never an actor or a saved
+ * camera pose. Bounds and eye-path checks fail closed on unavailable scenery. */
+static int sScenicX, sScenicZ;
+void CtrVoxel_ScriptAnchor(int x,int z) { sScenicX=x; sScenicZ=z; }
+bool CtrVoxel_ScriptView(unsigned frames,int distance,int pitch,int yaw)
+{
+#if !CTR_VOXEL_LIGHTING
+    (void)frames; (void)distance; (void)pitch; (void)yaw;
+    return false;
+#else
+    if (!CtrSettings_Voxel() || !CtrVoxel_IsAvailable() || sBattle.on || sSwoop>0 || !frames || frames>3600)
+        return false;
+    const VoxelMapInstance *map=VoxelWorld_Instance(0);
+    if (!map || sScenicX<0 || sScenicZ<0 || sScenicX>=map->width || sScenicZ>=map->height)
+        return false;
+    VoxelCamera follow=sDirector.active?sFollowCamera:sCamera;
+    VoxelCamera anchor=follow;
+    anchor.targetX=map->originX+sScenicX+0.5f;
+    anchor.targetZ=map->originY+sScenicZ+0.5f;
+    anchor.ground=VoxelRelief_SurfaceAt(anchor.targetX,anchor.targetZ);
+    anchor.distance=follow.distance*(distance<80?80:distance>180?180:distance)/100.0f;
+    anchor.pitch=pitch<30?30:pitch>55?55:pitch;
+    anchor.yaw=yaw<-60?-60:yaw>60?60:yaw;
+    VoxelCameraShot shot={0,0,1,0,frames,0,0};
+    VoxelDirector trial={0}; VoxelCamera pose=sCamera,previous=sCamera;
+    if (!VoxelDirector_Begin(&trial,&sCamera,&shot,1,60)) return false;
+    trial.anchor=anchor;
+    VoxelDirector_Hold(&trial);
+    for (unsigned f=0;f<frames;++f)
+    {
+        VoxelDirector_Step(&trial,&follow,&pose);
+        if ((f+1)%12==0 || f+1==frames)
+        {
+            /* A one-frame view is a cut: validate its eye, not the unseen
+             * segment between shots. Longer moves validate the swept path. */
+            if (!VoxelLighting_CameraClear(frames==1?pose.x:previous.x,
+                frames==1?pose.y:previous.y,frames==1?pose.z:previous.z,
+                pose.x,pose.y,pose.z))
+            {
+                CtrLog_Write(CTR_LOG_VIDEO,"CAMERA scenic skipped: eye path blocked/unknown at %u/%u",f+1,frames);
+                return false;
+            }
+            previous=pose;
+        }
+    }
+    VoxelDirector_Cancel(&sDirector);
+    if (!VoxelDirector_Begin(&sDirector,&sCamera,&shot,1,60)) return false;
+    sDirector.anchor=anchor;
+    VoxelDirector_Hold(&sDirector);
+    sFollowCamera=follow;
+    sScriptCamera.follow=false;
+    sScriptCamera.active=true; sScriptCamera.returning=false;
+    CtrLog_Write(CTR_LOG_VIDEO,"CAMERA scenic: map=%d,%d target=%d,%d frames=%u distance=%d pitch=%d yaw=%d",
+                 map->originX,map->originY,sScenicX,sScenicZ,frames,distance,pitch,yaw);
+    return true;
+#endif
+}
+void CtrVoxel_ScriptReturn(unsigned frames)
+{
+    if (!sScriptCamera.active) return;
+    CtrLog_Write(CTR_LOG_VIDEO,"CAMERA return: interrupted=%u heading=%.2f phase=%u/%u",
+                 VoxelDirector_Moving(&sDirector),90.0f-sCamera.yaw,sDirector.frame,
+                 sDirector.index<sDirector.count?sDirector.shots[sDirector.index].move:sDirector.returnFrames);
+    sDirector.returnFrames=frames<1?1:frames>3600?3600:frames;
+    VoxelDirector_Release(&sDirector,&sCamera);
+    sScriptCamera.returning=true;
+}
+bool CtrVoxel_ScriptMoving(void) { return CtrSettings_Voxel() && CtrVoxel_IsAvailable() && sScriptCamera.active && VoxelDirector_Moving(&sDirector); }
+static void ScriptCameraTrack(void)
+{
+    float x,z,ground;
+    if (!sScriptCamera.active || !sScriptCamera.follow || sScriptCamera.returning) return;
+    if (!ScriptPairPosition(&x,&z,&ground)) { CtrVoxel_CancelCamera(); return; }
+    sScriptCamera.smoothX += (x-sScriptCamera.smoothX)*0.2f;
+    sScriptCamera.smoothZ += (z-sScriptCamera.smoothZ)*0.2f;
+    sScriptCamera.smoothGround += (ground-sScriptCamera.smoothGround)*0.2f;
+    VoxelDirector_Track(&sDirector,sScriptCamera.smoothX-sScriptCamera.x,
+        sScriptCamera.smoothZ-sScriptCamera.z,sScriptCamera.smoothGround-sScriptCamera.ground);
+}
+bool CtrVoxel_CameraPlaying(void) { return sDirector.active; }
+void CtrVoxel_CancelCamera(void)
+{
+    if (sDirector.active) sCamera = sFollowCamera;
+    VoxelDirector_Cancel(&sDirector);
+    sScriptCamera.active=false;
+    sCinemaBars=0;
+}
+
 bool CtrVoxel_Update(void)
 {
     const VoxelMapInstance *inst;
@@ -5805,6 +6147,10 @@ bool CtrVoxel_Update(void)
         CtrVoxel_EndBattle();
     started = svcGetSystemTick();
     ++sFrame;
+    /* Small letterbox fades stay clear of the dialogue window. */
+    float barTarget=sScriptCamera.active && !sScriptCamera.returning ? 1.0f : 0.0f;
+    if (sCinemaBars<barTarget) { sCinemaBars+=1.0f/24; if(sCinemaBars>1) sCinemaBars=1; }
+    else if(sCinemaBars>barTarget) { sCinemaBars-=1.0f/24; if(sCinemaBars<0) sCinemaBars=0; }
 
     /* CtrVideo_Present has opened the frame and waited for the previous GPU
      * queue. Only now may the sources of last frame's uploads be reused. */
@@ -5912,11 +6258,31 @@ bool CtrVoxel_Update(void)
         VoxelEntities_GetPlayerWorldPos(&smoothX, &smoothZ);
 
     mapChanged = mapGroup != sMeshMapGroup || mapNum != sMeshMapNum;
+    if (sBattle.on || sSwoop > 0.0f) CtrVoxel_CancelCamera();
+    if (sDirector.active) sCamera = sFollowCamera;
     if (mapChanged)
     {
         for (unsigned a = 0; a < VOXEL_ATLAS_SLOTS; ++a)
             sAtlases[a].extendPending = false;
+        float oldTargetX=sCamera.targetX,oldTargetZ=sCamera.targetZ;
         cut = !HandleMapChange(mapGroup, mapNum, smoothX, smoothZ);
+        if (sDirector.active)
+        {
+            if (!cut && sScriptCamera.follow)
+            {
+                float dx=sCamera.targetX-oldTargetX,dz=sCamera.targetZ-oldTargetZ;
+                VoxelCamera_Shift(&sDirector.anchor,dx,dz);
+                VoxelCamera_Shift(&sDirector.from,dx,dz);
+                sScriptCamera.x+=dx;sScriptCamera.smoothX+=dx;
+                sScriptCamera.z+=dz;sScriptCamera.smoothZ+=dz;
+                CtrLog_Write(CTR_LOG_VIDEO,"CAMERA tracking crossed map, rebased %.1f,%.1f",dx,dz);
+            }
+            else
+            {
+                VoxelDirector_Cancel(&sDirector);
+                sScriptCamera.active=false;sCinemaBars=0;
+            }
+        }
         /* A battle on a map the field never drew: the field's camera is the
          * one the cut just placed on the player. */
         if (sBattle.on)
@@ -5926,6 +6292,13 @@ bool CtrVoxel_Update(void)
     {
         VoxelCamera_SetGround(&sCamera, VoxelEntities_PlayerGround(), 0);
         VoxelCamera_Update(&sCamera, smoothX, smoothZ);
+    }
+    if (sDirector.active)
+    {
+        sFollowCamera = sCamera;
+        ScriptCameraTrack();
+        VoxelDirector_Step(&sDirector, &sFollowCamera, &sCamera);
+        if (!sDirector.active) sScriptCamera.active=false;
     }
     /* The swoop to or from the 2D field, on top of the player's pose. */
     if (!sBattle.on)
@@ -5991,7 +6364,7 @@ bool CtrVoxel_Update(void)
         sStats.streamMs = MsSince(streamStart);
     }
     /* The view is visited around what is looked at: the stage, in a battle. */
-    if (sBattle.on)
+    if (sBattle.on || sDirector.active)
         UpdateView(sCamera.targetX, sCamera.targetZ, false, cut);
     else
         UpdateView(playerX, playerZ, mapChanged && !cut, cut);
@@ -6292,6 +6665,7 @@ bool CtrVoxel_HoldsVram(void)
 
 void CtrVoxel_ParkVram(void)
 {
+    CtrVoxel_CancelCamera();
     if (!sReady || sParked)
         return;
     LampsRelease(true);
@@ -8515,10 +8889,10 @@ void CtrVoxel_Draw(C3D_RenderTarget *target, int eye)
     const VoxelMapInstance *current = VoxelWorld_Instance(0);
     bool indoor = current != NULL && current->indoor;
     VoxelLight light = LightFor(indoor), unlit = LightFor(true);
-    /* The swoop: the light towards neutral with the camera (VOXEL_SWOOP_NEUTRAL_START). */
-    float neutral = CtrVoxel_SwoopNeutral();
     bool dapples;
 #if CTR_VOXEL_LIGHTING
+    /* The swoop: the light towards neutral with the camera. */
+    float neutral = CtrVoxel_SwoopNeutral();
     float fog = !indoor && sHaveFog ? VoxelWorld_FogDensity() : 0.0f;
     bool cave = fog > 0.0f && VoxelWorld_Underground();
     VoxelWeatherClass weather = indoor ? VOXEL_WEATHER_CLEAR : VoxelWorld_Weather();

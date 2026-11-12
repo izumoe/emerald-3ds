@@ -1,0 +1,16 @@
+--- a/src/event_object_movement.c
++++ b/src/event_object_movement.c
+@@ -9282,3 +9282,13 @@
+ {
+     return TRUE;
+ }
++
++#ifdef PORT_BRIDGE
++/* Renderer-only capability query. Do not infer direction groups on special
++ * animation tables (bikes, fishing, creatures, props, or custom poses). */
++bool8 Port_HasCameraDirections(const struct Sprite *sprite)
++{
++    return sprite->anims == sAnimTable_Standard
++        || sprite->anims == sAnimTable_BrendanMayNormal;
++}
++#endif

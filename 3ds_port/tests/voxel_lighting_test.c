@@ -421,6 +421,12 @@ int main(void)
     sRailPresent = false;
     VoxelLighting_Reset();
 
+    /* Camera rays stop at a house, pass above it, and fail closed off-map. */
+    assert(!VoxelLighting_CameraClear(3.5f,1,4.5f,6.5f,1,4.5f));
+    assert(VoxelLighting_CameraClear(3.5f,4,4.5f,6.5f,4,4.5f));
+    assert(!VoxelLighting_CameraClear(3.5f,4,4.5f,50,4,4.5f));
+    assert(!VoxelLighting_CameraClear(NAN,4,4.5f,6.5f,4,4.5f));
+    assert(!VoxelLighting_CameraClear(50,4,50,50,4,50));
     MovingSunTests();
     sMaps[1].indoor = true;
     VoxelLighting_Reset();

@@ -25,6 +25,7 @@
 #include "voxel_grade.h"
 #include "voxel_relief.h"
 #include "voxel_sprite_slots.h"
+#include "voxel_sprite_direction.h"
 #include "voxel_tree.h"
 #include "voxel_world.h"
 #include "voxel_lighting.h"
@@ -86,9 +87,12 @@ static bool sDoorStale = true;
 
 int VoxelEntities_PlayerVertexFirst(void) { return sPlayerVertexFirst; }
 
+static int sViewQuadrant;
+
 void VoxelEntities_Reset(void)
 {
     sDoorStale = true;
+    sViewQuadrant = 0;
     for (unsigned i = 0; i < VOXEL_SPRITE_SLOTS; ++i)
     {
         sSlots[i].valid = false;
@@ -276,6 +280,38 @@ void VoxelEntities_GetPlayerWorldPos(float *worldX, float *worldZ)
     z += VoxelRelief_ShiftAt(x + 0.5f, z + 0.5f) + ObjectDeck(obj, x, z);
     if (worldX != NULL) *worldX = x;
     if (worldZ != NULL) *worldZ = z;
+}
+
+static unsigned CameraObjectId(unsigned localId)
+{
+    unsigned id = OBJECT_EVENTS_COUNT;
+    if (localId == 255) id = gPlayerAvatar.objectEventId;
+    else
+    {
+        unsigned mapNum=(localId & 0x01000000u)?(localId>>8)&255:gSaveBlock1Ptr->location.mapNum;
+        unsigned mapGroup=(localId & 0x01000000u)?(localId>>16)&255:gSaveBlock1Ptr->location.mapGroup;
+        localId &= 255;
+        for (unsigned i=0;i<OBJECT_EVENTS_COUNT;++i)
+            if (gObjectEvents[i].active && gObjectEvents[i].localId == localId
+                && gObjectEvents[i].mapNum == mapNum && gObjectEvents[i].mapGroup == mapGroup) id = i;
+    }
+    if (id >= OBJECT_EVENTS_COUNT || !gObjectEvents[id].active
+        || gObjectEvents[id].spriteId >= MAX_SPRITES) return OBJECT_EVENTS_COUNT;
+    return id;
+}
+
+bool VoxelEntities_GetLocalWorldPos(unsigned localId, float *x, float *z, float *ground)
+{
+    unsigned id=CameraObjectId(localId);
+    if (id==OBJECT_EVENTS_COUNT) return false;
+    const struct ObjectEvent *obj = &gObjectEvents[id];
+    GetObjectWorldPos(obj,&gSprites[obj->spriteId],x,z);
+    if (VoxelWorld_InstanceCount())
+    { *x += VoxelWorld_Instance(0)->originX; *z += VoxelWorld_Instance(0)->originY; }
+    float deck = ObjectDeck(obj,*x,*z);
+    *ground = VoxelRelief_LiftAt(*x+0.5f,*z+0.5f) + deck;
+    *z += VoxelRelief_ShiftAt(*x+0.5f,*z+0.5f) + deck;
+    return true;
 }
 
 /* ── Slot decoding ──────────────────────────────────────────────────────── */
@@ -492,6 +528,41 @@ static void PictureSize(const struct Sprite *sprite, const struct ObjectEvent *o
     }
 }
 
+/* The regular game has already advanced the animation. Read the matching
+ * command in the other direction, without changing a Sprite or ObjectEvent.
+ * Resident-only lookup keeps card I/O out of this render path. Nearby object
+ * pictures are loaded by the existing asset read-ahead worker. */
+extern bool8 Port_HasCameraDirections(const struct Sprite *sprite);
+static bool CameraSource(const struct Sprite *sprite, const struct ObjectEvent *obj,
+                         int w, int h, u8 *dest, bool *flipX, bool *flipY)
+{
+    if (obj == NULL || sViewQuadrant == 0 || sprite->images == NULL
+        || sprite->oam.bpp || sprite->oam.affineMode != ST_OAM_AFFINE_OFF
+        || !Port_HasCameraDirections(sprite) || sprite->animNum >= 20)
+        return false;
+    unsigned dir = VoxelSprite_RelativeDirection(sprite->animNum & 3, sViewQuadrant);
+    unsigned anim = (sprite->animNum & ~3u) + dir;
+    unsigned phase = sprite->animCmdIndex;
+    /* Known tables: a face has one frame; each walking group has four.
+     * Control commands are deliberately left to the normal sprite path. */
+    if (phase >= (anim < 4 ? 1u : 4u)) return false;
+    const union AnimCmd *cmd = &sprite->anims[anim][phase];
+    if (cmd->type < 0) return false;
+    const struct ObjectEventGraphicsInfo *info = GetObjectEventGraphicsInfo(obj->graphicsId);
+    if (w != info->width || h != info->height || sprite->images != info->images)
+        return false;
+    const struct SpriteFrameImage *frame = &sprite->images[cmd->frame.imageValue];
+    u32 size = Port_GetSpriteFrameSize(frame->data, frame->size);
+    unsigned bytes = (unsigned)w * h / 2;
+    if (size < bytes) return false;
+    const void *pixels = Port_PeekSpriteFramePointer(frame->data, size, frame->offset);
+    if (pixels == NULL) return false;
+    memcpy(dest, pixels, bytes);
+    *flipX = cmd->frame.hFlip;
+    *flipY = cmd->frame.vFlip;
+    return true;
+}
+
 /*
  * Brings a slot up to date with its sprite (an object's, or NULL for a field
  * effect). Returns true if it was re-decoded, which only happens when
@@ -520,7 +591,10 @@ static bool RefreshSlot(unsigned index, const struct Sprite *sprite, const struc
                          VOXEL_SPRITE_MAX_BYTES))
         return false;
 
-    sourceBytes = GatherSource(sprite, w, h, color256, source);
+    if (CameraSource(sprite, obj, w, h, source, &flipX, &flipY))
+        sourceBytes = (u32)w * h / 2;
+    else
+        sourceBytes = GatherSource(sprite, w, h, color256, source);
     paletteBytes = color256 ? 256 * 2 : 16 * 2;
     /* OBJ palettes are the second half of PLTT; 8bpp uses it as one bank.
      * One given an ext palette shows that, as the 2D compositor does. */
@@ -687,6 +761,77 @@ static float SpriteScale(const struct Sprite *sprite)
     return a > 0 ? 256.0f / a : 1.0f;
 }
 
+static void BillboardBase(float cx,float cz,float rise,float deck,float halfW,float height,
+                          float offX,float offZ,float rightX,float rightZ,
+                          float *outX,float *outY,float *outZ)
+{
+    /* On relief the sprite stands where its cell was lifted to, and rides
+     * the lattice between cells, so a flight of stairs is climbed. */
+    float lift = VoxelRelief_LiftAt(cx, cz) + rise + deck;
+    float shift = VoxelRelief_ShiftAt(cx, cz) + deck;
+    /* Up on a deck nothing of the ground or of a model's front is before
+     * it: the deck is under its feet. */
+    float push = deck > 0.0f ? 0.0f : CardPush(cx, cz, halfW, height);
+    float model = deck > 0.0f ? 0.0f : ModelPush(cx, cz, halfW);
+
+    if (model > push)
+        push = model;
+    /* Towards the camera: the right vector turned a quarter, unit length. */
+    float along = push > 0.0f ? push / sqrtf(rightX * rightX + rightZ * rightZ) : 0.0f;
+    float px = cx + offX - rightZ * along, pz = cz + offZ + shift + rightX * along;
+
+    lift += push;
+    *outX=px;*outY=lift;*outZ=pz;
+}
+
+/* First opaque row of the decoded OBJ frame, in displayed orientation. */
+static int OpaqueTop(const VoxelSpriteSlot *slot,int rows)
+{
+    unsigned tilesX=slot->width/8;
+    for (int y=0;y<rows;++y)
+        for (int x=0;x<slot->width;++x)
+        {
+            unsigned sx=slot->flipX?slot->width-1-x:x;
+            unsigned sy=slot->flipY?slot->height-1-y:y;
+            unsigned tile=(sy/8)*tilesX+sx/8, pixel=(sy%8)*8+sx%8;
+            unsigned at=tile*(slot->color256?64u:32u)+(slot->color256?pixel:pixel/2);
+            if (at>=slot->sourceBytes) continue;
+            unsigned colour=slot->source[at];
+            if (!slot->color256) colour=(colour>>((pixel&1)*4))&15;
+            if (colour) return y;
+        }
+    return rows;
+}
+
+bool VoxelEntities_GetCameraBounds(unsigned localId,const VoxelCamera *camera,
+                                   float *x,float *y,float *z,float *halfWidth,float *height)
+{
+    unsigned id=CameraObjectId(localId);
+    if (id==OBJECT_EVENTS_COUNT || !camera || camera->lay>0.01f
+        || !isfinite(camera->pitch) || fabsf(camera->pitch)>=89) return false;
+    const VoxelSpriteSlot *slot=&sSlots[id];
+    const struct ObjectEvent *obj=&gObjectEvents[id];
+    const struct ObjectEventGraphicsInfo *info=GetObjectEventGraphicsInfo(obj->graphicsId);
+    if (!slot->valid || sSlotEffect[id] || slot->width<=0 || slot->height<=0
+        || !info || slot->footPadImages!=info->images) return false;
+    int rows=VisibleRows(slot), top=OpaqueTop(slot,rows);
+    if (top==rows) return false;
+    float cx,cz;
+    GetObjectWorldPos(obj,&gSprites[obj->spriteId],&cx,&cz);
+    if (VoxelWorld_InstanceCount())
+    { cx+=VoxelWorld_Instance(0)->originX;cz+=VoxelWorld_Instance(0)->originY; }
+    float deck=ObjectDeck(obj,cx,cz);
+    float narrow=sqrtf(cosf(camera->pitch*(3.14159265358979323846f/180.0f)));
+    float stretch=1.0f/narrow, yaw=camera->yaw*(3.14159265358979323846f/180.0f);
+    float hw=slot->width/VOXEL_PIXELS_PER_TILE*0.5f;
+    float fullHeight=rows/VOXEL_PIXELS_PER_TILE*stretch;
+    BillboardBase(cx+0.5f,cz+0.5f,0,deck,hw,fullHeight,0,0,
+                  cosf(yaw)*narrow,-sinf(yaw)*narrow,x,y,z);
+    *halfWidth=hw*narrow;
+    *height=(rows-top)/VOXEL_PIXELS_PER_TILE*stretch;
+    return true;
+}
+
 /* How far the cards lie down this update (VoxelCamera.lay), 0 upright. */
 static float sLay;
 
@@ -704,22 +849,8 @@ static void EmitBillboard(VoxelBuilder *builder, const VoxelSpriteSlot *slot, un
     float v1 = 1.0f - (baseY + rows) / (float)VOXEL_SPRITE_ATLAS_H;
     float halfW = slot->width / VOXEL_PIXELS_PER_TILE * 0.5f * scale;
     float height = rows / VOXEL_PIXELS_PER_TILE * stretch * scale;
-    /* On relief the sprite stands where its cell was lifted to, and rides
-     * the lattice between cells, so a flight of stairs is climbed. */
-    float lift = VoxelRelief_LiftAt(cx, cz) + rise + deck;
-    float shift = VoxelRelief_ShiftAt(cx, cz) + deck;
-    /* Up on a deck nothing of the ground or of a model's front is before
-     * it: the deck is under its feet. */
-    float push = deck > 0.0f ? 0.0f : CardPush(cx, cz, halfW, height);
-    float model = deck > 0.0f ? 0.0f : ModelPush(cx, cz, halfW);
-
-    if (model > push)
-        push = model;
-    /* Towards the camera: the right vector turned a quarter, unit length. */
-    float along = push > 0.0f ? push / sqrtf(rightX * rightX + rightZ * rightZ) : 0.0f;
-    float px = cx + offX - rightZ * along, pz = cz + offZ + shift + rightX * along;
-
-    lift += push;
+    float px,lift,pz;
+    BillboardBase(cx,cz,rise,deck,halfW,height,offX,offZ,rightX,rightZ,&px,&lift,&pz);
     float ax = px - rightX * halfW, az = pz - rightZ * halfW;
     float bx = px + rightX * halfW, bz = pz + rightZ * halfW;
     /* Tilting back (sLay) to face the swoop's end camera, square on: the
@@ -1471,6 +1602,7 @@ unsigned VoxelEntities_Emit(VoxelBuilder *builder, uint16_t *atlas, const VoxelC
 #if !CTR_VOXEL_LIGHTING
     (void)shadows;
 #endif
+    sViewQuadrant = VoxelSprite_Quadrant(camera->yaw, sViewQuadrant);
     memset(objectSprite, 0, sizeof(objectSprite));
     for (unsigned i = 0; i < OBJECT_EVENTS_COUNT; ++i)
     {

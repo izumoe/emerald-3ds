@@ -124,7 +124,7 @@ VOXEL_GAME_SRCS := src/voxel/voxel_world.c src/voxel/voxel_camera.c \
 	src/voxel/voxel_regions.c src/voxel/voxel_tree.c src/voxel/voxel_sign.c \
 	src/voxel/voxel_building.c src/voxel/voxel_relief.c \
 	src/voxel/voxel_arena.c src/voxel/voxel_grade.c src/voxel/voxel_battle.c \
-	src/voxel/voxel_sprite_slots.c src/voxel/voxel_swoop.c
+	src/voxel/voxel_sprite_slots.c src/voxel/voxel_swoop.c src/voxel/voxel_director.c
 ifeq ($(VOXEL_LIGHTING),1)
 VOXEL_GAME_SRCS += src/voxel/voxel_lighting.c
 endif
@@ -819,3 +819,10 @@ verify-voxel-sprite-slots: build/voxel_sprite_slots_test.exe
 build/voxel_sprite_slots_test.exe: tests/voxel_sprite_slots_test.c src/voxel/voxel_sprite_slots.c src/voxel/voxel_sprite_slots.h
 	@mkdir -p $(@D)
 	$(HOSTCC) -std=c99 -O2 -Wall -Wextra -Werror -Isrc/voxel tests/voxel_sprite_slots_test.c src/voxel/voxel_sprite_slots.c -o $@
+
+.PHONY: verify-voxel-director
+verify: verify-voxel-director
+verify-voxel-director: build/voxel_director_test$(EXESUFFIX)
+	./$<
+build/voxel_director_test$(EXESUFFIX): tests/voxel_director_test.c src/voxel/voxel_director.c src/voxel/voxel_director.h src/voxel/voxel_camera.h | build
+	$(HOSTCC) -std=c99 -O2 -Wall -Wextra -Werror -Isrc/voxel tests/voxel_director_test.c src/voxel/voxel_director.c -lm -o $@

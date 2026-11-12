@@ -60,6 +60,13 @@ void VoxelEntities_Reset(void);
  * once per step no matter how smooth its damping is.
  */
 void VoxelEntities_GetPlayerWorldPos(float *worldX, float *worldZ);
+/* Interpolated actor position (255 is player). Internal explicit-map refs use
+ * bit 24 plus group:16, map:8, local:0 for retained cross-map actors. */
+bool VoxelEntities_GetLocalWorldPos(unsigned localId, float *x, float *z, float *ground);
+/* Upright rendered bounds: cell centre, relief/model push, opaque sprite height. */
+bool VoxelEntities_GetCameraBounds(unsigned localId,const VoxelCamera *camera,
+                                   float *x,float *y,float *z,float *halfWidth,float *height);
+
 /* How high a bridge's deck carries the player, tiles (0 off one). */
 float VoxelEntities_PlayerDeck(void);
 /* The height, tiles, of the ground the player stands on, deck included: taken

@@ -29,6 +29,10 @@ extern VoxelSun gVoxelSun;
  * were read from changes - a live tile, the set of maps or their origins -
  * and needed at no other time: the caches outlive builds and frames. */
 void VoxelLighting_Reset(void);
+/* Conservative sampled camera visibility against the cached scenery proxies.
+ * Unknown map coverage or a segment over 32 tiles fails closed. Not a GPU
+ * depth test: includes terrain, building bounds, tree volumes and props. */
+bool VoxelLighting_CameraClear(float x0, float y0, float z0, float x1, float y1, float z1);
 bool VoxelLighting_SetSun(float dx, float dz, float strength, uint32_t key);
 uint32_t VoxelLighting_Hash(int x0, int z0, int x1, int z1);
 float VoxelLighting_Sample(float x, float y, float z);

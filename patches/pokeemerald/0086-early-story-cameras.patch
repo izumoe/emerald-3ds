@@ -1,0 +1,186 @@
+--- a/data/maps/Route101/scripts.inc
++++ b/data/maps/Route101/scripts.inc
+@@ -19,14 +19,30 @@
+ Route101_EventScript_StartBirchRescue::
+ 	lockall
+ 	playbgm MUS_HELP, TRUE
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE101_BIRCH
++    camera_anchor 10, 19
++    camera_view 54, 110, 50, 0
++    waitcamera
++#endif
+ 	msgbox Route101_Text_HelpMe, MSGBOX_DEFAULT
+ 	closemessage
+ 	setobjectxy LOCALID_ROUTE101_BIRCH, 0, 15
+ 	setobjectxy LOCALID_ROUTE101_ZIGZAGOON, 0, 16
++#ifdef PORT_BRIDGE
++    @ Move towards the action as the actors enter, not before they move.
++    camera_anchor 6, 15
++    camera_view 120, 120, 43, -10
++#endif
+ 	applymovement LOCALID_PLAYER, Route101_Movement_EnterScene
+ 	applymovement LOCALID_ROUTE101_BIRCH, Route101_Movement_BirchRunAway1
+ 	applymovement LOCALID_ROUTE101_ZIGZAGOON, Route101_Movement_ZigzagoonChase1
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_ROUTE101_BIRCH, LOCALID_ROUTE101_ZIGZAGOON
++    camera_follow TRUE
++    camera_move 96, 110, 2, -15
++#endif
+ 	applymovement LOCALID_ROUTE101_ZIGZAGOON, Route101_Movement_ZigzagoonChaseInCircles
+ 	applymovement LOCALID_ROUTE101_BIRCH, Route101_Movement_BirchRunInCircles
+ 	waitmovement 0
+@@ -35,7 +51,22 @@
+ 	applymovement LOCALID_ROUTE101_ZIGZAGOON, Route101_Movement_ZigzagoonFaceBirch
+ 	applymovement LOCALID_ROUTE101_BIRCH, Route101_Movement_BirchFaceZigzagoon
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    @ Stop tracking and settle before the plea; text then holds a fixed view.
++    camera_follow FALSE
++    camera_move 54, 70, 0, -28
++    waitcamera
++    msgbox Route101_Text_CameraPleaseHelp, MSGBOX_DEFAULT
++    camera_anchor 7, 14
++    camera_view 90, 105, 40, -10
++    msgbox Route101_Text_CameraBag, MSGBOX_DEFAULT
++    waitcamera
++    camera_return 60
++    waitcamera
++    camera_end
++#else
+ 	msgbox Route101_Text_PleaseHelp, MSGBOX_DEFAULT
++#endif
+ 	closemessage
+ 	setvar VAR_ROUTE101_STATE, 2
+ 	releaseall
+@@ -297,3 +328,13 @@
+ 	.string "ROUTE 101\n"
+ 	.string "{UP_ARROW} OLDALE TOWN$"
+ 
++
++#ifdef PORT_BRIDGE
++@ Exact original page boundary, wording and line breaks.
++Route101_Text_CameraPleaseHelp:
++    .string "Hello! You over there!\n"
++    .string "Please! Help!$"
++Route101_Text_CameraBag:
++    .string "In my BAG!\n"
++    .string "There's a POKé BALL!$"
++#endif
+--- a/data/maps/Route103/scripts.inc
++++ b/data/maps/Route103/scripts.inc
+@@ -19,6 +19,11 @@
+ 
+ Route103_EventScript_Rival::
+ 	lockall
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE103_RIVAL
++    camera_move 60, 75, -4, -28
++    waitcamera
++#endif
+ 	checkplayergender
+ 	goto_if_eq VAR_RESULT, MALE, Route103_EventScript_RivalMay
+ 	goto_if_eq VAR_RESULT, FEMALE, Route103_EventScript_RivalBrendan
+@@ -28,13 +33,23 @@
+ 	msgbox Route103_Text_MayRoute103Pokemon, MSGBOX_DEFAULT
+ 	closemessage
+ 	playbgm MUS_ENCOUNTER_MAY, TRUE
++#ifdef PORT_BRIDGE
++    camera_move 72, 70, -4, -28
++#endif
+ 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_FacePlayer
+ 	waitmovement 0
+ 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_ExclamationMark
+ 	waitmovement 0
+ 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_Delay48
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_move 90, 65, 2, 28
++#endif
+ 	msgbox Route103_Text_MayLetsBattle, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    @ The shared battle-start rule takes over from this displayed pose.
++    waitcamera
++#endif
+ 	switch VAR_STARTER_MON
+ 	case 0, Route103_EventScript_StartMayBattleTreecko
+ 	case 1, Route103_EventScript_StartMayBattleTorchic
+@@ -45,13 +60,23 @@
+ 	msgbox Route103_Text_BrendanRoute103Pokemon, MSGBOX_DEFAULT
+ 	closemessage
+ 	playbgm MUS_ENCOUNTER_BRENDAN, TRUE
++#ifdef PORT_BRIDGE
++    camera_move 72, 70, -4, -28
++#endif
+ 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_FacePlayer
+ 	waitmovement 0
+ 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_ExclamationMark
+ 	waitmovement 0
+ 	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_Delay48
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_move 90, 65, 2, 28
++#endif
+ 	msgbox Route103_Text_BrendanLetsBattle, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    @ The shared battle-start rule takes over from this displayed pose.
++    waitcamera
++#endif
+ 	switch VAR_STARTER_MON
+ 	case 0, Route103_EventScript_StartBrendanBattleTreecko
+ 	case 1, Route103_EventScript_StartBrendanBattleTorchic
+@@ -89,17 +114,35 @@
+ 	end
+ 
+ Route103_EventScript_AfterMayBattle::
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE103_RIVAL
++    camera_follow TRUE
++    camera_move 60, 75, -4, -28
++    waitcamera
++#endif
+ 	msgbox Route103_Text_MayTimeToHeadBack, MSGBOX_DEFAULT
+ 	goto Route103_EventScript_RivalExit
+ 	end
+ 
+ Route103_EventScript_AfterBrendanBattle::
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE103_RIVAL
++    camera_follow TRUE
++    camera_move 60, 75, -4, -28
++    waitcamera
++#endif
+ 	msgbox Route103_Text_BrendanTimeToHeadBack, MSGBOX_DEFAULT
+ 	goto Route103_EventScript_RivalExit
+ 	end
+ 
+ Route103_EventScript_RivalExit::
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 0, -32
++    camera_follow TRUE
++    camera_move 120, 80, -4, 0
++#endif
+ 	switch VAR_FACING
+ 	case DIR_SOUTH, Route103_EventScript_RivalExitFacingSouth
+ 	case DIR_NORTH, Route103_EventScript_RivalExitFacingNorth
+@@ -137,7 +180,17 @@
+ 	end
+ 
+ Route103_EventScript_RivalEnd::
++#ifdef PORT_BRIDGE
++    @ Finish on the player. Remove the rival while still off-screen, then widen.
++    waitcamera
++    camera_hold 45
++#endif
+ 	removeobject LOCALID_ROUTE103_RIVAL
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	setvar VAR_BIRCH_LAB_STATE, 4
+ 	clearflag FLAG_HIDE_LITTLEROOT_TOWN_BIRCHS_LAB_RIVAL
+ 	setflag FLAG_DEFEATED_RIVAL_ROUTE103

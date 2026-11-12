@@ -1,0 +1,264 @@
+--- a/data/maps/RusturfTunnel/scripts.inc
++++ b/data/maps/RusturfTunnel/scripts.inc
+@@ -268,6 +268,13 @@
+ 
+ RusturfTunnel_EventScript_AquaGruntBackUp::
+ 	lockall
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_RUSTURF_TUNNEL_GRUNT
++    camera_offset 0, -16
++    camera_orbit 45, 65, 2, 145
++    waitcamera
++#endif
+ 	msgbox RusturfTunnel_Text_ComeAndGetSome, MSGBOX_DEFAULT
+ 	closemessage
+ 	applymovement LOCALID_RUSTURF_TUNNEL_GRUNT, RusturfTunnel_Movement_GruntAndPeekoBackUp
+@@ -276,6 +283,12 @@
+ 	copyobjectxytoperm LOCALID_RUSTURF_TUNNEL_GRUNT
+ 	copyobjectxytoperm LOCALID_RUSTURF_TUNNEL_PEEKO
+ 	setvar VAR_RUSTURF_TUNNEL_STATE, 3
++
++#ifdef PORT_BRIDGE
++    camera_return 48
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+@@ -299,11 +312,29 @@
+ 	lock
+ 	faceplayer
+ 	playbgm MUS_ENCOUNTER_AQUA, FALSE
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_RUSTURF_TUNNEL_GRUNT
++    camera_offset 0, -16
++    camera_orbit 60, 55, 2, 145
++    waitcamera
++#endif
+ 	msgbox RusturfTunnel_Text_GruntIntro, MSGBOX_DEFAULT
++
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_RUSTURF_TUNNEL, LOCALID_PLAYER, LOCALID_RUSTURF_TUNNEL_GRUNT, 60, 2, -55
++#endif
+ 	trainerbattle_no_intro TRAINER_GRUNT_RUSTURF_TUNNEL, RusturfTunnel_Text_GruntDefeat
+ 	msgbox RusturfTunnel_Text_GruntTakePackage, MSGBOX_DEFAULT
+ 	giveitem ITEM_DEVON_GOODS
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 16, 0
++    camera_orbit 60, 50, 0, 145
++    waitcamera
++#endif
+ 	applymovement LOCALID_PLAYER, RusturfTunnel_Movement_PushPlayerAsideForGrunt
+ 	applymovement LOCALID_RUSTURF_TUNNEL_GRUNT, RusturfTunnel_Movement_GruntEscape
+ 	waitmovement 0
+@@ -315,9 +346,27 @@
+ 	applymovement LOCALID_PLAYER, RusturfTunnel_Movement_PlayerMoveAsideForBriney
+ 	applymovement LOCALID_RUSTURF_TUNNEL_BRINEY, RusturfTunnel_Movement_BrineyApproachPeeko2
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 8, -32
++    camera_orbit 75, 55, 4, 145
++    waitcamera
++    camera_pair LOCALID_RUSTURF_TUNNEL_BRINEY, LOCALID_RUSTURF_TUNNEL_PEEKO
++    camera_offset 0, -16
++    camera_orbit 1, 55, 4, 145
++    waitcamera
++#endif
+ 	msgbox RusturfTunnel_Text_PeekoGladToSeeYouSafe, MSGBOX_DEFAULT
+ 	applymovement LOCALID_RUSTURF_TUNNEL_BRINEY, Common_Movement_FacePlayer
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_RUSTURF_TUNNEL_BRINEY
++    camera_offset 0, -24
++    camera_orbit 60, 55, 4, 145
++    waitcamera
++#endif
+ 	message RusturfTunnel_Text_ThankYouLetsGoHomePeeko
+ 	waitmessage
+ 	waitse
+@@ -325,6 +374,13 @@
+ 	waitbuttonpress
+ 	waitmoncry
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 16, 0
++    camera_orbit 60, 50, 0, 145
++    waitcamera
++#endif
+ 	applymovement LOCALID_PLAYER, RusturfTunnel_Movement_PlayerWatchBrineyExit
+ 	applymovement LOCALID_RUSTURF_TUNNEL_BRINEY, RusturfTunnel_Movement_BrineyExit
+ 	applymovement LOCALID_RUSTURF_TUNNEL_PEEKO, RusturfTunnel_Movement_PeekoExit
+@@ -336,6 +392,14 @@
+ 	setvar VAR_RUSTBORO_CITY_STATE, 4
+ 	setvar VAR_BRINEY_HOUSE_STATE, 1
+ 	setflag FLAG_HIDE_ROUTE_116_MR_BRINEY
++
++#ifdef PORT_BRIDGE
++    camera_hold 24
++    waitcamera
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+--- a/data/maps/RustboroCity_DevonCorp_3F/scripts.inc
++++ b/data/maps/RustboroCity_DevonCorp_3F/scripts.inc
+@@ -27,28 +27,78 @@
+ 
+ RustboroCity_DevonCorp_3F_EventScript_MeetPresident::
+ 	lockall
++
++#ifdef PORT_BRIDGE
++    camera_hold 30
++    waitcamera
++    camera_pair LOCALID_PLAYER, LOCALID_DEVON_CORP_3F_EMPLOYEE
++    camera_move 60, 60, 0, 25
++    waitcamera
++#endif
+ 	msgbox RustboroCity_DevonCorp_3F_Text_ThisIs3rdFloorWaitHere, MSGBOX_DEFAULT
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_move 48, 50, 0, 25
++    waitcamera
++#endif
+ 	applymovement LOCALID_DEVON_CORP_3F_EMPLOYEE, RustboroCity_DevonCorp_3F_Movement_EmployeeWalkOffscreen
+ 	waitmovement 0
+ 	delay 80
+ 	applymovement LOCALID_DEVON_CORP_3F_EMPLOYEE, RustboroCity_DevonCorp_3F_Movement_EmployeeReturnToPlayer
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_DEVON_CORP_3F_EMPLOYEE
++    camera_move 48, 55, 0, 25
++    waitcamera
++#endif
+ 	msgbox RustboroCity_DevonCorp_3F_Text_WordWithPresidentComeWithMe, MSGBOX_DEFAULT
+ 	closemessage
+ 	playbgm MUS_FOLLOW_ME, FALSE
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_DEVON_CORP_3F_EMPLOYEE
++    camera_follow TRUE
++    camera_move 120, 85, -2, 20
++#endif
+ 	applymovement LOCALID_DEVON_CORP_3F_EMPLOYEE, RustboroCity_DevonCorp_3F_Movement_LeadPlayerToPresident
+ 	applymovement LOCALID_PLAYER, RustboroCity_DevonCorp_3F_Movement_PlayerFollowToPresident
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_follow FALSE
++    waitcamera
++#endif
+ 	msgbox RustboroCity_DevonCorp_3F_Text_PleaseGoAhead, MSGBOX_DEFAULT
+ 	closemessage
+ 	fadedefaultbgm
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, 1
++    camera_follow TRUE
++    camera_orbit 90, 60, -4, 145
++#endif
+ 	applymovement LOCALID_DEVON_CORP_3F_EMPLOYEE, RustboroCity_DevonCorp_3F_Movement_EmployeeFaceDesk
+ 	applymovement LOCALID_PLAYER, RustboroCity_DevonCorp_3F_Movement_PlayerApproachDesk
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    waitcamera
++    camera_follow FALSE
++#endif
+ 	msgbox RustboroCity_DevonCorp_3F_Text_MrStoneIHaveFavor, MSGBOX_DEFAULT
+ 	giveitem ITEM_LETTER
++
++#ifdef PORT_BRIDGE
++    camera_orbit 120, 50, -6, 145
++#endif
+ 	msgbox RustboroCity_DevonCorp_3F_Text_MrStoneWantYouToHaveThis, MSGBOX_DEFAULT
++
++#ifdef PORT_BRIDGE
++    waitcamera
++#endif
+ 	playfanfare MUS_OBTAIN_ITEM
+ 	message RustboroCity_DevonCorp_3F_Text_ReceivedPokenav
+ 	waitfanfare
+@@ -68,6 +118,12 @@
+ 	clearflag FLAG_HIDE_RUSTBORO_CITY_RIVAL
+ 	setvar VAR_DEVON_CORP_3F_STATE, 1
+ 	setvar VAR_RUSTBORO_CITY_STATE, 6
++
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+--- a/data/maps/GraniteCave_StevensRoom/scripts.inc
++++ b/data/maps/GraniteCave_StevensRoom/scripts.inc
+@@ -4,6 +4,12 @@
+ GraniteCave_StevensRoom_EventScript_Steven::
+ 	lock
+ 	faceplayer
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_GRANITE_CAVE_STEVEN
++    camera_orbit 72, 55, -4, 145
++    waitcamera
++#endif
+ 	msgbox GraniteCave_StevensRoom_Text_ImStevenLetterForMe, MSGBOX_DEFAULT
+ 	setvar VAR_0x8004, ITEM_LETTER
+ 	call Common_EventScript_PlayerHandedOverTheItem
+@@ -11,6 +17,10 @@
+ 	msgbox GraniteCave_StevensRoom_Text_ThankYouTakeThis, MSGBOX_DEFAULT
+ 	giveitem ITEM_TM_STEEL_WING
+ 	call_if_eq VAR_RESULT, FALSE, GraniteCave_StevensRoom_EventScript_BagFull
++
++#ifdef PORT_BRIDGE
++    camera_orbit 120, 50, -4, 145
++#endif
+ 	msgbox GraniteCave_StevensRoom_Text_CouldBecomeChampionLetsRegister, MSGBOX_DEFAULT
+ 	closemessage
+ 	delay 30
+@@ -22,12 +32,27 @@
+ 	setflag FLAG_REGISTERED_STEVEN_POKENAV
+ 	msgbox GraniteCave_StevensRoom_Text_IveGotToHurryAlong, MSGBOX_DEFAULT
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 0, 16
++    camera_orbit 60, 50, -4, 150
++    waitcamera
++#endif
+ 	call_if_eq VAR_FACING, DIR_NORTH, GraniteCave_StevensRoom_EventScript_StevenExitNorth
+ 	call_if_eq VAR_FACING, DIR_SOUTH, GraniteCave_StevensRoom_EventScript_StevenExitSouth
+ 	call_if_eq VAR_FACING, DIR_WEST, GraniteCave_StevensRoom_EventScript_StevenExitWestEast
+ 	call_if_eq VAR_FACING, DIR_EAST, GraniteCave_StevensRoom_EventScript_StevenExitWestEast
+ 	playse SE_EXIT
+ 	removeobject LOCALID_GRANITE_CAVE_STEVEN
++
++#ifdef PORT_BRIDGE
++    camera_hold 30
++    waitcamera
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 

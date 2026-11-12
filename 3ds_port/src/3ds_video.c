@@ -10389,6 +10389,14 @@ static void RenderVoxelTo(C3D_RenderTarget *target, int eye, uint32_t clear, boo
     VoxelGloom();
     VoxelFlashLight();
     if (!(Reg(0) & 128)) ComposeVoxelOverlay();
+    float cinema=CtrVoxel_CinemaBars();
+    if (cinema>0.001f)
+    {
+        Blend(5,false,false);
+        uint32_t ink=C2D_Color32(0,0,0,(u8)(cinema*255));
+        C2D_DrawRectSolid(0,0,0,CTR_GAME_WIDTH,8,ink);
+        C2D_DrawRectSolid(0,CTR_GAME_HEIGHT-8,0,CTR_GAME_WIDTH,8,ink);
+    }
     C2D_Flush();
     C3D_SetScissor(GPU_SCISSOR_DISABLE, 0, 0, 0, 0);
     GpuSplit();

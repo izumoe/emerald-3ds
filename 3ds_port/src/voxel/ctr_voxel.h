@@ -3,6 +3,29 @@
 
 #include <stdbool.h>
 #include <citro3d.h>
+#include "voxel_director.h"
+
+/* Native cutscene hooks; caller owns story timing and input locking.
+ * Play copies shots; false when unavailable, busy, battling or swooping.
+ * Cancel immediately restores gameplay; normal completion eases back. */
+bool CtrVoxel_PlayCamera(const VoxelCameraShot *shots, unsigned count, unsigned returnFrames);
+bool CtrVoxel_PlayCameraDemo(void);
+/* NPC delta in map tiles from the player. Hold until EndConversation. */
+bool CtrVoxel_BeginConversation(float npcDeltaX, float npcDeltaZ);
+void CtrVoxel_EndConversation(void);
+/* Event-script bridge. Angles are relative to gameplay, distance in percent. */
+void CtrVoxel_ScriptPair(unsigned actorA, unsigned actorB);
+bool CtrVoxel_ScriptMove(unsigned frames, int distance, int pitch, int yaw);
+bool CtrVoxel_ScriptOrbit(unsigned frames, int distance, int pitch, int heading);
+void CtrVoxel_ScriptFollow(bool enabled);
+void CtrVoxel_ScriptOffset(int x, int z);
+float CtrVoxel_CinemaBars(void);
+void CtrVoxel_ScriptReturn(unsigned frames);
+bool CtrVoxel_ScriptMoving(void);
+/* Important: concurrent pan, stronger push, and visibility-gated tilt. */
+bool CtrVoxel_BeginConversationStyled(float npcDeltaX, float npcDeltaZ, bool important);
+bool CtrVoxel_CameraPlaying(void);
+void CtrVoxel_CancelCamera(void);
 
 bool CtrVoxel_Init(void);
 void CtrVoxel_Shutdown(void);
@@ -207,5 +230,14 @@ typedef struct
     float time;
 } CtrVoxelBattleIntro;
 void CtrVoxel_BattleIntro(CtrVoxelBattleIntro *intro);
+
+/* Map-local scenic framing, with eye-path validation. */
+void CtrVoxel_ScriptAnchor(int x,int z);
+bool CtrVoxel_ScriptView(unsigned frames,int distance,int pitch,int yaw);
+
+/* Shared lead-in for normal overworld battle transitions. */
+bool CtrVoxel_BeginBattlePush(unsigned other);
+
+bool CtrVoxel_CameraMapReady(void);
 
 #endif

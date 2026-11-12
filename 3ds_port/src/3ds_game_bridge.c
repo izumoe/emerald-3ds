@@ -4,9 +4,10 @@
 #include "3ds_audio.h"
 #include "3ds_emu_regs.h"
 #include "3ds_bottom.h"
-#ifdef CTR_TEST_SWOOP
+#if defined(CTR_TEST_SWOOP) || defined(CTR_TEST_CAMERA)
 #include "main.h"
 #include "overworld.h"
+#include "script.h"
 #endif
 #include "siirtc.h"
 #include "gba/flash_internal.h"
@@ -85,6 +86,29 @@ u16 Platform_GetKeyInput(void)
      * and the menu until the field is up, for a keyboard-less run. */
     if (gMain.callback2 != CB2_Overworld && gMain.vblankCounter1 % 40 == 0)
         held |= A_BUTTON;
+#endif
+#ifdef CTR_TEST_CAMERA
+    /* Let the captured conversation sit for reading, then dismiss naturally. */
+#ifdef CTR_TEST_CITY_CAMERA
+    int earlyMode=CtrSettings_GetInt("camera_test_early",0);
+    if (earlyMode)
+    {
+        if (CtrPlatform_FrameCount()% (gMain.callback2==CB2_Overworld?100:12)==0
+            && (gMain.callback2!=CB2_Overworld || ArePlayerFieldControlsLocked())) held |= A_BUTTON;
+    }
+    static unsigned cityLockedFrames;
+    if (gMain.callback2 == CB2_Overworld && ArePlayerFieldControlsLocked())
+    {
+        if (++cityLockedFrames==260 && CtrSettings_GetInt("camera_test_skip",0)) held |= B_BUTTON;
+    }
+    else cityLockedFrames=0;
+#elif defined(CTR_TEST_SHOP_CAMERA)
+    unsigned cameraCadence=CtrSettings_GetInt("camera_test_spam",0)?8:90;
+    if (gMain.callback2 == CB2_Overworld && ArePlayerFieldControlsLocked()
+        && CtrPlatform_FrameCount()>=720 && CtrPlatform_FrameCount()%cameraCadence==0) held |= A_BUTTON;
+#else
+    if (gMain.callback2 == CB2_Overworld && CtrPlatform_FrameCount() == 720) held |= A_BUTTON;
+#endif
 #endif
     REG_KEYINPUT = held ^ KEYS_MASK;
     return held;

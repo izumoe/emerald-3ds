@@ -1,0 +1,35 @@
+--- a/src/battle_setup.c
++++ b/src/battle_setup.c
+@@ -348,6 +348,12 @@
+     FLAG_BADGE05_GET, FLAG_BADGE06_GET, FLAG_BADGE07_GET, FLAG_BADGE08_GET,
+ };
+ 
++#ifdef PORT_BRIDGE
++extern void Port_BattleCameraBegin(void);
++extern bool8 Port_BattleCameraReady(void);
++extern void Port_BattleCameraAbort(void);
++#endif
++
+ #define tState data[0]
+ #define tTransition data[1]
+ 
+@@ -360,6 +366,19 @@
+     case 0:
+         if (!FldEffPoison_IsActive()) // is poison not active?
+         {
++#ifdef PORT_BRIDGE
++            if (!data[2])
++            {
++                Port_BattleCameraBegin();
++                data[2] = 1;
++            }
++            if (!Port_BattleCameraReady())
++            {
++                if (++data[3] < 60)
++                    break;
++                Port_BattleCameraAbort();
++            }
++#endif
+             BattleTransition_StartOnField(tTransition);
+             ClearMirageTowerPulseBlendEffect();
+             tState++; // go to case 1.

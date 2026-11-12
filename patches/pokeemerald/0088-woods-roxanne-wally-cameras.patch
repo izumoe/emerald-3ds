@@ -1,0 +1,511 @@
+--- a/data/specials.inc
++++ b/data/specials.inc
+@@ -561,3 +561,9 @@
+     def_special Port_CameraView
+     def_special Port_CameraHold
+ #endif
++
++#ifdef PORT_BRIDGE
++    def_special Port_CameraReveal
++    def_special Port_CameraPairMap
++    def_special Port_CameraRevealSelected
++#endif
+--- a/asm/macros/event.inc
++++ b/asm/macros/event.inc
+@@ -2027,3 +2027,33 @@
+     waitstate
+     .endm
+ #endif
++
++#ifdef PORT_BRIDGE
++    @ Prepare a pose for the next fade-hidden arrival on this destination map.
++    .macro camera_reveal map:req, actor1:req, actor2:req, distance=100, pitch=-4, yaw=0
++    setvar VAR_0x8004, \map
++    setvar VAR_0x8005, \actor1
++    setvar VAR_0x8006, \actor2
++    setvar VAR_0x8007, \distance
++    setvar VAR_0x8008, \pitch
++    setvar VAR_0x8009, \yaw
++    special Port_CameraReveal
++    .endm
++#endif
++
++#ifdef PORT_BRIDGE
++    .macro camera_pair_map actor1:req, actor2:req, source_map:req
++    setvar VAR_0x8004, \source_map
++    setvar VAR_0x8005, \actor1
++    setvar VAR_0x8006, \actor2
++    special Port_CameraPairMap
++    .endm
++    .macro camera_reveal_selected map:req, distance=100, pitch=-4, yaw=0
++    setvar VAR_0x8004, \map
++    setvar VAR_0x8007, \distance
++    setvar VAR_0x8008, \pitch
++    setvar VAR_0x8009, \yaw
++    special Port_CameraRevealSelected
++    .endm
++#endif
++
+--- a/data/maps/PetalburgWoods/scripts.inc
++++ b/data/maps/PetalburgWoods/scripts.inc
+@@ -3,12 +3,24 @@
+ 
+ PetalburgWoods_EventScript_DevonResearcherLeft::
+ 	lockall
++#ifdef PORT_BRIDGE
++    hideobjectat LOCALID_PETALBURG_WOODS_GRUNT, MAP_PETALBURG_WOODS
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE
++    camera_move 60, 60, -2, -30
++    waitcamera
++#endif
+ 	call PetalburgWoods_EventScript_DevonResearcherIntro
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, PetalburgWoods_Movement_DevonResearcherApproachPlayerLeft
+ 	waitmovement 0
+ 	msgbox PetalburgWoods_Text_HaveYouSeenShroomish, MSGBOX_DEFAULT
+ 	closemessage
+ 	playbgm MUS_ENCOUNTER_AQUA, FALSE
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, LOCALID_PETALBURG_WOODS_GRUNT
++    camera_move 90, 75, 2, -28
++    showobjectat LOCALID_PETALBURG_WOODS_GRUNT, MAP_PETALBURG_WOODS
++#endif
+ 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaEntrance
+ 	waitmovement 0
+ 	msgbox PetalburgWoods_Text_IWasGoingToAmbushYou, MSGBOX_DEFAULT
+@@ -17,19 +29,45 @@
+ 	waitmovement 0
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    waitcamera
++#endif
+ 	msgbox PetalburgWoods_Text_HandOverThosePapers, MSGBOX_DEFAULT
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE
++    camera_move 90, 60, 2, -30
++#endif
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, PetalburgWoods_Movement_DevonResearcherFleeToPlayerLeft
+ 	waitmovement 0
+ 	msgbox PetalburgWoods_Text_YouHaveToHelpMe, MSGBOX_DEFAULT
+ 	closemessage
+ 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaApproachPlayer
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_GRUNT
++    camera_offset 0, -16
++    camera_move 90, 60, 2, 30
++#endif
+ 	msgbox PetalburgWoods_Text_NoOneCrossesTeamAqua, MSGBOX_DEFAULT
++
++#ifdef PORT_BRIDGE
++    waitcamera
++    camera_reveal MAP_PETALBURG_WOODS, LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_GRUNT, 60, 0, 30
++#endif
+ 	trainerbattle_no_intro TRAINER_GRUNT_PETALBURG_WOODS, PetalburgWoods_Text_YoureKiddingMe
+ 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaBackOff
+ 	waitmovement 0
+ 	call PetalburgWoods_EventScript_DevonResearcherPostBattle
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 0, 16
++    camera_move 60, 60, 0, -24
++    waitcamera
++#endif
+ 	applymovement LOCALID_PLAYER, PetalburgWoods_Movement_WatchResearcherLeave
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, PetalburgWoods_Movement_DevonResearcherExitLeft
+ 	waitmovement 0
+@@ -38,6 +76,12 @@
+ 
+ PetalburgWoods_EventScript_DevonResearcherRight::
+ 	lockall
++#ifdef PORT_BRIDGE
++    hideobjectat LOCALID_PETALBURG_WOODS_GRUNT, MAP_PETALBURG_WOODS
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE
++    camera_move 60, 60, -2, -30
++    waitcamera
++#endif
+ 	call PetalburgWoods_EventScript_DevonResearcherIntro
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, PetalburgWoods_Movement_DevonResearcherApproachPlayerRight
+ 	waitmovement 0
+@@ -46,6 +90,12 @@
+ 	msgbox PetalburgWoods_Text_HaveYouSeenShroomish, MSGBOX_DEFAULT
+ 	closemessage
+ 	playbgm MUS_ENCOUNTER_AQUA, FALSE
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, LOCALID_PETALBURG_WOODS_GRUNT
++    camera_move 90, 75, 2, -28
++    showobjectat LOCALID_PETALBURG_WOODS_GRUNT, MAP_PETALBURG_WOODS
++#endif
+ 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaEntrance
+ 	waitmovement 0
+ 	msgbox PetalburgWoods_Text_IWasGoingToAmbushYou, MSGBOX_DEFAULT
+@@ -54,18 +104,44 @@
+ 	waitmovement 0
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    waitcamera
++#endif
+ 	msgbox PetalburgWoods_Text_HandOverThosePapers, MSGBOX_DEFAULT
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE
++    camera_move 90, 60, 2, -30
++#endif
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, PetalburgWoods_Movement_DevonResearcherFleeToPlayerRight
+ 	waitmovement 0
+ 	msgbox PetalburgWoods_Text_YouHaveToHelpMe, MSGBOX_DEFAULT
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_GRUNT
++    camera_offset 0, -16
++    camera_move 90, 60, 2, 30
++#endif
+ 	msgbox PetalburgWoods_Text_NoOneCrossesTeamAqua, MSGBOX_DEFAULT
++
++#ifdef PORT_BRIDGE
++    waitcamera
++    camera_reveal MAP_PETALBURG_WOODS, LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_GRUNT, 60, 0, 30
++#endif
+ 	trainerbattle_no_intro TRAINER_GRUNT_PETALBURG_WOODS, PetalburgWoods_Text_YoureKiddingMe
+ 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaBackOff
+ 	waitmovement 0
+ 	call PetalburgWoods_EventScript_DevonResearcherPostBattle
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 0, 16
++    camera_move 60, 60, 0, -24
++    waitcamera
++#endif
+ 	applymovement LOCALID_PLAYER, PetalburgWoods_Movement_WatchResearcherLeave
+ 	applymovement LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE, PetalburgWoods_Movement_DevonResearcherExitRight
+ 	waitmovement 0
+@@ -82,11 +158,28 @@
+ PetalburgWoods_EventScript_DevonResearcherPostBattle::
+ 	msgbox PetalburgWoods_Text_YouveGotSomeNerve, MSGBOX_DEFAULT
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_offset 0, 16
++    camera_move 60, 60, 0, -24
++    waitcamera
++#endif
+ 	applymovement LOCALID_PETALBURG_WOODS_GRUNT, PetalburgWoods_Movement_AquaRunAway
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE
++    camera_move 60, 60, 0, -30
++    waitcamera
++#endif
+ 	removeobject LOCALID_PETALBURG_WOODS_GRUNT
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterDown
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    waitcamera
++#endif
+ 	msgbox PetalburgWoods_Text_ThatWasAwfullyClose, MSGBOX_DEFAULT
+ 	giveitem ITEM_GREAT_BALL
+ 	goto_if_eq VAR_RESULT, FALSE, PetalburgWoods_EventScript_BagFull
+@@ -108,6 +201,12 @@
+ 
+ PetalburgWoods_EventScript_RemoveDevonResearcher::
+ 	removeobject LOCALID_PETALBURG_WOODS_DEVON_EMPLOYEE
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
++
+ 	setvar VAR_PETALBURG_WOODS_STATE, 1
+ 	releaseall
+ 	end
+--- a/data/maps/RustboroCity_Gym/scripts.inc
++++ b/data/maps/RustboroCity_Gym/scripts.inc
+@@ -2,7 +2,26 @@
+ 	.byte 0
+ 
+ RustboroCity_Gym_EventScript_Roxanne::
++#ifdef PORT_BRIDGE
++    goto_if_defeated TRAINER_ROXANNE_1, RustboroCity_Gym_CameraOriginalRoxanne
++    lock
++    faceplayer
++    fadescreenspeed FADE_TO_BLACK, 0
++    camera_pair LOCALID_PLAYER, 1
++    camera_orbit 1, 55, -6, 138
++    waitcamera
++    fadescreenspeed FADE_FROM_BLACK, 0
++    msgbox RustboroCity_Gym_Text_CameraIntroduction, MSGBOX_DEFAULT
++    msgbox RustboroCity_Gym_Text_CameraSchool, MSGBOX_DEFAULT
++    camera_orbit 90, 55, -6, 42
++    camera_reveal MAP_RUSTBORO_CITY_GYM, LOCALID_PLAYER, 1, 55, -6, -48
++RustboroCity_Gym_CameraOriginalRoxanne:
++#endif
++#ifdef PORT_BRIDGE
++	trainerbattle_single TRAINER_ROXANNE_1, RustboroCity_Gym_Text_CameraChallenge, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
++#else
+ 	trainerbattle_single TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
++#endif
+ 	specialvar VAR_RESULT, ShouldTryRematchBattle
+ 	goto_if_eq VAR_RESULT, TRUE, RustboroCity_Gym_EventScript_RoxanneRematch
+ 	goto_if_unset FLAG_RECEIVED_TM_ROCK_TOMB, RustboroCity_Gym_EventScript_GiveRockTomb
+@@ -26,10 +45,25 @@
+ 	end
+ 
+ RustboroCity_Gym_EventScript_GiveRockTomb::
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, 1
++    camera_orbit 48, 55, -6, 138
++    waitcamera
++#endif
+ 	giveitem ITEM_TM_ROCK_TOMB
++#ifdef PORT_BRIDGE
++    goto_if_eq VAR_RESULT, FALSE, RustboroCity_Gym_CameraBagFull
++#else
+ 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
++#endif
+ 	setflag FLAG_RECEIVED_TM_ROCK_TOMB
+ 	msgbox RustboroCity_Gym_Text_ExplainRockTomb, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
++
+ 	release
+ 	end
+ 
+@@ -281,3 +315,21 @@
+ 	.string "You only have one POKéMON with you?\p"
+ 	.string "Please return with at least one more\n"
+ 	.string "POKéMON.$"
++
++#ifdef PORT_BRIDGE
++RustboroCity_Gym_CameraBagFull:
++    camera_return 60
++    waitcamera
++    camera_end
++    goto Common_EventScript_ShowBagIsFull
++RustboroCity_Gym_Text_CameraIntroduction:
++    .string "Hello, I am ROXANNE, the RUSTBORO\n"
++    .string "POKéMON GYM LEADER.$"
++RustboroCity_Gym_Text_CameraSchool:
++    .string "I became a GYM LEADER so that I might\n"
++    .string "apply what I learned at the POKéMON\l"
++    .string "TRAINER'S SCHOOL in battle.$"
++RustboroCity_Gym_Text_CameraChallenge:
++    .string "Would you kindly demonstrate how you\n"
++    .string "battle, and with which POKéMON?$"
++#endif
+--- a/data/maps/PetalburgCity_Gym/scripts.inc
++++ b/data/maps/PetalburgCity_Gym/scripts.inc
+@@ -78,17 +78,33 @@
+ 	msgbox PetalburgCity_Gym_Text_DadSoDidItWorkOut, MSGBOX_DEFAULT
+ 	msgbox PetalburgCity_Gym_Text_WallyThankYouBye, MSGBOX_DEFAULT
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraGoodbye
++#endif
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterDown
+ 	applymovement LOCALID_PETALBURG_GYM_WALLY, PetalburgCity_Gym_Movement_WallyExitGym
+ 	waitmovement 0
+ 	playse SE_EXIT
++#ifdef PORT_BRIDGE
++    camera_follow FALSE
++#endif
+ 	removeobject LOCALID_PETALBURG_GYM_WALLY
+ 	setflag FLAG_HIDE_PETALBURG_CITY_WALLY
+ 	delay 30
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraNorman
++#endif
+ 	msgbox PetalburgCity_Gym_Text_DadGoCollectBadges, MSGBOX_DEFAULT
+ 	setvar VAR_PETALBURG_GYM_STATE, 2
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+@@ -110,6 +126,10 @@
+ 	case 6, PetalburgCity_Gym_EventScript_NormanBattle
+ 	case 7, PetalburgCity_Gym_EventScript_NormanPostBattle
+ 	case 8, PetalburgCity_Gym_EventScript_NormanRematch
++
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraNorman
++#endif
+ 	msgbox PetalburgCity_Gym_Text_DadYoureHereWithYourPokemon, MSGBOX_DEFAULT
+ 	closemessage
+ 	switch VAR_FACING
+@@ -142,10 +162,17 @@
+ PetalburgCity_Gym_EventScript_BeginWallyTutorial::
+ 	addobject LOCALID_PETALBURG_GYM_WALLY
+ 	playse SE_DOOR
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraDoor
++#endif
+ 	call_if_eq VAR_0x8008, 0, PetalburgCity_Gym_EventScript_WallyArriveSouth
+ 	call_if_eq VAR_0x8008, 1, PetalburgCity_Gym_EventScript_WallyArriveNorth
+ 	call_if_eq VAR_0x8008, 2, PetalburgCity_Gym_EventScript_WallyArriveWestEast
+ 	call_if_eq VAR_0x8008, 3, PetalburgCity_Gym_EventScript_WallyArriveWestEast
++
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraWally
++#endif
+ 	msgbox PetalburgCity_Gym_Text_WallyIdLikeAPokemon, MSGBOX_DEFAULT
+ 	msgbox PetalburgCity_Gym_Text_DadOhYoureWallyRight, MSGBOX_DEFAULT
+ 	msgbox PetalburgCity_Gym_Text_WallyIveNeverCaughtAPokemon, MSGBOX_DEFAULT
+@@ -154,11 +181,19 @@
+ 	call_if_eq VAR_0x8008, 1, PetalburgCity_Gym_EventScript_NormanAddressPlayerNorth
+ 	call_if_eq VAR_0x8008, 2, PetalburgCity_Gym_EventScript_NormanAddressPlayerWest
+ 	call_if_eq VAR_0x8008, 3, PetalburgCity_Gym_EventScript_NormanAddressPlayerEast
++
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraNorman
++#endif
+ 	msgbox PetalburgCity_Gym_Text_DadPlayerGoWithWally, MSGBOX_DEFAULT
+ 	call_if_eq VAR_0x8008, 0, PetalburgCity_Gym_EventScript_NormanAddressWallySouth
+ 	call_if_eq VAR_0x8008, 1, PetalburgCity_Gym_EventScript_NormanAddressWallyNorth
+ 	call_if_eq VAR_0x8008, 2, PetalburgCity_Gym_EventScript_NormanAddressWallyWest
+ 	call_if_eq VAR_0x8008, 3, PetalburgCity_Gym_EventScript_NormanAddressWallyEast
++
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraLoan
++#endif
+ 	msgbox PetalburgCity_Gym_Text_IllLoanYouMyZigzagoon, MSGBOX_DEFAULT
+ 	msgbox PetalburgCity_Gym_Text_WallyThankYouAndDadGivesPokeBall, MSGBOX_DEFAULT
+ 	msgbox PetalburgCity_Gym_Text_WallyOhWowThankYou, MSGBOX_DEFAULT
+@@ -172,6 +207,10 @@
+ 	call_if_eq VAR_0x8008, 3, PetalburgCity_Gym_EventScript_WallyFacePlayer
+ 	msgbox PetalburgCity_Gym_Text_WouldYouReallyComeWithMe, MSGBOX_DEFAULT
+ 	closemessage
++
++#ifdef PORT_BRIDGE
++    call PetalburgCity_Gym_CameraLeave
++#endif
+ 	setflag FLAG_DONT_TRANSITION_MUSIC
+ 	playbgm MUS_FOLLOW_ME, FALSE
+ 	call_if_eq VAR_0x8008, 0, PetalburgCity_Gym_EventScript_ExitGymWithWallySouth
+@@ -1589,3 +1628,58 @@
+ 	.string "Sorry, but you'll have to come back\n"
+ 	.string "with at least two POKéMON.$"
+ 
++
++#ifdef PORT_BRIDGE
++PetalburgCity_Gym_CameraNorman:
++    copyvar VAR_TEMP_E, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_GYM_NORMAN
++    camera_offset 16, 0
++    camera_orbit 60, 50, -6, 145
++    waitcamera
++    copyvar VAR_0x8008, VAR_TEMP_E
++    return
++
++PetalburgCity_Gym_CameraDoor:
++    copyvar VAR_TEMP_E, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_GYM_WALLY
++    camera_follow TRUE
++    camera_orbit 90, 60, -6, 125
++    copyvar VAR_0x8008, VAR_TEMP_E
++    return
++
++PetalburgCity_Gym_CameraWally:
++    copyvar VAR_TEMP_E, VAR_0x8008
++    camera_pair LOCALID_PETALBURG_GYM_NORMAN, LOCALID_PETALBURG_GYM_WALLY
++    camera_offset 16, 0
++    camera_orbit 60, 50, -6, 145
++    waitcamera
++    copyvar VAR_0x8008, VAR_TEMP_E
++    return
++
++PetalburgCity_Gym_CameraLoan:
++    copyvar VAR_TEMP_E, VAR_0x8008
++    camera_pair LOCALID_PETALBURG_GYM_NORMAN, LOCALID_PETALBURG_GYM_WALLY
++    camera_offset 16, 0
++    camera_orbit 60, 50, -6, 145
++    waitcamera
++    copyvar VAR_0x8008, VAR_TEMP_E
++    return
++
++PetalburgCity_Gym_CameraLeave:
++    copyvar VAR_TEMP_E, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_GYM_WALLY
++    camera_follow TRUE
++    camera_move 120, 100, 8, -6
++    camera_reveal MAP_PETALBURG_CITY, LOCALID_PLAYER, LOCALID_PETALBURG_WALLY, 110, -4, -10
++    copyvar VAR_0x8008, VAR_TEMP_E
++    return
++
++PetalburgCity_Gym_CameraGoodbye:
++    copyvar VAR_TEMP_E, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_GYM_WALLY
++    camera_follow TRUE
++    camera_orbit 90, 60, -6, 135
++    copyvar VAR_0x8008, VAR_TEMP_E
++    return
++
++#endif
+--- a/data/maps/PetalburgCity/scripts.inc
++++ b/data/maps/PetalburgCity/scripts.inc
+@@ -33,12 +33,31 @@
+ 	lockall
+ 	special SavePlayerParty
+ 	special LoadWallyZigzagoon
++#ifdef PORT_BRIDGE
++    camera_pair_map LOCALID_PLAYER, LOCALID_PETALBURG_WALLY, MAP_PETALBURG_CITY
++    camera_follow TRUE
++    camera_move 120, 110, -4, -10
++#endif
++
+ 	applymovement LOCALID_PETALBURG_WALLY, PetalburgCity_Movement_WallyTutorialWally
+ 	applymovement LOCALID_PLAYER, PetalburgCity_Movement_WallyTutorialPlayer
+ 	waitmovement 0
++
++#ifdef PORT_BRIDGE
++    camera_pair_map LOCALID_PLAYER, LOCALID_PETALBURG_WALLY, MAP_PETALBURG_CITY
++    camera_move 60, 65, -2, -28
++    waitcamera
++    camera_reveal_selected MAP_ROUTE102, 70, -2, -28
++#endif
+ 	msgbox Route102_Text_WatchMeCatchPokemon, MSGBOX_DEFAULT
+ 	special StartWallyTutorialBattle
+ 	waitstate
++
++#ifdef PORT_BRIDGE
++    camera_pair_map LOCALID_PLAYER, LOCALID_PETALBURG_WALLY, MAP_PETALBURG_CITY
++    camera_move 60, 65, -2, -28
++    waitcamera
++#endif
+ 	msgbox Route102_Text_WallyIDidIt, MSGBOX_DEFAULT
+ 	applymovement LOCALID_PETALBURG_WALLY, Common_Movement_WalkInPlaceFasterLeft, MAP_PETALBURG_CITY
+ 	waitmovement LOCALID_PETALBURG_WALLY, MAP_PETALBURG_CITY
+@@ -50,6 +69,10 @@
+ 	clearflag FLAG_DONT_TRANSITION_MUSIC
+ 	special LoadPlayerParty
+ 	setvar VAR_PETALBURG_GYM_STATE, 1
++
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_PETALBURG_CITY_GYM, LOCALID_PLAYER, LOCALID_PETALBURG_GYM_NORMAN, 50, -6, -45
++#endif
+ 	warp MAP_PETALBURG_CITY_GYM, 4, 108
+ 	waitstate
+ 	releaseall

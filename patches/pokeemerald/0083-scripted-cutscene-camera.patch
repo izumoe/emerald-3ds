@@ -1,0 +1,199 @@
+--- a/data/specials.inc
++++ b/data/specials.inc
+@@ -543,3 +543,14 @@
+ 	def_special LocalSession_Wait
+ 	def_special LocalSession_CanEnter
+ 	def_special LocalSession_Leave
++
++#ifdef PORT_BRIDGE
++    def_special Port_CameraPair
++    def_special Port_CameraMove
++    def_special Port_CameraFollow
++    def_special Port_CameraReturn
++    def_special Port_CameraWait
++    def_special Port_CameraEnd
++    def_special Port_CameraOffset
++    def_special Port_CameraOrbit
++#endif
+--- a/asm/macros/event.inc
++++ b/asm/macros/event.inc
+@@ -1952,3 +1952,48 @@
+ 	setvar VAR_0x8006, \item
+ 	special CreateEnemyEventMon
+ 	.endm
++
++#ifdef PORT_BRIDGE
++    @ Camera macros reserve scratch variables 0x8004 through 0x8009.
++    .macro camera_pair actor1:req, actor2:req
++    setvar VAR_0x8004, \actor1
++    setvar VAR_0x8005, \actor2
++    special Port_CameraPair
++    .endm
++    .macro camera_move frames:req, distance=100, pitch=0, yaw=0
++    setvar VAR_0x8006, \frames
++    setvar VAR_0x8007, \distance
++    setvar VAR_0x8008, \pitch
++    setvar VAR_0x8009, \yaw
++    special Port_CameraMove
++    .endm
++    @ Target offset in sixteenths of a world tile; set before camera_move.
++    @ Azimuth heading: 90 is the usual front view, 150 is a 60-degree orbit.
++    .macro camera_orbit frames:req, distance=80, pitch=4, heading=150
++    setvar VAR_0x8006, \frames
++    setvar VAR_0x8007, \distance
++    setvar VAR_0x8008, \pitch
++    setvar VAR_0x8009, \heading
++    special Port_CameraOrbit
++    .endm
++    .macro camera_offset x=0, z=0
++    setvar VAR_0x8006, \x
++    setvar VAR_0x8007, \z
++    special Port_CameraOffset
++    .endm
++    .macro camera_follow enabled=TRUE
++    setvar VAR_0x8006, \enabled
++    special Port_CameraFollow
++    .endm
++    .macro waitcamera
++    special Port_CameraWait
++    waitstate
++    .endm
++    .macro camera_return frames=60
++    setvar VAR_0x8006, \frames
++    special Port_CameraReturn
++    .endm
++    .macro camera_end
++    special Port_CameraEnd
++    .endm
++#endif
+--- a/data/maps/OldaleTown/scripts.inc
++++ b/data/maps/OldaleTown/scripts.inc
+@@ -39,9 +39,28 @@
+ 	goto_if_set FLAG_RECEIVED_POTION_OLDALE, OldaleTown_EventScript_ExplainPotion
+ 	goto_if_set FLAG_TEMP_1, OldaleTown_EventScript_ExplainPotion
+ 	setflag FLAG_TEMP_1
++#ifdef PORT_BRIDGE
++    @ Establish the town, then meet the shopkeeper during the greeting.
++    camera_pair LOCALID_PLAYER, LOCALID_OLDALE_MART_EMPLOYEE
++    camera_follow TRUE
++    camera_offset -6, 0
++    camera_move 72, 110, -6, -28
++    waitcamera
++#endif
+ 	playbgm MUS_FOLLOW_ME, FALSE
++#ifdef PORT_BRIDGE
++    camera_move 84, 70, -8, -22
++    msgbox OldaleTown_Text_CameraGreeting, MSGBOX_DEFAULT
++    msgbox OldaleTown_Text_CameraInvitation, MSGBOX_DEFAULT
++#else
+ 	msgbox OldaleTown_Text_IWorkAtPokemonMart, MSGBOX_DEFAULT
++#endif
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Start the tracking move WITH the walk, not before it.
++    camera_offset 4, 6
++    camera_move 120, 102, -6, -28
++#endif
+ 	switch VAR_FACING
+ 	case DIR_SOUTH, OldaleTown_EventScript_GoToMartSouth
+ 	case DIR_NORTH, OldaleTown_EventScript_GoToMartNorth
+@@ -52,6 +71,9 @@
+ 	applymovement LOCALID_OLDALE_MART_EMPLOYEE, OldaleTown_Movement_EmployeeSouth
+ 	applymovement LOCALID_PLAYER, OldaleTown_Movement_PlayerSouth
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    waitcamera
++#endif
+ 	goto OldaleTown_EventScript_ExplainPokemonMart
+ 	end
+ 
+@@ -59,6 +81,9 @@
+ 	applymovement LOCALID_OLDALE_MART_EMPLOYEE, OldaleTown_Movement_EmployeeNorth
+ 	applymovement LOCALID_PLAYER, OldaleTown_Movement_PlayerNorth
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    waitcamera
++#endif
+ 	goto OldaleTown_EventScript_ExplainPokemonMart
+ 	end
+ 
+@@ -66,16 +91,42 @@
+ 	applymovement LOCALID_PLAYER, OldaleTown_Movement_PlayerEast
+ 	applymovement LOCALID_OLDALE_MART_EMPLOYEE, OldaleTown_Movement_EmployeeEast
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    waitcamera
++#endif
+ 	goto OldaleTown_EventScript_ExplainPokemonMart
+ 	end
+ 
+ OldaleTown_EventScript_ExplainPokemonMart::
++#ifdef PORT_BRIDGE
++    @ Let the shopkeeper look at what he is describing; reveal the roof.
++    camera_offset 0, -20
++    camera_move 96, 112, -4, -30
++    applymovement LOCALID_OLDALE_MART_EMPLOYEE, OldaleTown_Movement_CameraLookAtMart
++    waitmovement 0
++    waitcamera
++    msgbox OldaleTown_Text_CameraBlueRoof, MSGBOX_DEFAULT
++    faceplayer
++    camera_offset 0, 4
++    camera_move 90, 70, -8, 0
++    msgbox OldaleTown_Text_CameraGoods, MSGBOX_DEFAULT
++    camera_offset -4, 4
++    @ Continue this gentle move across the offer and item messages.
++    camera_orbit 420, 65, 4, 150
++    msgbox OldaleTown_Text_CameraPromotion, MSGBOX_DEFAULT
++#else
+ 	msgbox OldaleTown_Text_ThisIsAPokemonMart, MSGBOX_DEFAULT
++#endif
+ 	giveitem ITEM_POTION
+ 	goto_if_eq VAR_RESULT, FALSE, OldaleTown_EventScript_BagIsFull
+ 	msgbox OldaleTown_Text_PotionExplanation, MSGBOX_DEFAULT
+ 	setflag FLAG_RECEIVED_POTION_OLDALE
+ 	fadedefaultbgm
++#ifdef PORT_BRIDGE
++    camera_return 90
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+@@ -87,6 +138,11 @@
+ OldaleTown_EventScript_BagIsFull::
+ 	msgbox gText_TooBadBagIsFull, MSGBOX_DEFAULT
+ 	fadedefaultbgm
++#ifdef PORT_BRIDGE
++    camera_return 90
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+@@ -395,3 +451,24 @@
+ 	.string "OLDALE TOWN\n"
+ 	.string "“Where things start off scarce.”$"
+ 
++
++#ifdef PORT_BRIDGE
++@ The original wording is split at its existing page boundaries for shot cues.
++OldaleTown_Text_CameraGreeting:
++    .string "Hi!\n"
++    .string "I work at a POKéMON MART.$"
++OldaleTown_Text_CameraInvitation:
++    .string "Can I get you to come with me?$"
++OldaleTown_Text_CameraBlueRoof:
++    .string "This is a POKéMON MART.\n"
++    .string "Just look for our blue roof.$"
++OldaleTown_Text_CameraGoods:
++    .string "We sell a variety of goods including\n"
++    .string "POKé BALLS for catching POKéMON.$"
++OldaleTown_Text_CameraPromotion:
++    .string "Here, I'd like you to have this as\n"
++    .string "a promotional item.$"
++OldaleTown_Movement_CameraLookAtMart:
++    walk_in_place_faster_up
++    step_end
++#endif

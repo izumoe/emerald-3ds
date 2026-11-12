@@ -1,0 +1,121 @@
+--- a/data/specials.inc
++++ b/data/specials.inc
+@@ -554,3 +554,10 @@
+     def_special Port_CameraOffset
+     def_special Port_CameraOrbit
+ #endif
++
++#ifdef PORT_BRIDGE
++    def_special Port_CameraScene
++    def_special Port_CameraAnchor
++    def_special Port_CameraView
++    def_special Port_CameraHold
++#endif
+--- a/asm/macros/event.inc
++++ b/asm/macros/event.inc
+@@ -1997,3 +1997,33 @@
+     special Port_CameraEnd
+     .endm
+ #endif
++
++#ifdef PORT_BRIDGE
++    @ Scenic sequences own the camera and allow B to skip the whole sequence.
++    .macro camera_scene
++    special Port_CameraScene
++    .endm
++    @ Current-map tile coordinates, independent of actors.
++    .macro camera_anchor x:req, y:req
++    setvar VAR_0x8004, \x
++    setvar VAR_0x8005, \y
++    special Port_CameraAnchor
++    .endm
++    @ Absolute scenic pitch/yaw; distance remains relative to gameplay.
++    .macro camera_view frames:req, distance=150, pitch=45, yaw=0
++    setvar VAR_0x8006, \frames
++    setvar VAR_0x8007, \distance
++    setvar VAR_0x8008, \pitch
++    setvar VAR_0x8009, \yaw
++    special Port_CameraView
++    .endm
++#endif
++
++#ifdef PORT_BRIDGE
++    @ Hold the displayed camera; B can still skip the scenic sequence.
++    .macro camera_hold frames=120
++    setvar VAR_0x8006, \frames
++    special Port_CameraHold
++    waitstate
++    .endm
++#endif
+--- a/data/maps/RustboroCity/scripts.inc
++++ b/data/maps/RustboroCity/scripts.inc
+@@ -4,6 +4,10 @@
+ 	.byte 0
+ 
+ RustboroCity_OnTransition:
++#ifdef PORT_BRIDGE
++    setvar VAR_TEMP_7, 0
++    call_if_unset FLAG_VISITED_RUSTBORO_CITY, RustboroCity_CameraArm
++#endif
+ 	setflag FLAG_VISITED_RUSTBORO_CITY
+ 	call Common_EventScript_SetupRivalGfxId
+ 	call_if_eq VAR_RUSTBORO_CITY_STATE, 6, RustboroCity_EventScript_HideMapNamePopup
+@@ -25,6 +29,9 @@
+ 	return
+ 
+ RustboroCity_OnFrame:
++#ifdef PORT_BRIDGE
++    map_script_2 VAR_TEMP_7, 1, RustboroCity_CameraIntro
++#endif
+ 	map_script_2 VAR_RUSTBORO_CITY_STATE, 6, RustboroCity_EventScript_ScientistAddMatchCall
+ 	.short 0
+ 
+@@ -1290,3 +1297,48 @@
+ 	.string "they'll both challenge you.\p"
+ 	.string "Don't you think it'd be cool if you\n"
+ 	.string "could beat two TRAINERS by yourself?$"
++
++#ifdef PORT_BRIDGE
++@ Only the first southern arrival; existing saves and other entrances skip it.
++RustboroCity_CameraArm:
++    getplayerxy VAR_TEMP_0, VAR_TEMP_1
++    goto_if_lt VAR_TEMP_1, 52, RustboroCity_CameraArmDone
++    setvar VAR_TEMP_7, 1
++RustboroCity_CameraArmDone:
++    return
++
++RustboroCity_CameraIntro::
++    lockall
++    setvar VAR_TEMP_7, 0
++    @ Let the arrival fade and initial scenery settle before taking control.
++    delay 60
++    camera_scene
++    @ Open high over the entrance. One rendered frame establishes the view.
++    camera_anchor 16, 45
++    camera_view 1, 150, 55, -30
++    waitcamera
++    @ Descending orbit: angle, pitch and distance ease together onto the Mart.
++    camera_view 180, 105, 35, 20
++    waitcamera
++    @ Lock off the Mart composition for two seconds; no camera movement.
++    camera_hold 120
++    @ Cut to the Gym, then carry the motion through Devon.
++    camera_anchor 27, 19
++    camera_view 1, 140, 45, 20
++    waitcamera
++    camera_anchor 27, 18
++    camera_view 90, 130, 42, 25
++    waitcamera
++    camera_anchor 12, 15
++    camera_view 180, 140, 45, -20
++    waitcamera
++    @ Climb back over the boulevard before descending towards the player.
++    camera_anchor 18, 48
++    camera_view 180, 150, 50, 0
++    waitcamera
++    camera_return 120
++    waitcamera
++    camera_end
++    releaseall
++    end
++#endif

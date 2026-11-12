@@ -673,6 +673,24 @@ static bool Occludes(float x, float y, float z)
     return ObjectAt(Tile(x), x, y, z, &cell);
 }
 
+bool VoxelLighting_CameraClear(float x0, float y0, float z0, float x1, float y1, float z1)
+{
+    float dx = x1-x0, dy = y1-y0, dz = z1-z0;
+    float reach = sqrtf(dx*dx + dy*dy + dz*dz);
+    if (!isfinite(x0) || !isfinite(y0) || !isfinite(z0)
+        || !isfinite(x1) || !isfinite(y1) || !isfinite(z1) || reach > 32.0f) return false;
+    unsigned steps = (unsigned)ceilf(reach * 32.0f);
+    if (!steps) steps = 1;
+    for (unsigned i=0; i<=steps; ++i)
+    {
+        float t = (float)i / steps;
+        float x = x0 + dx*t, y = y0 + dy*t, z = z0 + dz*t;
+        if (VoxelWorld_GetInstanceAt(Tile(x), Tile(z)) == NULL
+            || y < VoxelRelief_SurfaceAt(x,z) + 0.02f || Occludes(x,y,z)) return false;
+    }
+    return true;
+}
+
 /*
  * Where step `step` of a ray puts it. One expression, used by the march and by
  * the cell skip alike, so both see exactly the same points.

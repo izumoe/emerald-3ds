@@ -1,0 +1,44 @@
+--- a/src/field_screen_effect.c
++++ b/src/field_screen_effect.c
+@@ -95,8 +95,30 @@
+     FadeScreen(FADE_FROM_WHITE, 8);
+ }
+ 
++#ifdef PORT_BRIDGE
++extern bool8 Port_CameraDeferFade(void);
++extern bool8 Port_CameraFadeReady(void);
++extern bool8 Port_CameraFadeBlocking(void);
++static void Task_CameraRevealFade(u8 taskId)
++{
++    if (Port_CameraFadeReady())
++    {
++        DestroyTask(taskId);
++        FadeInFromBlack();
++    }
++}
++#endif
++
+ void FadeInFromBlack(void)
+ {
++#ifdef PORT_BRIDGE
++    if (Port_CameraDeferFade())
++    {
++        BlendPalettes(PALETTES_ALL, 16, RGB_BLACK);
++        CreateTask(Task_CameraRevealFade, 0);
++        return;
++    }
++#endif
+     FillPalBufferBlack();
+     FadeScreen(FADE_FROM_BLACK, 0);
+ }
+@@ -478,6 +500,10 @@
+ 
+ static bool32 WaitForWeatherFadeIn(void)
+ {
++#ifdef PORT_BRIDGE
++    if (Port_CameraFadeBlocking())
++        return FALSE;
++#endif
+     if (IsWeatherNotFadingIn() == TRUE)
+         return TRUE;
+     else

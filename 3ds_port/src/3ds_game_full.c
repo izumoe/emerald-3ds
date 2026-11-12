@@ -25,17 +25,24 @@
 #include "item_menu.h"
 #include "party_menu.h"
 #include "battle_main.h"
+#include "battle.h"
 #include "fldeff_misc.h"
 #include "field_effect.h"
 #include "constants/field_effects.h"
 #include "battle_pyramid.h"
 #include "rtc.h"
 #include "constants/map_types.h"
+#include "constants/battle.h"
 #include "sprite.h"
 #include "palette.h"
 #include "pokemon.h"
 #include "random.h"
+#include "script.h"
+#include "event_data.h"
+#include "event_object_movement.h"
+#include "field_message_box.h"
 #include "constants/party_menu.h"
+#include "constants/event_objects.h"
 #ifdef CTR_TEST_BATTLE
 #include "battle_setup.h"
 #include "script_pokemon_util.h"
@@ -63,6 +70,13 @@
 #include "battle_setup.h"
 #include "field_screen_effect.h"
 #include "script_pokemon_util.h"
+#endif
+#ifdef CTR_TEST_CITY_CAMERA
+#include "script_pokemon_util.h"
+#include "constants/species.h"
+#include "constants/moves.h"
+#include "item.h"
+#include "constants/items.h"
 #endif
 #include "librfu.h"
 #ifdef CTR_TEST_SWOOP
@@ -1288,6 +1302,272 @@ static void HoldFieldFade(void)
         sFadeHeldFrames = 0;
 }
 
+/* Only direct NPC dialogue: signs and narration have LOCALID_NONE. Keep the
+ * framing through text pages, choices and waits until the script releases the
+ * controls. FieldMessageBoxHidden alone means the printer finished, not that
+ * the player dismissed the box. */
+/* Resolve variable graphics as well (the rival uses OBJ_EVENT_GFX_VAR_0).
+ * These are default story presets, not authored directions for every scene. */
+static bool ConversationImportant(const struct ObjectEvent *npc)
+{
+    static const u8 graphics[] = {
+        OBJ_EVENT_GFX_AQUA_MEMBER_M, OBJ_EVENT_GFX_AQUA_MEMBER_F,
+        OBJ_EVENT_GFX_MAGMA_MEMBER_M, OBJ_EVENT_GFX_MAGMA_MEMBER_F,
+        OBJ_EVENT_GFX_ARCHIE, OBJ_EVENT_GFX_MAXIE, OBJ_EVENT_GFX_STEVEN,
+        OBJ_EVENT_GFX_PROF_BIRCH, OBJ_EVENT_GFX_WALLY, OBJ_EVENT_GFX_SCOTT,
+        OBJ_EVENT_GFX_RIVAL_BRENDAN_NORMAL, OBJ_EVENT_GFX_RIVAL_MAY_NORMAL,
+    };
+    const struct ObjectEventGraphicsInfo *info = GetObjectEventGraphicsInfo(npc->graphicsId);
+    for (unsigned i=0; i<ARRAY_COUNT(graphics); ++i)
+        if (info == GetObjectEventGraphicsInfo(graphics[i])) return true;
+    return false;
+}
+
+static struct {
+    bool pending,left;
+    unsigned map,origin,a,b,distance;
+    int pitch,yaw;
+    unsigned waiting,poseAt;
+    bool accepted;
+} sCameraReveal;
+static bool sCameraFadeBlocked;
+static unsigned sCameraFadeWait;
+static unsigned sCameraRevealGrace;
+static unsigned CameraActorReference(unsigned map,unsigned actor)
+{
+    return actor==255?255:0x01000000u|((map>>8)<<16)|((map&255)<<8)|(actor&255);
+}
+void Port_CameraReveal(void)
+{
+    sCameraReveal.pending=true;sCameraReveal.left=false;sCameraReveal.waiting=0;sCameraReveal.accepted=false;
+    sCameraReveal.map=gSpecialVar_0x8004;
+    sCameraReveal.origin=((unsigned)gSaveBlock1Ptr->location.mapGroup<<8)|gSaveBlock1Ptr->location.mapNum;
+    sCameraReveal.a=CameraActorReference(sCameraReveal.map,gSpecialVar_0x8005);
+    sCameraReveal.b=CameraActorReference(sCameraReveal.map,gSpecialVar_0x8006);
+    sCameraReveal.distance=gSpecialVar_0x8007;
+    sCameraReveal.pitch=(s16)gSpecialVar_0x8008;sCameraReveal.yaw=(s16)gSpecialVar_0x8009;
+}
+void Port_CameraRevealSelected(void)
+{
+    extern void CtrVoxel_GetScriptPair(unsigned*,unsigned*);
+    Port_CameraReveal();
+    CtrVoxel_GetScriptPair(&sCameraReveal.a,&sCameraReveal.b);
+}
+static bool sCameraScriptOwns, sCameraScriptWait, sCameraScene, sCameraSceneSkipped;
+static unsigned sCameraScriptHold;
+static bool sBattleCameraPush;
+void Port_BattleCameraBegin(void)
+{
+    extern bool CtrVoxel_BeginBattlePush(unsigned);
+    unsigned actor=255;
+    if ((gBattleTypeFlags & BATTLE_TYPE_TRAINER) && sCameraScriptOwns && !sCameraScene)
+    {
+        extern void CtrVoxel_GetScriptPair(unsigned*,unsigned*);
+        unsigned first,second;
+        CtrVoxel_GetScriptPair(&first,&second);
+        actor=second!=255?second:first;
+    }
+    else if ((gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+        && gSelectedObjectEvent<OBJECT_EVENTS_COUNT
+        && gSelectedObjectEvent!=gPlayerAvatar.objectEventId
+        && gObjectEvents[gSelectedObjectEvent].active
+        && gObjectEvents[gSelectedObjectEvent].localId==gSpecialVar_LastTalked)
+        actor=gSpecialVar_LastTalked;
+    sBattleCameraPush=CtrVoxel_BeginBattlePush(actor);
+    if (sBattleCameraPush)
+    {
+        sCameraScriptOwns=true; sCameraScriptWait=false;
+        sCameraScene=false; sCameraSceneSkipped=false; sCameraScriptHold=0;
+    }
+}
+bool8 Port_BattleCameraReady(void)
+{
+    extern bool CtrVoxel_ScriptMoving(void);
+    return !sBattleCameraPush || !CtrVoxel_ScriptMoving();
+}
+void Port_BattleCameraAbort(void)
+{
+    extern void CtrVoxel_CancelCamera(void);
+    if (sBattleCameraPush) CtrVoxel_CancelCamera();
+    sBattleCameraPush=false; sCameraScriptOwns=false;
+}
+
+void Port_CameraHold(void)
+{
+    sCameraScriptHold=sCameraSceneSkipped?0:gSpecialVar_0x8006;
+    if (sCameraScriptHold>3600) sCameraScriptHold=3600;
+    sCameraScriptWait=true;
+}
+void Port_CameraScene(void)
+{
+    sCameraScriptOwns=true; sCameraScene=true; sCameraSceneSkipped=false; sCameraScriptHold=0;
+}
+void Port_CameraAnchor(void)
+{
+    extern void CtrVoxel_ScriptAnchor(int,int);
+    CtrVoxel_ScriptAnchor((s16)gSpecialVar_0x8004,(s16)gSpecialVar_0x8005);
+}
+void Port_CameraView(void)
+{
+    extern bool CtrVoxel_ScriptView(unsigned,int,int,int);
+    if (!sCameraSceneSkipped) CtrVoxel_ScriptView(gSpecialVar_0x8006,gSpecialVar_0x8007,
+        (s16)gSpecialVar_0x8008,(s16)gSpecialVar_0x8009);
+}
+void Port_CameraPairMap(void)
+{
+    extern void CtrVoxel_ScriptPair(unsigned,unsigned);
+    sCameraScriptOwns=true;
+    CtrVoxel_ScriptPair(CameraActorReference(gSpecialVar_0x8004,gSpecialVar_0x8005),
+                       CameraActorReference(gSpecialVar_0x8004,gSpecialVar_0x8006));
+}
+void Port_CameraPair(void)
+{
+    extern void CtrVoxel_ScriptPair(unsigned,unsigned);
+    sCameraScriptOwns=true;
+    CtrVoxel_ScriptPair(gSpecialVar_0x8004,gSpecialVar_0x8005);
+}
+void Port_CameraMove(void)
+{
+    extern bool CtrVoxel_ScriptMove(unsigned,int,int,int);
+    CtrVoxel_ScriptMove(gSpecialVar_0x8006,gSpecialVar_0x8007,
+                        (s16)gSpecialVar_0x8008,(s16)gSpecialVar_0x8009);
+}
+void Port_CameraOrbit(void)
+{
+    extern bool CtrVoxel_ScriptOrbit(unsigned,int,int,int);
+    CtrVoxel_ScriptOrbit(gSpecialVar_0x8006,gSpecialVar_0x8007,
+                         (s16)gSpecialVar_0x8008,(s16)gSpecialVar_0x8009);
+}
+void Port_CameraOffset(void)
+{
+    extern void CtrVoxel_ScriptOffset(int,int);
+    CtrVoxel_ScriptOffset((s16)gSpecialVar_0x8006,(s16)gSpecialVar_0x8007);
+}
+void Port_CameraFollow(void)
+{
+    extern void CtrVoxel_ScriptFollow(bool);
+    CtrVoxel_ScriptFollow(gSpecialVar_0x8006!=0);
+}
+void Port_CameraReturn(void)
+{
+    extern void CtrVoxel_ScriptReturn(unsigned);
+    if (!sCameraSceneSkipped) CtrVoxel_ScriptReturn(gSpecialVar_0x8006);
+}
+void Port_CameraWait(void) { sCameraScriptWait=true; }
+void Port_CameraEnd(void)
+{
+    extern void CtrVoxel_ScriptReturn(unsigned);
+    CtrVoxel_ScriptReturn(60);
+    sCameraScriptOwns=false; sCameraScene=false; sCameraSceneSkipped=false; sCameraScriptHold=0;
+}
+static void CameraRevealTick(void)
+{
+    extern bool CtrVoxel_CameraMapReady(void);
+    extern void CtrVoxel_ScriptPair(unsigned,unsigned);
+    extern void CtrVoxel_ScriptFollow(bool);
+    extern bool CtrVoxel_ScriptOrbit(unsigned,int,int,int);
+    if (!sCameraReveal.pending) return;
+    if (gMain.callback2!=CB2_Overworld && gMain.callback2!=CB2_OverworldBasic)
+    { sCameraReveal.left=true;return; }
+    unsigned map=((unsigned)gSaveBlock1Ptr->location.mapGroup<<8)|gSaveBlock1Ptr->location.mapNum;
+    if (map!=sCameraReveal.origin) sCameraReveal.left=true;
+    if (!sCameraReveal.left || gMain.callback2!=CB2_Overworld) return;
+    if (++sCameraReveal.waiting>120) { sCameraReveal.pending=false;return; }
+    if (map!=sCameraReveal.map)
+    { if (map!=sCameraReveal.origin) sCameraReveal.pending=false;return; }
+    if (!CtrVoxel_CameraMapReady()) return;
+    CtrVoxel_ScriptPair(sCameraReveal.a,sCameraReveal.b);
+    CtrVoxel_ScriptFollow(true);
+    bool accepted=CtrVoxel_ScriptOrbit(1,sCameraReveal.distance,sCameraReveal.pitch,90-sCameraReveal.yaw);
+    sCameraReveal.accepted=accepted;sCameraReveal.poseAt=CtrPlatform_FrameCount();
+    sCameraRevealGrace=accepted?8:0;
+    if (accepted) sCameraScriptOwns=true;
+    CtrLog_Write(CTR_LOG_GAME,"CAMERA reveal: map=%u fade=%u accepted=%u",map,gPaletteFade.active,accepted);
+    sCameraReveal.pending=false;
+}
+bool8 Port_CameraDeferFade(void)
+{
+    unsigned map=((unsigned)gSaveBlock1Ptr->location.mapGroup<<8)|gSaveBlock1Ptr->location.mapNum;
+    if (!CtrSettings_Voxel() || !sCameraReveal.pending || sCameraReveal.map!=map
+        || (!sCameraReveal.left && map==sCameraReveal.origin)) return false;
+    sCameraFadeBlocked=true;sCameraFadeWait=0;
+    return true;
+}
+bool8 Port_CameraFadeReady(void)
+{
+    if (!sCameraFadeBlocked) return true;
+    if (++sCameraFadeWait>=60)
+    {
+        sCameraReveal.pending=false;sCameraFadeBlocked=false;
+        CtrLog_Write(CTR_LOG_GAME,"CAMERA reveal fade: watchdog fallback");
+        return true;
+    }
+    if (sCameraReveal.pending) return false;
+    if (sCameraReveal.accepted && (unsigned)(CtrPlatform_FrameCount()-sCameraReveal.poseAt)<2)
+        return false;
+    sCameraFadeBlocked=false;
+    CtrLog_Write(CTR_LOG_GAME,"CAMERA reveal fade: released after %u frames",sCameraFadeWait);
+    return true;
+}
+bool8 Port_CameraFadeBlocking(void) { return sCameraFadeBlocked; }
+static void CameraScriptTick(void)
+{
+    extern bool CtrVoxel_ScriptMoving(void);
+    extern void CtrVoxel_ScriptReturn(unsigned);
+    extern void CtrVoxel_CancelCamera(void);
+    if (sCameraRevealGrace && gMain.callback2==CB2_Overworld
+        && !gPaletteFade.active && !sCameraFadeBlocked) --sCameraRevealGrace;
+    if (sCameraScriptOwns && gMain.callback2!=CB2_Overworld
+        && !(sBattleCameraPush && gMain.callback2==CB2_OverworldBasic))
+    { CtrVoxel_CancelCamera(); sCameraScriptOwns=false; sBattleCameraPush=false; sCameraRevealGrace=0; }
+    else if (sCameraScriptOwns && !sBattleCameraPush && !sCameraRevealGrace && !ArePlayerFieldControlsLocked())
+    { CtrVoxel_ScriptReturn(60); sCameraScriptOwns=false; }
+    if (!sCameraScriptOwns) { sCameraScene=false; sCameraScriptHold=0; sCameraRevealGrace=0; }
+    if (sCameraScene && !sCameraSceneSkipped && (gMain.newKeys & B_BUTTON))
+    {
+        sCameraSceneSkipped=true; sCameraScriptHold=0;
+        CtrVoxel_ScriptReturn(36);
+        CtrLog_Write(CTR_LOG_GAME,"CAMERA scenic skipped by B");
+    }
+    bool moving=CtrVoxel_ScriptMoving();
+    if (sCameraScriptHold && !moving) --sCameraScriptHold;
+    if (sCameraScriptWait && !moving && !sCameraScriptHold)
+    { sCameraScriptWait=false; ScriptContext_Enable(); }
+}
+
+static void ConversationCamera(void)
+{
+    extern bool CtrVoxel_BeginConversationStyled(float, float, bool);
+    extern void CtrVoxel_EndConversation(void);
+    static bool considered, framed;
+    if (sCameraScriptOwns) return;
+    bool eligible = gMain.callback2 == CB2_Overworld && ArePlayerFieldControlsLocked()
+        && gPlayerAvatar.objectEventId < OBJECT_EVENTS_COUNT
+        && gSelectedObjectEvent < OBJECT_EVENTS_COUNT
+        && gSelectedObjectEvent != gPlayerAvatar.objectEventId
+        && gObjectEvents[gSelectedObjectEvent].active
+        && gSpecialVar_LastTalked != LOCALID_NONE
+        && gObjectEvents[gSelectedObjectEvent].localId == gSpecialVar_LastTalked
+        && CtrSettings_GetInt("camera_dialogue", 1) != 0;
+    if (!eligible)
+    {
+        if (framed) CtrVoxel_EndConversation();
+        considered = framed = false;
+        return;
+    }
+    if (!considered && GetFieldMessageBoxMode() == FIELD_MESSAGE_BOX_NORMAL)
+    {
+        const struct ObjectEvent *npc = &gObjectEvents[gSelectedObjectEvent];
+        const struct ObjectEvent *player = &gObjectEvents[gPlayerAvatar.objectEventId];
+        considered = true;
+        int style = CtrSettings_GetInt("camera_dialogue_style", 1);
+        bool important = style == 2 || (style == 1 && ConversationImportant(npc));
+        framed = CtrVoxel_BeginConversationStyled(npc->currentCoords.x - player->currentCoords.x,
+                                                 npc->currentCoords.y - player->currentCoords.y,
+                                                 important);
+    }
+}
+
 void CtrGame_WaitFrame(void)
 {
     static MainCallback lastCallback;
@@ -1322,6 +1602,99 @@ void CtrGame_WaitFrame(void)
     }
     if (CtrScenario_Active())
         ScenarioCheckpoints();
+    CameraRevealTick();
+    CameraScriptTick();
+    ConversationCamera();
+#ifdef CTR_TEST_CITY_CAMERA
+    if (sFrames == 200) SetMainCallback2(CB2_NewGame);
+    {
+        static unsigned earlyFieldFrames;
+        static bool earlyBegun;
+        int earlyMode=CtrSettings_GetInt("camera_test_early",0);
+        if (gMain.callback2==CB2_Overworld) ++earlyFieldFrames;
+        /* Devon's first meeting starts through its real on-frame map script. */
+        if (earlyMode==7 && !earlyBegun && earlyFieldFrames>=1 && gMain.callback2==CB2_Overworld)
+        {
+            ScriptGiveMon(SPECIES_TREECKO,20,0,0,0,0);
+            FlagSet(FLAG_SYS_POKEMON_GET);
+            earlyBegun=true;
+        }
+        if (earlyMode>=1 && earlyMode<=8 && !earlyBegun && earlyFieldFrames>=180
+            && !gPaletteFade.active && !ArePlayerFieldControlsLocked())
+        {
+            extern const u8 Route101_EventScript_StartBirchRescue[];
+            extern const u8 Route103_EventScript_Rival[];
+            if (earlyMode>=2)
+            {
+                /* Overlevelled solely to keep the captured real battle short. */
+                ScriptGiveMon(SPECIES_TREECKO,(earlyMode==4 || earlyMode==6)?40:20,0,0,0,0);
+                SetMonMoveSlot(&gPlayerParty[0],(earlyMode==4 || earlyMode==6)?MOVE_ABSORB:MOVE_POUND,0);
+                VarSet(VAR_STARTER_MON,0);
+                FlagSet(FLAG_SYS_POKEMON_GET);
+                unsigned localId=earlyMode==6?6:earlyMode>=4?1:earlyMode==3?3:2;
+                unsigned facing=earlyMode==6?DIR_EAST:DIR_NORTH;
+                gSelectedObjectEvent=GetObjectEventIdByLocalIdAndMap(localId,
+                    gSaveBlock1Ptr->location.mapNum,gSaveBlock1Ptr->location.mapGroup);
+                gSpecialVar_LastTalked=localId;
+                gSpecialVar_Facing=facing;
+                ObjectEventTurn(&gObjectEvents[gPlayerAvatar.objectEventId],facing);
+                if (earlyMode==8) AddBagItem(ITEM_LETTER,1);
+            }
+            extern const u8 PetalburgWoods_EventScript_DevonResearcherLeft[];
+            extern const u8 RustboroCity_Gym_EventScript_Roxanne[];
+            extern const u8 PetalburgCity_Gym_EventScript_Norman[];
+            extern const u8 RusturfTunnel_EventScript_Grunt[];
+            extern const u8 GraniteCave_StevensRoom_EventScript_Steven[];
+            const u8 *script=earlyMode==1?Route101_EventScript_StartBirchRescue:
+                earlyMode==2?Route103_EventScript_Rival:
+                earlyMode==3?PetalburgWoods_EventScript_DevonResearcherLeft:
+                earlyMode==4?RustboroCity_Gym_EventScript_Roxanne:
+                earlyMode==6?RusturfTunnel_EventScript_Grunt:
+                earlyMode==8?GraniteCave_StevensRoom_EventScript_Steven:PetalburgCity_Gym_EventScript_Norman;
+            ScriptContext_SetupScript(script);
+            earlyBegun=true;
+        }
+    }
+#endif
+#if defined(CTR_TEST_CAMERA) && !defined(CTR_TEST_CITY_CAMERA)
+    /* Isolated capture: a real Oldale NPC script, not simulated dialogue. */
+    {
+#ifdef CTR_TEST_SHOP_CAMERA
+        extern const u8 OldaleTown_EventScript_MartEmployee[];
+#else
+        extern const u8 OldaleTown_EventScript_Girl[];
+#endif
+        static bool begun;
+        static unsigned fieldFrames;
+        if (sFrames == 200) SetMainCallback2(CB2_NewGame);
+        if (gMain.callback2 == CB2_Overworld) ++fieldFrames;
+        if (!begun && fieldFrames >= 180 && !gPaletteFade.active
+            && !ArePlayerFieldControlsLocked())
+        {
+    #ifdef CTR_TEST_SHOP_CAMERA
+            const u8 actor = 2, facing = DIR_NORTH;
+#else
+            const u8 actor = 1, facing = DIR_EAST;
+#endif
+            u8 id = GetObjectEventIdByLocalIdAndMap(actor, gSaveBlock1Ptr->location.mapNum,
+                                                   gSaveBlock1Ptr->location.mapGroup);
+            if (id < OBJECT_EVENTS_COUNT)
+            {
+                gSelectedObjectEvent = id;
+                gSpecialVar_LastTalked = actor;
+                gSpecialVar_Facing = facing;
+                ObjectEventTurn(&gObjectEvents[gPlayerAvatar.objectEventId], facing);
+#ifdef CTR_TEST_SHOP_CAMERA
+                ScriptContext_SetupScript(OldaleTown_EventScript_MartEmployee);
+#else
+                ScriptContext_SetupScript(OldaleTown_EventScript_Girl);
+#endif
+                begun = true;
+            }
+        }
+    }
+#endif
+
 #ifdef CTR_TEST_SWOOP
     /* Azahar aid (-DCTR_TEST_SWOOP=frame): the swoop between the voxel world
      * and the 2D field, every way it starts - the 3D option off, then on
