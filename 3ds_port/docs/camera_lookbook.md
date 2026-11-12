@@ -23,6 +23,14 @@ to something that has changed. Use this lookbook to plan, and the
 | Fade and reveal | Time, place or scene state changes | Restore the image into a prepared composition |
 | Battle lead-in | Dialogue turns into a fight | Give the shared battle zoom a clear subject |
 
+## Motion during dialogue
+
+A slow, subtle pan or orbit is a useful default during a dialogue hold. Give
+the movement a clear direction and keep the important faces readable throughout.
+Let a shot settle when stillness helps a landmark, reveal, entrance or departure;
+use the scene’s pace and space to decide. Test quick dialogue advances so a new
+cue starts cleanly from the displayed pose.
+
 ## Shot cards
 
 ### Establishing wide → close conversation

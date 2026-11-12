@@ -456,3 +456,10 @@ stronger side angles to separate the actors and retains the held player view for
 the departure. Test captures use isolated scene setups, not a continuous save;
 other approaches, the May-house view and nickname/skip branches still require
 visual review. Small rooms can expose unmodelled space at their edges.
+
+The lab conversation now adds slow lateral and orbital moves during the starter
+and Pokédex dialogue. The Pokédex sequence begins off centre, eases around
+Birch, then moves toward the rival's side and drifts during the Poké Ball offer.
+These are continuous camera moves; the renderer does not implement a true
+crossfade between live views. The cues are allowed to be interrupted by dialogue
+advances and the next cue starts from the displayed pose.

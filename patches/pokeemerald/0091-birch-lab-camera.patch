@@ -1,6 +1,6 @@
 --- a/data/maps/LittlerootTown_ProfessorBirchsLab/scripts.inc
 +++ b/data/maps/LittlerootTown_ProfessorBirchsLab/scripts.inc
-@@ -106,6 +106,12 @@
+@@ -106,7 +106,18 @@
  /* This is just where the game tells you its yours and lets you nickname it*/
  LittlerootTown_ProfessorBirchsLab_EventScript_GiveStarterEvent::
  	lockall
@@ -11,9 +11,15 @@
 +    waitcamera
 +#endif
  	bufferleadmonspeciesname STR_VAR_1
++#ifdef PORT_BRIDGE
++    @ Drift sideways as Birch offers the partner; dialogue can interrupt smoothly.
++    camera_offset -6, -3
++    camera_orbit 180, 55, -4, 130
++#endif
  	message LittlerootTown_ProfessorBirchsLab_Text_LikeYouToHavePokemon
  	waitmessage
-@@ -123,6 +129,12 @@
+ 	playfanfare MUS_OBTAIN_ITEM
+@@ -123,6 +134,15 @@
  	end
  
  LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival::
@@ -22,11 +28,14 @@
 +    camera_pair LOCALID_PLAYER, LOCALID_BIRCHS_LAB_BIRCH
 +    camera_orbit 60, 55, -4, 145
 +    waitcamera
++    @ A small drift keeps the conversational hold alive.
++    camera_offset -4, 2
++    camera_orbit 240, 55, -4, 130
 +#endif
  	msgbox LittlerootTown_ProfessorBirchsLab_Text_MightBeGoodIdeaToGoSeeRival, MSGBOX_YESNO
  	goto_if_eq VAR_RESULT, YES, LittlerootTown_ProfessorBirchsLab_EventScript_AgreeToSeeRival
  	goto_if_eq VAR_RESULT, NO, LittlerootTown_ProfessorBirchsLab_EventScript_DeclineSeeingRival
-@@ -132,6 +144,11 @@
+@@ -132,6 +152,11 @@
  	msgbox LittlerootTown_ProfessorBirchsLab_Text_GetRivalToTeachYou, MSGBOX_DEFAULT
  	clearflag FLAG_HIDE_ROUTE_101_BOY
  	setvar VAR_BIRCH_LAB_STATE, 3
@@ -38,20 +47,27 @@
  	releaseall
  	end
  
-@@ -504,6 +521,12 @@
+@@ -504,14 +529,34 @@
  	end
  
  LittlerootTown_ProfessorBirchsLab_EventScript_GivePokedex::
 +#ifdef PORT_BRIDGE
-+    @ Hold Birch and the player for the Pokédex handover.
++    @ Begin just off centre, then orbit into the handover.
 +    camera_pair LOCALID_PLAYER, LOCALID_BIRCHS_LAB_BIRCH
-+    camera_orbit 72, 60, -4, 145
++    camera_orbit 72, 65, -4, 110
 +    waitcamera
++    camera_orbit 210, 55, -4, 145
 +#endif
  	msgbox LittlerootTown_ProfessorBirchsLab_Text_HeardYouBeatRivalTakePokedex, MSGBOX_DEFAULT
  	call LittlerootTown_ProfessorBirchsLab_EventScript_ReceivePokedex
++#ifdef PORT_BRIDGE
++    @ Continue a gentle orbit and pan while Birch explains the Pokédex.
++    camera_offset 6, -3
++    camera_orbit 240, 55, -4, 125
++#endif
  	msgbox LittlerootTown_ProfessorBirchsLab_Text_ExplainPokedex, MSGBOX_DEFAULT
-@@ -512,6 +535,12 @@
+ 	closemessage
+ 	applymovement LOCALID_BIRCHS_LAB_RIVAL, LittlerootTown_ProfessorBirchsLab_Movement_RivalApproachPlayer
  	waitmovement 0
  	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
  	waitmovement 0
@@ -60,11 +76,13 @@
 +    camera_pair LOCALID_PLAYER, LOCALID_BIRCHS_LAB_RIVAL
 +    camera_orbit 72, 55, -4, 145
 +    waitcamera
++    @ Stay on the same side while the rival offers Poké Balls.
++    camera_orbit 240, 50, -4, 130
 +#endif
  	checkplayergender
  	call_if_eq VAR_RESULT, MALE, LittlerootTown_ProfessorBirchsLab_EventScript_MayGivePokeBalls
  	call_if_eq VAR_RESULT, FEMALE, LittlerootTown_ProfessorBirchsLab_EventScript_BrendanGivePokeBalls
-@@ -520,6 +549,11 @@
+@@ -520,6 +565,11 @@
  	setvar VAR_OLDALE_TOWN_STATE, 1
  	setvar VAR_LITTLEROOT_RIVAL_STATE, 4
  	setvar VAR_LITTLEROOT_TOWN_STATE, 3
