@@ -10163,6 +10163,10 @@ static void VoxelFlashLight(void)
     CtrVoxel_PlayerLightSpot(&x, &y, &sx, &sy);
     /* A flame's slow breathing: two slow waves, a pixel or two. */
     radius = sFieldLight.shown * (1.0f + 0.010f * sinf(t * 0.071f) + 0.006f * sinf(t * 0.173f + 1.3f));
+    /* An authored shot may widen the visual pool without changing the
+     * underlying puzzle's flash level or the normal gameplay view. */
+    float shotRadius = CtrVoxel_CinematicLightRadius();
+    if (shotRadius > radius) radius = shotRadius;
     w = radius * FLASH_LIGHT_QUAD * sx;
     h = radius * FLASH_LIGHT_QUAD * sy;
     x0 = x - w; x1 = x + w;

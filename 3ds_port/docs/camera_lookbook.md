@@ -65,7 +65,9 @@ choosing the angle. Leave room above the dialogue box and around heads.
 means closer framing; these values describe camera distance, not image scale.
 
 **Check:** the player does not cover the speaker, and neither sprite becomes
-uncomfortably large. Preview at the intended screen size.
+uncomfortably large. The camera normally aims at ground height; use
+`camera_height 8` as a starting point to centre the characters vertically in
+close shots, then account for the dialogue box. Preview at the intended size.
 
 ### Shoulder view
 

@@ -1,0 +1,60 @@
+--- a/data/maps/MtChimney/scripts.inc
++++ b/data/maps/MtChimney/scripts.inc
+@@ -33,6 +33,13 @@
+ 
+ MtChimney_EventScript_Maxie::
+ 	lockall
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MT_CHIMNEY_MAXIE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	playbgm MUS_ENCOUNTER_MAGMA, FALSE
+ 	msgbox MtChimney_Text_MeteoriteWillActivateVolcano, MSGBOX_DEFAULT
+ 	applymovement LOCALID_MT_CHIMNEY_MAXIE, Common_Movement_FacePlayer
+@@ -43,6 +50,9 @@
+ 	applymovement LOCALID_MT_CHIMNEY_MAXIE, Common_Movement_Delay48
+ 	waitmovement 0
+ 	msgbox MtChimney_Text_MaxieIntro, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_MT_CHIMNEY, LOCALID_PLAYER, LOCALID_MT_CHIMNEY_MAXIE, 55, -4, -35
++#endif
+ 	trainerbattle_no_intro TRAINER_MAXIE_MT_CHIMNEY, MtChimney_Text_MaxieDefeat
+ 	msgbox MtChimney_Text_MaxieYouHaventSeenLastOfMagma, MSGBOX_DEFAULT
+ 	closemessage
+@@ -60,8 +70,21 @@
+ 	call_if_eq VAR_FACING, DIR_NORTH, MtChimney_EventScript_ArchieApproachPlayerNorth
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MT_CHIMNEY_ARCHIE
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox MtChimney_Text_ArchieThankYou, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 72, 50, -4, 125
++    waitcamera
++#endif
+ 	call_if_eq VAR_FACING, DIR_EAST, MtChimney_EventScript_ArchieExitEast
+ 	call_if_eq VAR_FACING, DIR_NORTH, MtChimney_EventScript_ArchieExitNorth
+ 	removeobject LOCALID_MT_CHIMNEY_ARCHIE
+@@ -70,6 +93,11 @@
+ 	clearflag FLAG_HIDE_FALLARBOR_HOUSE_PROF_COZMO
+ 	setflag FLAG_HIDE_METEOR_FALLS_1F_1R_COZMO
+ 	clearflag FLAG_HIDE_MT_CHIMNEY_LAVA_COOKIE_LADY
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 

@@ -1,0 +1,100 @@
+--- a/data/maps/SlateportCity_OceanicMuseum_2F/scripts.inc
++++ b/data/maps/SlateportCity_OceanicMuseum_2F/scripts.inc
+@@ -4,6 +4,14 @@
+ SlateportCity_OceanicMuseum_2F_EventScript_CaptStern::
+ 	lock
+ 	faceplayer
++#ifdef PORT_BRIDGE
++    @ Establish Stern and the player before the interruption.
++    camera_pair LOCALID_PLAYER, LOCALID_OCEANIC_MUSEUM_2F_CAPT_STERN
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox SlateportCity_OceanicMuseum_2F_Text_ThankYouForTheParts, MSGBOX_DEFAULT
+ 	closemessage
+ 	playbgm MUS_ENCOUNTER_AQUA, TRUE
+@@ -16,6 +24,14 @@
+ 	applymovement LOCALID_OCEANIC_MUSEUM_2F_GRUNT_1, SlateportCity_OceanicMuseum_2F_Movement_FirstGruntApproach
+ 	applymovement LOCALID_OCEANIC_MUSEUM_2F_GRUNT_2, SlateportCity_OceanicMuseum_2F_Movement_SecondGruntApproach
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    @ Reframe only after both grunts have reached their marks.
++    camera_pair LOCALID_PLAYER, LOCALID_OCEANIC_MUSEUM_2F_GRUNT_2
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	call_if_eq VAR_FACING, DIR_SOUTH, SlateportCity_OceanicMuseum_2F_EventScript_PlayerFaceGrunts
+ 	call_if_eq VAR_FACING, DIR_EAST, SlateportCity_OceanicMuseum_2F_EventScript_PlayerFaceGrunts
+ 	msgbox SlateportCity_OceanicMuseum_2F_Text_WellTakeThoseParts, MSGBOX_DEFAULT
+@@ -27,6 +43,9 @@
+ 	waitmovement 0
+ 	call_if_eq VAR_FACING, DIR_SOUTH, SlateportCity_OceanicMuseum_2F_EventScript_PlayerApproachGruntSouth
+ 	call_if_eq VAR_FACING, DIR_WEST, SlateportCity_OceanicMuseum_2F_EventScript_PlayerApproachGruntWest
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_SLATEPORT_CITY_OCEANIC_MUSEUM_2F, LOCALID_PLAYER, LOCALID_OCEANIC_MUSEUM_2F_GRUNT_2, 55, -4, -35
++#endif
+ 	trainerbattle_no_intro TRAINER_GRUNT_MUSEUM_1, SlateportCity_OceanicMuseum_2F_Text_Grunt1Defeat
+ 	msgbox SlateportCity_OceanicMuseum_2F_Text_BossGoingToBeFurious, MSGBOX_DEFAULT
+ 	closemessage
+@@ -34,7 +53,17 @@
+ 	waitmovement 0
+ 	applymovement LOCALID_OCEANIC_MUSEUM_2F_GRUNT_1, SlateportCity_OceanicMuseum_2F_Movement_GruntApproachToBattle
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_OCEANIC_MUSEUM_2F_GRUNT_1
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox SlateportCity_OceanicMuseum_2F_Text_LetMeTakeCareOfThis, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_SLATEPORT_CITY_OCEANIC_MUSEUM_2F, LOCALID_PLAYER, LOCALID_OCEANIC_MUSEUM_2F_GRUNT_1, 55, -4, -35
++#endif
+ 	trainerbattle_no_intro TRAINER_GRUNT_MUSEUM_2, SlateportCity_OceanicMuseum_2F_Text_Grunt2Defeat
+ 	applymovement LOCALID_OCEANIC_MUSEUM_2F_GRUNT_1, SlateportCity_OceanicMuseum_2F_Movement_GruntDefeated
+ 	waitmovement 0
+@@ -52,6 +81,13 @@
+ 	closemessage
+ 	applymovement LOCALID_OCEANIC_MUSEUM_2F_ARCHIE, SlateportCity_OceanicMuseum_2F_Movement_ArchieApproachPlayer
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_OCEANIC_MUSEUM_2F_ARCHIE
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 50, -4, 145
++#endif
+ 	msgbox SlateportCity_OceanicMuseum_2F_Text_ArchieWarning, MSGBOX_DEFAULT
+ 	closemessage
+ 	savebgm MUS_DUMMY
+@@ -65,6 +101,13 @@
+ 	setflag FLAG_HIDE_SLATEPORT_CITY_OCEANIC_MUSEUM_AQUA_GRUNTS
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_OCEANIC_MUSEUM_2F_CAPT_STERN
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox SlateportCity_OceanicMuseum_2F_Text_SternThankYouForSavingUs, MSGBOX_DEFAULT
+ 	setvar VAR_0x8004, ITEM_DEVON_GOODS
+ 	call Common_EventScript_PlayerHandedOverTheItem
+@@ -75,6 +118,11 @@
+ 	waitfanfare
+ 	special HealPlayerParty
+ 	removeobject LOCALID_OCEANIC_MUSEUM_2F_CAPT_STERN
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	setflag FLAG_HIDE_ROUTE_110_TEAM_AQUA
+ 	call_if_eq VAR_REGISTER_BIRCH_STATE, 0, SlateportCity_OceanicMuseum_2F_EventScript_ReadyRegisterBirch
+ 	setflag FLAG_DELIVERED_DEVON_GOODS

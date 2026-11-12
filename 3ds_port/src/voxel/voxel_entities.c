@@ -15,6 +15,7 @@
 #include "field_player_avatar.h"
 #include "constants/field_effects.h"
 #include "constants/event_object_movement.h"
+#include "constants/event_objects.h"
 #include "gba/io_reg.h"
 #include "port_platform.h"
 #include "3ds_log.h"
@@ -1635,6 +1636,11 @@ unsigned VoxelEntities_Emit(VoxelBuilder *builder, uint16_t *atlas, const VoxelC
          * twice as far north. Only the object's own flag hides it here.
          */
         if (obj->invisible)
+            continue;
+        /* The bridge shadow reuses Kecleon art with a special 2D palette.
+         * Drawing it as an ordinary 3D card reveals Kecleon before the scope.
+         * The real object is emitted when its reveal animation makes it visible. */
+        if (obj->graphicsId == OBJ_EVENT_GFX_KECLEON_BRIDGE_SHADOW)
             continue;
         /* Carried on the screen instead of the map - the rider of Fly's
          * bird - it is drawn with the screen's sprites, over the view. */

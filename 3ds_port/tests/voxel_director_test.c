@@ -193,5 +193,18 @@ int main(void)
     for(unsigned i=1;i<180;++i) VoxelDirector_Step(&d,&custom,&out);
     Near(out.yaw,15); Near(out.pitch,32); Near(out.distance,custom.distance*1.1f);
     VoxelDirector_Cancel(&d);
+    /* Raise the aim without changing physical ground; release smoothly to gameplay. */
+    VoxelCamera base = {.targetX=3,.targetZ=4,.ground=2,.pitch=40,.distance=8,.fov=35};
+    VoxelCameraShot heightShot={0,0,1,0,60,0,0};
+    assert(VoxelDirector_Begin(&d,&base,&heightShot,1,60));
+    d.anchor.focusHeight=0.5f;
+    VoxelDirector_Hold(&d);
+    for (unsigned i=0;i<30;++i) VoxelDirector_Step(&d,&base,&out);
+    Near(out.ground,2); Near(out.focusHeight,0.25f); Near(out.targetY,2.25f);
+    for (unsigned i=30;i<60;++i) VoxelDirector_Step(&d,&base,&out);
+    Near(out.focusHeight,0.5f); Near(out.targetY,2.5f);
+    VoxelDirector_Release(&d,&out);
+    for (unsigned i=0;i<60;++i) VoxelDirector_Step(&d,&base,&out);
+    assert(!d.active); Near(out.focusHeight,0); Near(out.ground,2); Near(out.targetY,2);
     puts("voxel director: passed");
 }

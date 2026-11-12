@@ -1,0 +1,56 @@
+--- a/data/maps/PetalburgCity_Gym/scripts.inc
++++ b/data/maps/PetalburgCity_Gym/scripts.inc
+@@ -407,6 +407,14 @@
+ 	end
+ 
+ PetalburgCity_Gym_EventScript_NormanBattle::
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_GYM_NORMAN
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 50, -4, 128
++    camera_reveal MAP_PETALBURG_CITY_GYM, LOCALID_PLAYER, LOCALID_PETALBURG_GYM_NORMAN, 55, -4, -35
++#endif
+ 	msgbox PetalburgCity_Gym_Text_NormanIntro, MSGBOX_DEFAULT
+ 	trainerbattle_no_intro TRAINER_NORMAN_1, PetalburgCity_Gym_Text_NormanDefeat
+ 	message PetalburgCity_Gym_Text_ReceivedBalanceBadge
+@@ -429,6 +437,12 @@
+ 	delay 30
+ 	msgbox PetalburgCity_Gym_Text_DadHappyAndSad, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Restore the gameplay view before the father enters.
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	delay 40
+ 	playse SE_DOOR
+ 	delay 10
+--- a/data/maps/PetalburgCity_WallysHouse/scripts.inc
++++ b/data/maps/PetalburgCity_WallysHouse/scripts.inc
+@@ -18,11 +18,23 @@
+ 
+ PetalburgCity_WallysHouse_EventScript_GiveHMSurf::
+ 	lockall
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_WALLYS_HOUSE_WALLYS_DAD
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 128
++#endif
+ 	msgbox PetalburgCity_WallysHouse_Text_PleaseExcuseUs, MSGBOX_DEFAULT
+ 	giveitem ITEM_HM_SURF
+ 	setflag FLAG_RECEIVED_HM_SURF
+ 	msgbox PetalburgCity_WallysHouse_Text_SurfGoAllSortsOfPlaces, MSGBOX_DEFAULT
+ 	setvar VAR_PETALBURG_CITY_STATE, 5
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 

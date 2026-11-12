@@ -65,15 +65,16 @@ void VoxelDirector_Step(VoxelDirector *d, const VoxelCamera *follow, VoxelCamera
     out->targetX = Mix(d->from.targetX, target.targetX, t);
     out->targetZ = Mix(d->from.targetZ, target.targetZ, t);
     out->ground = Mix(d->from.ground, target.ground, t);
+    out->focusHeight = Mix(d->from.focusHeight, target.focusHeight, t);
     out->pitch = Mix(d->from.pitch, target.pitch, t);
     out->yaw = Mix(d->from.yaw, target.yaw, t);
     out->distance = Mix(d->from.distance, target.distance, t);
     float pitch = out->pitch * (3.14159265358979323846f/180);
     float yaw = out->yaw * (3.14159265358979323846f/180);
     out->x = out->targetX + sinf(yaw)*out->distance;
-    out->y = out->ground + tanf(pitch)*out->distance;
+    out->y = out->ground + out->focusHeight + tanf(pitch)*out->distance;
     out->z = out->targetZ + cosf(yaw)*out->distance;
-    out->targetY = out->ground;
+    out->targetY = out->ground + out->focusHeight;
     if (d->holdLast && d->index + 1 == d->count && d->frame >= duration) {
         d->frame = duration; /* Bound the counter during an arbitrarily long read. */
         return;

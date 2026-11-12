@@ -34,6 +34,7 @@ typedef struct
     float distance; /* distance from the target, adapted to the map size */
     float fov;      /* vertical field of view, degrees */
     float ground;   /* height, tiles, of the ground the player stands on */
+    float focusHeight; /* extra height above ground for authored framing */
     /* The swoop's shift of the target (VoxelCamera_Swoop), taken off again
      * before the next follow step so it never feeds the damping. */
     float swoopX, swoopZ;

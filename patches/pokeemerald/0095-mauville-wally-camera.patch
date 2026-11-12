@@ -1,0 +1,123 @@
+--- a/data/maps/MauvilleCity/scripts.inc
++++ b/data/maps/MauvilleCity/scripts.inc
+@@ -86,6 +86,15 @@
+ MauvilleCity_EventScript_Wally::
+ 	lockall
+ 	goto_if_set FLAG_DECLINED_WALLY_BATTLE_MAUVILLE, MauvilleCity_EventScript_WallyRequestBattleAgain
++#ifdef PORT_BRIDGE
++    @ Introduce Wally and his uncle together, giving the group headroom.
++    camera_pair LOCALID_PLAYER, LOCALID_MAUVILLE_WALLY
++    camera_height 8
++    camera_offset 8, -6
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	applymovement LOCALID_MAUVILLE_WALLY, Common_Movement_WalkInPlaceFasterRight
+ 	waitmovement 0
+ 	msgbox MauvilleCity_Text_WallyWantToChallengeGym, MSGBOX_DEFAULT
+@@ -122,8 +131,22 @@
+ 	applymovement LOCALID_PLAYER, MauvilleCity_Movement_PlayerFaceUncleNorth
+ 	applymovement LOCALID_MAUVILLE_WALLYS_UNCLE, MauvilleCity_Movement_WallysUncleApproachPlayerNorth
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MAUVILLE_WALLYS_UNCLE
++    camera_height 8
++    camera_orbit 60, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox MauvilleCity_Text_UncleVisitUsSometime, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Stay on the player while the pair leaves.
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 60, 50, -4, 125
++    waitcamera
++#endif
+ 	applymovement LOCALID_PLAYER, MauvilleCity_Movement_PlayerWatchWallyExitNorth2
+ 	applymovement LOCALID_MAUVILLE_WALLYS_UNCLE, MauvilleCity_Movement_WallysUncleExitNorth2
+ 	applymovement LOCALID_MAUVILLE_WALLY, MauvilleCity_Movement_WallyExitNorth2
+@@ -141,8 +164,22 @@
+ 	delay 30
+ 	applymovement LOCALID_MAUVILLE_WALLYS_UNCLE, MauvilleCity_Movement_WallysUncleApproachPlayerEast
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MAUVILLE_WALLYS_UNCLE
++    camera_height 8
++    camera_orbit 60, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox MauvilleCity_Text_UncleVisitUsSometime, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Stay on the player while the pair leaves.
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 60, 50, -4, 125
++    waitcamera
++#endif
+ 	applymovement LOCALID_PLAYER, MauvilleCity_Movement_PlayerWatchWallyExitEast2
+ 	applymovement LOCALID_MAUVILLE_WALLYS_UNCLE, MauvilleCity_Movement_WallysUncleExitEast2
+ 	applymovement LOCALID_MAUVILLE_WALLY, MauvilleCity_Movement_WallyExitEast2
+@@ -160,6 +197,13 @@
+ 	setflag FLAG_ENABLE_FIRST_WALLY_POKENAV_CALL
+ 	call_if_eq VAR_FACING, DIR_NORTH, MauvilleCity_EventScript_ScottApproachPlayerNorth
+ 	call_if_eq VAR_FACING, DIR_EAST, MauvilleCity_EventScript_ScottApproachPlayerEast
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MAUVILLE_SCOTT
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterDown
+ 	waitmovement 0
+ 	msgbox MauvilleCity_Text_ScottYouDidntHoldBack, MSGBOX_DEFAULT
+@@ -168,6 +212,11 @@
+ 	call_if_eq VAR_FACING, DIR_NORTH, MauvilleCity_EventScript_ScottExitNorth
+ 	call_if_eq VAR_FACING, DIR_EAST, MauvilleCity_EventScript_ScottExitEast
+ 	removeobject LOCALID_MAUVILLE_SCOTT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+@@ -198,6 +247,9 @@
+ 
+ MauvilleCity_EventScript_BattleWally::
+ 	msgbox MauvilleCity_Text_WallyHereICome, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_MAUVILLE_CITY, LOCALID_PLAYER, LOCALID_MAUVILLE_WALLY, 55, -4, -35
++#endif
+ 	trainerbattle_no_intro TRAINER_WALLY_MAUVILLE, MauvilleCity_Text_WallyDefeat
+ 	applymovement LOCALID_MAUVILLE_WALLY, Common_Movement_WalkInPlaceFasterRight
+ 	waitmovement 0
+@@ -213,10 +265,22 @@
+ MauvilleCity_EventScript_DeclineWallyBattle::
+ 	setflag FLAG_DECLINED_WALLY_BATTLE_MAUVILLE
+ 	msgbox MauvilleCity_Text_WallyMyUncleWontKnowImStrong, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+ MauvilleCity_EventScript_WallyRequestBattleAgain::
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MAUVILLE_WALLY
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	applymovement LOCALID_MAUVILLE_WALLY, Common_Movement_FacePlayer
+ 	waitmovement 0
+ 	msgbox MauvilleCity_Text_WallyPleaseBattleMe, MSGBOX_YESNO

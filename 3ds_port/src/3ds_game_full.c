@@ -1326,7 +1326,7 @@ static bool ConversationImportant(const struct ObjectEvent *npc)
 static struct {
     bool pending,left;
     unsigned map,origin,a,b,distance;
-    int pitch,yaw;
+    int pitch,yaw,height16;
     unsigned waiting,poseAt;
     bool accepted;
 } sCameraReveal;
@@ -1339,6 +1339,7 @@ static unsigned CameraActorReference(unsigned map,unsigned actor)
 }
 void Port_CameraReveal(void)
 {
+    extern int CtrVoxel_GetScriptHeight(void);
     sCameraReveal.pending=true;sCameraReveal.left=false;sCameraReveal.waiting=0;sCameraReveal.accepted=false;
     sCameraReveal.map=gSpecialVar_0x8004;
     sCameraReveal.origin=((unsigned)gSaveBlock1Ptr->location.mapGroup<<8)|gSaveBlock1Ptr->location.mapNum;
@@ -1346,6 +1347,7 @@ void Port_CameraReveal(void)
     sCameraReveal.b=CameraActorReference(sCameraReveal.map,gSpecialVar_0x8006);
     sCameraReveal.distance=gSpecialVar_0x8007;
     sCameraReveal.pitch=(s16)gSpecialVar_0x8008;sCameraReveal.yaw=(s16)gSpecialVar_0x8009;
+    sCameraReveal.height16=CtrVoxel_GetScriptHeight();
 }
 void Port_CameraRevealSelected(void)
 {
@@ -1426,6 +1428,16 @@ void Port_CameraPair(void)
     sCameraScriptOwns=true;
     CtrVoxel_ScriptPair(gSpecialVar_0x8004,gSpecialVar_0x8005);
 }
+void Port_CameraHeight(void)
+{
+    extern void CtrVoxel_ScriptHeight(int);
+    CtrVoxel_ScriptHeight((s16)gSpecialVar_0x8006);
+}
+void Port_CameraLight(void)
+{
+    extern void CtrVoxel_ScriptLight(int);
+    CtrVoxel_ScriptLight((s16)gSpecialVar_0x8006);
+}
 void Port_CameraMove(void)
 {
     extern bool CtrVoxel_ScriptMove(unsigned,int,int,int);
@@ -1465,6 +1477,7 @@ static void CameraRevealTick(void)
     extern bool CtrVoxel_CameraMapReady(void);
     extern void CtrVoxel_ScriptPair(unsigned,unsigned);
     extern void CtrVoxel_ScriptFollow(bool);
+    extern void CtrVoxel_ScriptHeight(int);
     extern bool CtrVoxel_ScriptOrbit(unsigned,int,int,int);
     if (!sCameraReveal.pending) return;
     if (gMain.callback2!=CB2_Overworld && gMain.callback2!=CB2_OverworldBasic)
@@ -1477,6 +1490,7 @@ static void CameraRevealTick(void)
     { if (map!=sCameraReveal.origin) sCameraReveal.pending=false;return; }
     if (!CtrVoxel_CameraMapReady()) return;
     CtrVoxel_ScriptPair(sCameraReveal.a,sCameraReveal.b);
+    CtrVoxel_ScriptHeight(sCameraReveal.height16);
     CtrVoxel_ScriptFollow(true);
     bool accepted=CtrVoxel_ScriptOrbit(1,sCameraReveal.distance,sCameraReveal.pitch,90-sCameraReveal.yaw);
     sCameraReveal.accepted=accepted;sCameraReveal.poseAt=CtrPlatform_FrameCount();

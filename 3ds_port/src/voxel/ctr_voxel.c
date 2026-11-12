@@ -280,6 +280,7 @@ static struct {
     bool active, follow, returning;
     float x,z,ground, smoothX,smoothZ,smoothGround;
     float offsetX,offsetZ;
+    int height16,lightRadius;
 } sScriptCamera;
 static float sCinemaBars;
 /* The swoop's share of the camera this frame (CtrVoxel_SetSwoop), and the
@@ -5979,9 +5980,17 @@ static bool ScriptPairPosition(float *x,float *z,float *ground)
     return true;
 }
 void CtrVoxel_ScriptPair(unsigned a,unsigned b) { sScriptCamera.a=a; sScriptCamera.b=b; sScriptCamera.follow=false;
-    sScriptCamera.offsetX=sScriptCamera.offsetZ=0; }
+    sScriptCamera.offsetX=sScriptCamera.offsetZ=0; sScriptCamera.height16=0; sScriptCamera.lightRadius=0; }
 void CtrVoxel_GetScriptPair(unsigned *a,unsigned *b) { *a=sScriptCamera.a; *b=sScriptCamera.b; }
 void CtrVoxel_ScriptFollow(bool enabled) { sScriptCamera.follow=enabled; }
+void CtrVoxel_ScriptHeight(int height16) { sScriptCamera.height16=height16<0?0:height16>24?24:height16; }
+int CtrVoxel_GetScriptHeight(void) { return sScriptCamera.height16; }
+void CtrVoxel_ScriptLight(int radius) { sScriptCamera.lightRadius=radius<0?0:radius>160?160:radius; }
+float CtrVoxel_CinematicLightRadius(void)
+{
+    float t=sCinemaBars*sCinemaBars*(3-2*sCinemaBars);
+    return sScriptCamera.active ? sScriptCamera.lightRadius*t : 0.0f;
+}
 void CtrVoxel_ScriptOffset(int x,int z)
 {
     sScriptCamera.offsetX=(x<-32?-32:x>32?32:x)/16.0f;
@@ -6004,13 +6013,17 @@ static bool ScriptMove(unsigned frames,int distance,int pitch,int yaw,int yawLim
     yaw = yaw < -yawLimit ? -yawLimit : yaw>yawLimit ? yawLimit : yaw;
     VoxelCamera anchor=follow;
     anchor.targetX=x; anchor.targetZ=z; anchor.ground=ground;
+    anchor.focusHeight=sScriptCamera.height16/16.0f;
     VoxelCameraShot shot = {0,0,distance/100.0f,pitch,frames,0,yaw};
     float ax=0,az=0,ag=0,bx=0,bz=0,bg=0;
     unsigned actors[2]={sScriptCamera.a,sScriptCamera.b};
     bool foundA=VoxelEntities_GetLocalWorldPos(sScriptCamera.a,&ax,&az,&ag);
     bool foundB=VoxelEntities_GetLocalWorldPos(sScriptCamera.b,&bx,&bz,&bg);
+    /* Adjacent relief/bridge cells can put speakers at slightly different
+     * elevations. Their actual billboard bounds are still checked along the
+     * whole path; keep larger floor separations out of an authored two-shot. */
     if (!foundA || !foundB
-        || fabsf(ag-bg)>0.25f
+        || fabsf(ag-bg)>1.0f
         || !ConversationPathClear(&shot,ax,az,bx-ax,bz-az,&anchor,actors))
     {
         CtrLog_Write(CTR_LOG_VIDEO,"CAMERA script shot skipped: visibility blocked or unknown");

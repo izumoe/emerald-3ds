@@ -23,84 +23,128 @@ work. Proposed treatments are ideas, not final direction. Consult the
 
 ## Littleroot to Rustboro
 
-- [ ] **Move to Littleroot and meet Mom** — Player's house / Littleroot. Camera:
+First-pass direction approved for now. Checked boxes mark that creative pass;
+the modelling, alternate-branch and hardware notes remain open follow-ups.
+
+- [x] **Move to Littleroot and meet Mom** — Player's house / Littleroot. Camera:
   moving-in conversation prototype recorded for Brendan's house; remaining intro
   beats and May's house need review. Environment: Littleroot building **assets
   exist**; Brendan's house **captured 3D**, with exposed room edges. Establish home and the journey's start.
-- [ ] **Birch's rescue and starter choice** — Route 101 / Birch's lab. Camera:
+- [x] **Birch's rescue and starter choice** — Route 101 / Birch's lab. Camera:
   Route 101 rescue and lab starter handover prototypes recorded; starter selection
   UI remains original. Environment: rescue and the shown lab setup **captured
   3D**; other views **check**. Give the cry for help, chase
   and first partner choice distinct beats.
-- [ ] **First rival battle and Pokédex** — Route 103 / Birch's lab. Camera:
+- [x] **First rival battle and Pokédex** — Route 103 / Birch's lab. Camera:
   Route 103 rival and lab Pokédex exchange prototypes recorded. Environment:
   Route 103 and the shown lab setup **captured 3D**. Hold the player's view
   for the rival's departure; use the shared battle push.
-- [ ] **Norman, Wally and the catching lesson** — Petalburg Gym / Route 102.
+- [x] **Norman, Wally and the catching lesson** — Petalburg Gym / Route 102.
   Camera: introduction, walk and lesson prototype recorded. Environment:
   **captured 3D** for the shown setup. Review all entrance branches and the
   handoff into and out of the tutorial.
-- [ ] **Devon researcher and Aqua grunt** — Petalburg Woods. Camera: prototype
+- [x] **Devon researcher and Aqua grunt** — Petalburg Woods. Camera: prototype
   recorded, including battle and departures. Environment: **captured 3D**.
   Check both approach paths and the hidden-then-revealed grunt.
-- [ ] **Roxanne** — Rustboro Gym. Camera: greeting, battle transition and
+- [x] **Roxanne** — Rustboro Gym. Camera: greeting, battle transition and
   rewards prototype recorded. Environment: **captured 3D** for the shown
   approach. Review alternate approaches and fade/return.
-- [ ] **Rusturf rescue** — Rusturf Tunnel. Camera: confrontation, battle
+- [x] **Rusturf rescue** — Rusturf Tunnel. Camera: confrontation, battle
   return, Peeko reunion and departures prototype recorded. Environment:
   **captured 3D**. Review alternate approaches and all exits.
-- [ ] **Mr. Stone's first meeting** — Devon Corp 3F. Camera: employee escort,
+- [x] **Mr. Stone's first meeting** — Devon Corp 3F. Camera: employee escort,
   desk orbit and PokéNav push prototype recorded. Environment: **captured 3D**.
   Review the complete meeting and healing fade.
-- [ ] **Rustboro city introduction** — Rustboro. Camera: multi-shot city
+- [x] **Rustboro city introduction** — Rustboro. Camera: multi-shot city
   prototype recorded. Environment: **captured 3D**; building assets exist.
   Establishing orbit, static Mart, Gym/Devon and return flyover. Optional
   arrival treatment; decide when it should play and how it is skipped.
 
 ## Dewford, Slateport and Mauville
 
-- [ ] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: plan.
+First-pass scripts are in progress. Wally, Brawly, Wattson, the Route 110 rival
+and the museum have staged emulator recordings; the remaining shots, branches
+and map transitions need visual review. Checkboxes remain open pending that
+review.
+
+- [ ] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: first
+  offer scripted; voyage and arrival still need direction and review.
   Environment: **check** scene maps; Dewford building assets exist. Establish
   the departure and destination; consider whether travel needs a full sequence.
+
 - [ ] **Steven and the Letter** — Granite Cave, Steven's room. Camera: exchange
   and exit prototype recorded. Environment: **captured 3D** for the shown
   approach. Check alternate approaches and the return to the cave camera.
-- [ ] **Brawly** — Dewford Gym. Camera: plan. Environment: **check** interior
-  and darkness states. Frame the introduction and shared battle transition.
+
+- [ ] **Brawly** — Dewford Gym. Camera: introduction and battle return recorded.
+  Environment: **captured 3D** for the shown darkness state; check others. Frame
+  the introduction and shared battle transition.
+
 - [ ] **Captain Stern and the Oceanic Museum** — Slateport harbor / museum.
-  Camera: plan. Environment: **check** both locations and crowd states. Stage
-  the delivery, Aqua confrontation and Archie's introduction.
-- [ ] **Rival on Route 110** — Route 110. Camera: plan. Environment: **check**.
-  Give the meeting and battle a clear two-shot and transition.
-- [ ] **Wally challenges the Gym** — Mauville Gym exterior. Camera: plan.
-  Environment: **assets exist** for some Mauville buildings; exact scene
-  **check**. Stage Wally, his uncle and the player, including the battle and
-  farewell. Wally's uncle is present here; Norman is not part of this scene.
-- [ ] **Wattson** — Mauville Gym. Camera: plan. Environment: **check** interior
-  and puzzle state. Introduce Wattson and the battle.
+  Camera: museum confrontation and battle returns recorded; harbor and alternate
+  states need review. Environment: museum **captured 3D** for the shown setup;
+  harbor **check**. Stage the delivery, Aqua confrontation and Archie's
+  introduction.
+
+- [ ] **Rival on Route 110** — Route 110. Camera: staged encounter and departure
+  recorded; alternate approaches need review. Environment: **captured 3D** for
+  the shown approach. Give the meeting and battle a clear two-shot and
+  transition.
+
+- [ ] **Wally challenges the Gym** — Mauville Gym exterior. Camera: staged
+  encounter and departures recorded. Environment: **assets exist** for some
+  Mauville buildings; exact scene **check**. Stage Wally, his uncle and the
+  player, including the battle and farewell. Wally's uncle is present here;
+  Norman is not part of this scene.
+
+- [ ] **Wattson** — Mauville Gym. Camera: first battle and reward recorded;
+  alternate approaches need review. Environment: **check** interior and puzzle
+  state. Introduce Wattson and the battle.
 
 ## Meteor Falls to Fortree
 
+First-pass scripts are in progress, including the battle handoffs and character
+departures. Meteor Falls, Route 119, Route 120, Flannery and Winona have staged
+emulator captures; the remaining shots, branches, map transitions and visibility need visual
+review. Checkboxes remain open pending that review.
+
 - [ ] **Meteor Falls and Mt. Chimney** — Meteor Falls / cable car / Mt. Chimney.
-  Camera: plan. Environment: **check** each map and villain-team state. Stage
-  the Meteorite theft, opposing teams, ascent, Maxie battle and recovery.
-- [ ] **Flannery and the Go-Goggles** — Lavaridge Gym / town. Camera: plan.
-  Environment: **assets exist** for the shared Gym exterior; Gym interior and
-  rival scene **check**. Separate the Gym victory from the rival's gift.
+  Camera: Meteor Falls confrontation recorded; summit opening rejected by
+  terrain visibility checks, as did the battle return; both need recomposition.
+  Cable car still needs
+  direction. Environment: **check** each map and villain-team state. Stage the
+  Meteorite theft, opposing teams, ascent, Maxie battle and recovery.
+
+- [ ] **Flannery and the Go-Goggles** — Lavaridge Gym / town. Camera: first
+  battle recorded, but heavy steam obscures the shot; rival gift scripted and
+  needs review. Environment: **assets exist** for the shared Gym exterior; Gym
+  interior and rival scene **check**. Separate the Gym victory from the rival's
+  gift.
+
 - [ ] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
-  plan. Environment: Gym introduction was **captured 3D**; battle setup and
-  house **check**. Give father and child room for a quieter post-battle beat.
+  battle and Surf gift scripted; visual review pending. Environment: Gym
+  introduction was **captured 3D**; battle setup and house **check**. Give
+  father and child room for a quieter post-battle beat.
+
 - [ ] **Weather Institute takeover** — Route 119 / Weather Institute. Camera:
-  plan. Environment: **check** exterior, interior and weather. Stage the Aqua
-  encounter, administrator battle and rescue.
-- [ ] **Route 119 rival battle** — bridge south of Fortree. Camera: plan.
-  Environment: **check** bridge and approach directions. Use the setting for
-  a clear approach and held departure.
-- [ ] **Steven and the unseen obstacle** — Route 120. Camera: plan.
-  Environment: **check** bridge, Kecleon and reveal state. Preserve the
-  surprise and check the visibility of the newly revealed actor.
-- [ ] **Winona** — Fortree Gym. Camera: plan. Environment: **check** exterior,
-  interior and puzzle state. Establish her introduction and battle.
+  administrator and rescue scripted; battle return recorded. Rescue framing
+  exposes a dark floor gap; shorter orbits clear in a staged retest. Environment:
+  interior **captured 3D** with that issue; **check** exterior and weather.
+  Stage the Aqua encounter, administrator battle and rescue.
+
+- [ ] **Route 119 rival battle** — bridge south of Fortree. Camera: opening
+  angle recorded; revised battle return and alternate approach need review.
+  Environment: **check** bridge and approach directions. Use the setting for a
+  clear approach and held departure.
+
+- [ ] **Steven and the unseen obstacle** — Route 120. Camera: encounter
+  recorded through the Kecleon reveal, battle return and departure. Environment:
+  **captured 3D** for the shown setup; review alternate approaches and choices.
+  The 3D renderer suppresses the bridge shadow to preserve the surprise.
+
+- [ ] **Winona** — Fortree Gym. Camera: first battle and reward recorded;
+  alternate approaches and puzzle state need review. Environment: **check** exterior, interior and puzzle state. Establish
+  her introduction and battle.
 
 ## Lilycove to the weather crisis
 

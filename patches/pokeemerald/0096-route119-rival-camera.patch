@@ -1,0 +1,66 @@
+--- a/data/maps/Route119/scripts.inc
++++ b/data/maps/Route119/scripts.inc
+@@ -52,6 +52,18 @@
+ 	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_SetRivalPos2
+ 	removeobject LOCALID_ROUTE119_RIVAL_ON_BIKE
+ 	addobject LOCALID_ROUTE119_RIVAL
++#ifdef PORT_BRIDGE
++    @ Frame the reunion once the rival has dismounted.
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE119_RIVAL
++    camera_height 8
++    @ Allow the newly swapped rival sprite to become available for visibility checks.
++    camera_hold 30
++    camera_offset 0, -6
++    camera_orbit 72, 60, -4, 150
++    waitcamera
++    camera_orbit 1320, 55, -4, 150
++    camera_reveal MAP_ROUTE119, LOCALID_PLAYER, LOCALID_ROUTE119_RIVAL, 55, -4, -60
++#endif
+ 	delay 30
+ 	checkplayergender
+ 	goto_if_eq VAR_RESULT, MALE, Route119_EventScript_BattleMay
+@@ -134,6 +146,13 @@
+ 
+ Route119_EventScript_RivalExitScottArrive::
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Keep the player in view while the rival cycles away.
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 72, 50, -4, 125
++    waitcamera
++#endif
+ 	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_SetRivalPos1
+ 	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_SetRivalPos2
+ 	removeobject LOCALID_ROUTE119_RIVAL
+@@ -151,12 +170,30 @@
+ 	addobject LOCALID_ROUTE119_SCOTT
+ 	applymovement LOCALID_ROUTE119_SCOTT, Route119_Movement_ScottEnter
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE119_SCOTT
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	addvar VAR_SCOTT_STATE, 1
+ 	msgbox Route119_Text_ScottWayToGoBeSeeingYou, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 60, 50, -4, 125
++    waitcamera
++#endif
+ 	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_ScottExit1
+ 	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_ScottExit2
+ 	removeobject LOCALID_ROUTE119_SCOTT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 

@@ -1,0 +1,57 @@
+--- a/data/maps/Route119_WeatherInstitute_2F/scripts.inc
++++ b/data/maps/Route119_WeatherInstitute_2F/scripts.inc
+@@ -39,6 +39,18 @@
+ 	end
+ 
+ Route119_WeatherInstitute_2F_EventScript_Shelly::
++#ifdef PORT_BRIDGE
++    goto_if_defeated TRAINER_SHELLY_WEATHER_INSTITUTE, WeatherInstitute_CameraOriginalShelly
++    lock
++    faceplayer
++    camera_pair LOCALID_PLAYER, LOCALID_WEATHER_INSTITUTE_2F_SHELLY
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 135
++    camera_reveal MAP_ROUTE119_WEATHER_INSTITUTE_2F, LOCALID_PLAYER, LOCALID_WEATHER_INSTITUTE_2F_SHELLY, 55, -4, -35
++WeatherInstitute_CameraOriginalShelly:
++#endif
+ 	trainerbattle_single TRAINER_SHELLY_WEATHER_INSTITUTE, Route119_WeatherInstitute_2F_Text_ShellyIntro, Route119_WeatherInstitute_2F_Text_ShellyDefeat, Route119_WeatherInstitute_2F_EventScript_ShellyDefeated
+ 	msgbox Route119_WeatherInstitute_2F_Text_ShellyPostBattle, MSGBOX_AUTOCLOSE
+ 	end
+@@ -76,6 +88,13 @@
+ 	applymovement LOCALID_WEATHER_INSTITUTE_2F_SCIENTIST, Route119_WeatherInstitute_2F_Movement_ScientistApproachPlayer
+ 	waitmovement 0
+ 	copyobjectxytoperm LOCALID_WEATHER_INSTITUTE_2F_SCIENTIST
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_WEATHER_INSTITUTE_2F_SCIENTIST
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 135
++#endif
+ 	goto Route119_WeatherInstitute_2F_EventScript_ReceiveCastform
+ 	end
+ 
+@@ -119,8 +138,21 @@
+ 	return
+ 
+ Route119_WeatherInstitute_2F_EventScript_ExplainCastform::
++#ifdef PORT_BRIDGE
++    @ Reacquire the scientist if the naming screen interrupted the field.
++    camera_pair LOCALID_PLAYER, LOCALID_WEATHER_INSTITUTE_2F_SCIENTIST
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 135
++#endif
+ 	msgbox Route119_WeatherInstitute_2F_Text_PokemonChangesWithWeather, MSGBOX_DEFAULT
+ 	setflag FLAG_RECEIVED_CASTFORM
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 

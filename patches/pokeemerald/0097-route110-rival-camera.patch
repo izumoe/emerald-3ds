@@ -1,0 +1,48 @@
+--- a/data/maps/Route110/scripts.inc
++++ b/data/maps/Route110/scripts.inc
+@@ -383,6 +383,18 @@
+ 	call_if_eq VAR_0x8008, 1, Route110_EventScript_RivalApproachPlayer1
+ 	call_if_eq VAR_0x8008, 2, Route110_EventScript_RivalApproachPlayer2
+ 	call_if_eq VAR_0x8008, 3, Route110_EventScript_RivalApproachPlayer3
++#ifdef PORT_BRIDGE
++    @ This scene stores its approach branch in 0x8008, also used by camera macros.
++    copyvar VAR_TEMP_6, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE110_RIVAL
++    camera_height 8
++    camera_offset 0, -6
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    camera_reveal MAP_ROUTE110, LOCALID_PLAYER, LOCALID_ROUTE110_RIVAL, 55, -4, -35
++    copyvar VAR_0x8008, VAR_TEMP_6
++#endif
+ 	checkplayergender
+ 	goto_if_eq VAR_RESULT, MALE, Route110_EventScript_MayBattle
+ 	goto_if_eq VAR_RESULT, FEMALE, Route110_EventScript_BrendanBattle
+@@ -463,6 +475,14 @@
+ 
+ Route110_EventScript_RivalExit::
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Hold the player while the rival rides away; restore the original branch.
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 72, 50, -4, 125
++    waitcamera
++    copyvar VAR_0x8008, VAR_TEMP_6
++#endif
+ 	call_if_eq VAR_0x8008, 1, Route110_EventScript_MoveRival1
+ 	call_if_eq VAR_0x8008, 2, Route110_EventScript_MoveRival2
+ 	call_if_eq VAR_0x8008, 3, Route110_EventScript_MoveRival3
+@@ -478,6 +498,11 @@
+ 	setvar VAR_ROUTE110_STATE, 1
+ 	savebgm MUS_DUMMY
+ 	fadedefaultbgm
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 

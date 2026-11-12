@@ -1,0 +1,97 @@
+--- a/data/maps/DewfordTown_Gym/scripts.inc
++++ b/data/maps/DewfordTown_Gym/scripts.inc
+@@ -133,6 +133,22 @@
+ 	return
+ 
+ DewfordTown_Gym_EventScript_Brawly::
++#ifdef PORT_BRIDGE
++    @ First challenge only; later conversations and rematches use the original path.
++    goto_if_defeated TRAINER_BRAWLY_1, DewfordTown_Gym_CameraOriginalBrawly
++    lock
++    faceplayer
++    camera_pair LOCALID_PLAYER, 1
++    camera_light 96
++    camera_height 8
++    camera_offset 0, -6
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    @ A long, subtle move plays under the original challenge text.
++    camera_orbit 1320, 55, -4, 110
++    camera_reveal MAP_DEWFORD_TOWN_GYM, LOCALID_PLAYER, 1, 55, -4, -35
++DewfordTown_Gym_CameraOriginalBrawly:
++#endif
+ 	trainerbattle_single TRAINER_BRAWLY_1, DewfordTown_Gym_Text_BrawlyIntro, DewfordTown_Gym_Text_BrawlyDefeat, DewfordTown_Gym_EventScript_BrawlyDefeated, NO_MUSIC
+ 	specialvar VAR_RESULT, ShouldTryRematchBattle
+ 	goto_if_eq VAR_RESULT, TRUE, DewfordTown_Gym_EventScript_BrawlyRematch
+--- a/data/maps/MauvilleCity_Gym/scripts.inc
++++ b/data/maps/MauvilleCity_Gym/scripts.inc
+@@ -74,6 +74,21 @@
+ 	end
+ 
+ MauvilleCity_Gym_EventScript_Wattson::
++#ifdef PORT_BRIDGE
++    @ First challenge only; later conversations and rematches use the original path.
++    goto_if_defeated TRAINER_WATTSON_1, MauvilleCity_Gym_CameraOriginalWattson
++    lock
++    faceplayer
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_offset 0, -6
++    camera_orbit 72, 55, -4, 55
++    waitcamera
++    @ A long, subtle move plays under the original challenge text.
++    camera_orbit 1320, 55, -4, 70
++    camera_reveal MAP_MAUVILLE_CITY_GYM, LOCALID_PLAYER, 1, 55, -4, 35
++MauvilleCity_Gym_CameraOriginalWattson:
++#endif
+ 	trainerbattle_single TRAINER_WATTSON_1, MauvilleCity_Gym_Text_WattsonIntro, MauvilleCity_Gym_Text_WattsonDefeat, MauvilleCity_Gym_EventScript_WattsonDefeated, NO_MUSIC
+ 	specialvar VAR_RESULT, ShouldTryRematchBattle
+ 	goto_if_eq VAR_RESULT, TRUE, MauvilleCity_Gym_EventScript_WattsonRematch
+--- a/data/maps/LavaridgeTown_Gym_1F/scripts.inc
++++ b/data/maps/LavaridgeTown_Gym_1F/scripts.inc
+@@ -44,6 +44,21 @@
+ 	return
+ 
+ LavaridgeTown_Gym_1F_EventScript_Flannery::
++#ifdef PORT_BRIDGE
++    @ First challenge only; later conversations and rematches use the original path.
++    goto_if_defeated TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_CameraOriginalFlannery
++    lock
++    faceplayer
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_offset 0, -6
++    camera_orbit 72, 60, -4, 145
++    waitcamera
++    @ A long, subtle move plays under the original challenge text.
++    camera_orbit 1320, 55, -4, 125
++    camera_reveal MAP_LAVARIDGE_TOWN_GYM_1F, LOCALID_PLAYER, 1, 55, -4, -55
++LavaridgeTown_Gym_1F_CameraOriginalFlannery:
++#endif
+ 	trainerbattle_single TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryIntro, LavaridgeTown_Gym_1F_Text_FlanneryDefeat, LavaridgeTown_Gym_1F_EventScript_FlanneryDefeated, NO_MUSIC
+ 	specialvar VAR_RESULT, ShouldTryRematchBattle
+ 	goto_if_eq VAR_RESULT, TRUE, LavaridgeTown_Gym_1F_EventScript_FlanneryRematch
+--- a/data/maps/FortreeCity_Gym/scripts.inc
++++ b/data/maps/FortreeCity_Gym/scripts.inc
+@@ -17,6 +17,21 @@
+ 	end
+ 
+ FortreeCity_Gym_EventScript_Winona::
++#ifdef PORT_BRIDGE
++    @ First challenge only; later conversations and rematches use the original path.
++    goto_if_defeated TRAINER_WINONA_1, FortreeCity_Gym_CameraOriginalWinona
++    lock
++    faceplayer
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_offset 0, -6
++    camera_orbit 72, 55, -4, 55
++    waitcamera
++    @ A long, subtle move plays under the original challenge text.
++    camera_orbit 1320, 55, -4, 70
++    camera_reveal MAP_FORTREE_CITY_GYM, LOCALID_PLAYER, 1, 55, -4, 35
++FortreeCity_Gym_CameraOriginalWinona:
++#endif
+ 	trainerbattle_single TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaIntro, FortreeCity_Gym_Text_WinonaDefeat, FortreeCity_Gym_EventScript_WinonaDefeated, NO_MUSIC
+ 	specialvar VAR_RESULT, ShouldTryRematchBattle
+ 	goto_if_eq VAR_RESULT, TRUE, FortreeCity_Gym_EventScript_WinonaRematch

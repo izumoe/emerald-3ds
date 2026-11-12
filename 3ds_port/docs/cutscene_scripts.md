@@ -75,6 +75,15 @@ those script branches.
   of a world tile, clamped to +/-32 (two tiles). Positive z looks south;
   negative z composes towards the landmark north of the pair. Set before the
   next move; selection resets the offset. The same offset follows the actors.
+- `camera_height height`: aim above the actors’ ground, in sixteenths of a
+  tile (0..24). Set after `camera_pair` and before a move; selecting a new pair
+  resets it. This changes the look-at height, not terrain height. A queued
+  `camera_reveal` retains the selected height across the transition. Try 8
+  (half a tile) for a close dialogue, and check heads, feet and the text box.
+- `camera_light radius`: set a minimum *visual* light-pool radius in dark
+  voxel scenes, in game pixels (0..160), for the selected pair. It eases in
+  with the shot and does not change the puzzle flash level. Selecting a new
+  pair clears it. Use sparingly when darkness would hide a speaking character.
 - `camera_follow TRUE` / `FALSE`: smoothly follow the pair as their sprites
   walk, or freeze the current tracking offset. Positions use the same sub-tile
   movement interpolation as their billboards, followed with a small damping.

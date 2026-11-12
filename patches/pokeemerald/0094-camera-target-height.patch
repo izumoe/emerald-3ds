@@ -1,0 +1,32 @@
+--- a/data/specials.inc
++++ b/data/specials.inc
+@@ -567,3 +567,9 @@
+     def_special Port_CameraPairMap
+     def_special Port_CameraRevealSelected
+ #endif
++#ifdef PORT_BRIDGE
++    def_special Port_CameraHeight
++#endif
++#ifdef PORT_BRIDGE
++    def_special Port_CameraLight
++#endif
+--- a/asm/macros/event.inc
++++ b/asm/macros/event.inc
+@@ -2057,3 +2057,17 @@
+     .endm
+ #endif
+ 
++#ifdef PORT_BRIDGE
++    @ Height above actor ground, in sixteenths of a tile; applied by the next move.
++    .macro camera_height height=0
++    setvar VAR_0x8006, \height
++    special Port_CameraHeight
++    .endm
++#endif
++#ifdef PORT_BRIDGE
++    @ Minimum visual light radius for this camera pair, in game pixels.
++    .macro camera_light radius=0
++    setvar VAR_0x8006, \radius
++    special Port_CameraLight
++    .endm
++#endif

@@ -1,0 +1,26 @@
+--- a/data/maps/Route104_MrBrineysHouse/scripts.inc
++++ b/data/maps/Route104_MrBrineysHouse/scripts.inc
+@@ -30,8 +30,23 @@
+ 
+ Route104_MrBrineysHouse_EventScript_SailingIntro::
+ 	setflag FLAG_MR_BRINEY_SAILING_INTRO
++#ifdef PORT_BRIDGE
++    @ Hold a gentle moving portrait through the first sailing offer.
++    camera_pair LOCALID_PLAYER, LOCALID_BRINEYS_HOUSE_BRINEY
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox Route104_MrBrineysHouse_Text_WaitUpPeeko, MSGBOX_DEFAULT
+ 	msgbox Route104_MrBrineysHouse_Text_ItsYouLetsSailToDewford, MSGBOX_YESNO
++#ifdef PORT_BRIDGE
++    @ Preserve the answer while returning to gameplay before the boat warp.
++    copyvar VAR_TEMP_6, VAR_RESULT
++    camera_return 60
++    waitcamera
++    copyvar VAR_RESULT, VAR_TEMP_6
++#endif
+ 	goto_if_eq VAR_RESULT, NO, Route104_MrBrineysHouse_EventScript_DeclineDeliverySailing
+ 	goto Route104_MrBrineysHouse_EventScript_SailToDewford
+ 	end

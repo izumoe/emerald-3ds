@@ -30,10 +30,12 @@ struct {void (*callback2)(void);} gMain;
 struct {bool active;} gPaletteFade;
 struct Save {struct {unsigned mapGroup,mapNum;} location;} save,*gSaveBlock1Ptr=&save;
 bool sCameraScriptOwns,ready,accept,follow;
-unsigned moves,actorA,actorB,framesSeen;int expectedYaw=-6;
+unsigned moves,actorA,actorB,framesSeen;int expectedYaw=-6,scriptHeight=8,appliedHeight=-1;
 bool CtrVoxel_CameraMapReady(void) {return ready;}
 void CtrVoxel_ScriptPair(unsigned a,unsigned b) {actorA=a;actorB=b;}
 void CtrVoxel_ScriptFollow(bool on) {follow=on;}
+int CtrVoxel_GetScriptHeight(void) {return scriptHeight;}
+void CtrVoxel_ScriptHeight(int h) {appliedHeight=h;}
 void CtrVoxel_GetScriptPair(unsigned *a,unsigned *b) {*a=255;*b=0x01000002u;}
 bool CtrVoxel_ScriptMove(unsigned f,int d,int p,int y) {
  ++moves;framesSeen=f;assert(d==95 && p==-4 && y==expectedYaw);return accept;
@@ -55,7 +57,7 @@ int main(void) {
  gMain.callback2=CB2_OverworldBasic;CameraRevealTick();assert(!moves);
  gMain.callback2=CB2_Overworld;ready=false;CameraRevealTick();assert(!moves);
  ready=true;CameraRevealTick();assert(moves==1 && framesSeen==1 && actorA==255 && actorB==0x010b0301u && follow);
- assert(sCameraScriptOwns && !sCameraReveal.pending);CameraRevealTick();assert(moves==1);
+ assert(sCameraScriptOwns && !sCameraReveal.pending && appliedHeight==8);CameraRevealTick();assert(moves==1);
  for(int yaw=-42;yaw<=38;yaw+=80) {
   Reset();expectedYaw=yaw;gSpecialVar_0x8009=(unsigned short)yaw;Port_CameraReveal();
   sCameraReveal.left=true;CameraRevealTick();assert(moves==1 && sCameraReveal.accepted);

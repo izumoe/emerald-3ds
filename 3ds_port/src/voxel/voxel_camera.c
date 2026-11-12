@@ -61,6 +61,7 @@ void VoxelCamera_Init(VoxelCamera *cam)
     cam->distance = 9.0f;
     cam->fov = VOXEL_CAMERA_FOV;
     cam->ground = 0.0f;
+    cam->focusHeight = 0.0f;
     cam->swoopX = cam->swoopZ = 0.0f;
     cam->lay = 0.0f;
 }
@@ -78,9 +79,9 @@ static void Place(VoxelCamera *cam)
 
     /* The eye sits south of the player (+Z) and above it, looking north. */
     cam->x = cam->targetX + sinf(yawRad) * cam->distance;
-    cam->y = cam->ground + tanf(pitchRad) * cam->distance;
+    cam->y = cam->ground + cam->focusHeight + tanf(pitchRad) * cam->distance;
     cam->z = cam->targetZ + cosf(yawRad) * cam->distance;
-    cam->targetY = cam->ground;
+    cam->targetY = cam->ground + cam->focusHeight;
 }
 
 /* Wider maps are framed from further away, up to a fixed ceiling. Maps joined
@@ -224,6 +225,7 @@ void VoxelCamera_Frame(VoxelCamera *cam, float targetX, float targetZ, float gro
     cam->targetX = targetX;
     cam->targetZ = targetZ;
     cam->ground = ground;
+    cam->focusHeight = 0.0f;
     cam->pitch = pitch;
     cam->distance = distance;
     cam->lay = 0.0f;
