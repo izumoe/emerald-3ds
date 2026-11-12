@@ -15,11 +15,37 @@ not a claim that every approach and gameplay camera setting is finished.
 - **Check**: scene-specific 3D coverage has not yet been established here.
   Inspect the actual map and its relevant story state before planning a shot.
 
-The upstream README describes many towns and routes as partly modelled, with
-large areas and most interiors still flat. A flat or partly modelled scene may
-still support a useful composition. Record what is missing before assigning art
+Many towns, routes and interiors are only partly modelled; consult the
+map-by-map [voxel status](../../docs/VOXEL_STATUS.md) for known coverage and
+faults. A flat or partly modelled scene may still support a useful composition. Record what is missing before assigning art
 work. Proposed treatments are ideas, not final direction. Consult the
 [camera lookbook](camera_lookbook.md) and [script reference](cutscene_scripts.md).
+
+## Integration and verification
+
+The camera branch and the selected upstream geometry fixes are on the fork's
+`main`. Their inclusion does not by itself approve a shot or prove the updated
+models in game. Recordings made before the geometry merge describe the earlier
+model state and should be revisited where the scenery changed.
+
+- [x] Integrate the camera work and the selected upstream interior and
+  underground-border fixes into the fork's `main`. See the
+  [upstream PR review](../../docs/UPSTREAM_PR_REVIEW.md) for included and
+  deferred work.
+- [x] Run the fork's voxel runtime, draft, ground, sign, tree and lighting
+  host checks on the integration branch.
+- [ ] Complete the full 3DS build and scenery generation/verification after
+  the geometry merge. The long-running generator was still in progress at
+  the last check; record its final result before treating it as a pass.
+- [ ] Recheck affected camera shots with the updated geometry, especially
+  the Elite Four rooms, Weather Institute and underground locations. Confirm
+  battle returns, dynamic doors, actor visibility and safe orbit paths.
+- [ ] Review representative scenes on console, including stereo and the
+  player's adjustable camera settings. Emulator captures do not establish
+  hardware acceptance.
+- [ ] Fix the existing web-builder fixture failure involving missing generated
+  region data, then rerun the builder suite. It also reproduces before the
+  upstream PR integration.
 
 ## Littleroot to Rustboro
 
@@ -57,6 +83,8 @@ the modelling, alternate-branch and hardware notes remain open follow-ups.
   Review the complete meeting and healing fade.
 - [x] **Rustboro city introduction** — Rustboro. Camera: multi-shot city
   prototype recorded. Environment: **captured 3D**; building assets exist.
+  This is the same prototype tracked in Area reveals below; the checked box
+  records its approved creative pass, not an implemented arrival trigger.
   Establishing orbit, static Mart, Gym/Devon and return flyover. Optional
   arrival treatment; decide when it should play and how it is skipped.
 
@@ -129,8 +157,10 @@ visibility need visual review. Checkboxes remain open pending that review.
 - [ ] **Weather Institute takeover** — Route 119 / Weather Institute. Camera:
   administrator and rescue scripted; battle return recorded. Rescue framing
   exposes a dark floor gap; shorter orbits clear in a staged retest. Environment:
-  interior **captured 3D** with that issue; **check** exterior and weather.
-  Stage the Aqua encounter, administrator battle and rescue.
+  interior **captured 3D** with that issue before the geometry merge; updated
+  bed and wall details need a new visual pass. Exterior building is still flat;
+  **check** terrain and weather. Stage the Aqua encounter, administrator battle
+  and rescue.
 
 - [ ] **Route 119 rival battle** — bridge south of Fortree. Camera: opening
   angle and revised battle return recorded. The battle push is rejected by the
@@ -197,8 +227,9 @@ sequences, other League rooms, transitions and branches still need review.
 - [ ] **Cave of Origin and Sky Pillar** — Cave of Origin / Sky Pillar summit.
   Camera: Cave of Origin and Sky Pillar Wallace dialogue scripted; original
   shake and camera effects retained. Environment: **check** both interiors
-  and summit. Give Wallace's request and Rayquaza's awakening distinct beats;
-  preserve player control on the climb.
+  and summit. The underground-border fix is merged but needs visual review
+  on the affected Sky Pillar floors. Give Wallace's request and Rayquaza's
+  awakening distinct beats; preserve player control on the climb.
 - [ ] **Rayquaza and the aftermath** — Sootopolis. Camera: plan. Environment:
   **check** crisis and restored-weather states. Give the descent, confrontation,
   departure and leaders' reactions room to read.
@@ -210,8 +241,10 @@ sequences, other League rooms, transitions and branches still need review.
   **captured 3D** for the shown approach; check the other approach and flags.
 - [ ] **Pokémon League and Elite Four** — Ever Grande / League rooms. Camera:
   first dialogue and battle-return scripts for all four; Sidney recorded.
-  Environment: Sidney's room **captured 3D** for the shown setup; check the
-  exterior and other rooms. Use individual framing for each introduction.
+  Environment: Sidney's room **captured 3D** before the geometry merge;
+  assets exist for all four rooms and their wall, lintel and dynamic-door
+  fixes need fresh visual review. Check the exterior, each door and light
+  state, and the other rooms. Use individual framing for each introduction.
 - [ ] **Champion Wallace and Hall of Fame** — Champion room / Hall of Fame.
   Camera: Wallace battle, Champion procession and Hall of Fame recorded for
   one staged run, including return to the original recording effect.
@@ -299,7 +332,8 @@ Do not play a reveal over an existing event without coordinating ownership.
 - [ ] **Sky Pillar — tower and summit.** Trigger: first approach to the tower;
   consider a separate summit shot before Rayquaza's awakening. Shot: reveal
   the tower from the sea, then reserve the summit's focus for the story.
-  Environment: **check** tower exterior, sea, upper floors and summit.
+  Environment: floor assets exist; the merged underground-border fix needs
+  visual review. **Check** tower exterior, sea, upper floors and summit.
 - [ ] **Ever Grande — waterfall and Pokémon League.** Trigger: first arrival at
   a viewpoint that can show the approach; consider a second reveal at the League
   entrance after Victory Road. Shot: waterfall and island first, then a held
