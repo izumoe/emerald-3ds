@@ -98,14 +98,17 @@ the modelling, alternate-branch and hardware notes remain open follow-ups.
 
 ## Dewford, Slateport and Mauville
 
-The core encounters below have staged emulator recordings. The first voyage
-is only partially covered; alternate shots, branches and transitions remain
-open review work even where a core pass is checked.
+The core encounters below have staged emulator recordings. Alternate shots,
+branches and transitions remain open review work even where a core pass is
+checked.
 
-- [ ] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: first
-  offer and departure recorded; voyage and arrival still need camera direction.
-  Environment: **check** scene maps; Dewford building assets exist. Establish
-  the departure and destination; consider whether travel needs a full sequence.
+- [x] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: the
+  offer, boarding, boat-follow and scenic dock arrival are scripted and recorded,
+  including Norman's call. Tracking crossed a connected-map seam in the staged
+  run, and the arrival returned to gameplay. The close actor shot was rejected
+  by dock visibility checks; the recorded arrival uses a scenic cut instead.
+  Review the no-call and repeat-travel branches, other camera settings, water
+  edges, and Dewford building coverage. Boat route and dock **captured 3D**.
 
 - [x] **Steven and the Letter** — Granite Cave, Steven's room. Camera: exchange
   and exit prototype recorded. Environment: **captured 3D** for the shown

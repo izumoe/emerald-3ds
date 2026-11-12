@@ -1,0 +1,67 @@
+--- a/data/maps/Route104/scripts.inc
++++ b/data/maps/Route104/scripts.inc
+@@ -343,6 +343,14 @@
+ 	end
+ 
+ Route104_EventScript_SailToDewford::
++#ifdef PORT_BRIDGE
++    @ Establish Briney and the player at the boat before boarding.
++    camera_pair LOCALID_PLAYER, LOCALID_ROUTE104_BRINEY
++    camera_height 8
++    camera_orbit 72, 70, -3, 120
++    waitcamera
++    camera_follow TRUE
++#endif
+ 	setobjectsubpriority LOCALID_ROUTE104_BRINEY, MAP_ROUTE104, 0
+ 	setobjectsubpriority LOCALID_PLAYER, MAP_ROUTE104, 0
+ 	applymovement LOCALID_ROUTE104_BRINEY, Route104_Movement_BrineyBoardBoat
+@@ -351,6 +359,13 @@
+ 	applymovement LOCALID_PLAYER, Route104_Movement_PlayerBoardBoat
+ 	waitmovement 0
+ 	hideobjectat LOCALID_PLAYER, MAP_ROUTE104
++#ifdef PORT_BRIDGE
++    @ Follow the boat, not the now-hidden player, until the map changes.
++    camera_pair LOCALID_ROUTE104_BOAT, LOCALID_ROUTE104_BOAT
++    camera_height 6
++    camera_follow TRUE
++    camera_orbit 72, 75, -3, 120
++#endif
+ 	call Common_EventScript_PlayBrineysBoatMusic
+ 	goto_if_set FLAG_ENABLE_NORMAN_MATCH_CALL, Route104_EventScript_SailToDewfordNoCall
+ 	goto_if_unset FLAG_ENABLE_NORMAN_MATCH_CALL, Route104_EventScript_SailToDewfordDadCalls
+@@ -405,17 +420,35 @@
+ 	resetobjectsubpriority LOCALID_DEWFORD_BRINEY, MAP_DEWFORD_TOWN
+ 	copyobjectxytoperm LOCALID_DEWFORD_BRINEY
+ 	setvar VAR_BOARD_BRINEY_BOAT_STATE, 0
++#ifdef PORT_BRIDGE
++    @ A scenic cut avoids sweeping the camera through the dock and buildings.
++    camera_scene
++    camera_anchor 11, 8
++    camera_view 1, 90, 38, -30
++    waitcamera
++    camera_view 900, 85, 38, -20
++#endif
+ 	goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, Route104_EventScript_DeliverLetterReminder
+ 	goto_if_set FLAG_DELIVERED_STEVEN_LETTER, Route104_EventScript_LandedInDewford
+ 	end
+ 
+ Route104_EventScript_DeliverLetterReminder::
+ 	msgbox Route104_Text_LandedInDewfordDeliverLetter, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+ Route104_EventScript_LandedInDewford::
+ 	msgbox DewfordTown_Text_BrineyLandedInDewford, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 

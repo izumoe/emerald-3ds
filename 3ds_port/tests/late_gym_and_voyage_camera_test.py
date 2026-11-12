@@ -10,6 +10,7 @@ cases = [
     ('data/maps/PetalburgCity_WallysHouse/scripts.inc', '0103-norman-surf-camera.patch'),
     ('data/maps/LavaridgeTown/scripts.inc', '0104-lavaridge-rival-camera.patch'),
     ('data/maps/Route104_MrBrineysHouse/scripts.inc', '0105-briney-voyage-camera.patch'),
+    ('data/maps/Route104/scripts.inc', '0113-briney-voyage-camera.patch'),
 ]
 
 def cpp(text, port=False):
@@ -40,6 +41,11 @@ for rel, patch_name in cases:
     if 'LavaridgeTown' in rel:
         assert new.index('copyvar VAR_TEMP_6, VAR_0x8008') < new.index('camera_pair LOCALID_PLAYER, LOCALID_LAVARIDGE_RIVAL')
         assert new.count('copyvar VAR_0x8008, VAR_TEMP_6') == 2
+    if rel == 'data/maps/Route104/scripts.inc':
+        for label in ('Route104_EventScript_DeliverLetterReminder::',
+                      'Route104_EventScript_LandedInDewford::'):
+            block = new.split(label, 1)[1].split('\n\tend', 1)[0]
+            assert block.index('camera_return 60') < block.index('releaseall')
     if 'BrineysHouse' in rel:
         assert (new.index('MSGBOX_YESNO') < new.index('copyvar VAR_TEMP_6, VAR_RESULT')
                 < new.index('camera_return 60') < new.index('copyvar VAR_RESULT, VAR_TEMP_6')
