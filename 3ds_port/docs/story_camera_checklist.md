@@ -154,6 +154,101 @@ work. Proposed treatments are ideas, not final direction. Consult the
   Environment: Littleroot building **assets exist**; interior **check**.
   Review whether a quiet closing view serves the existing scene.
 
+## Area reveals
+
+These are separate from character scenes: a reveal introduces a place and
+returns the camera to the player. Triggers and shot ideas below are proposals,
+not implemented features. Prefer a first meaningful arrival, a skippable
+sequence and a clear return to the player's position. Check alternate entrances,
+revisits, story flags, saves and map transitions before choosing the trigger.
+Do not play a reveal over an existing event without coordinating ownership.
+
+- [ ] **Littleroot — a new home.** Trigger: first outdoor arrival after moving
+  in. Shot: a gentle look across the houses and lab, ending at the player.
+  Environment: **assets exist** for houses and lab; exact views **check**.
+- [ ] **Petalburg — the first Gym.** Trigger: first arrival from Route 101/102.
+  Shot: establish the town, then a brief static Gym composition and return.
+  Environment: Gym exterior **assets exist**; approach and full view **check**.
+- [ ] **Petalburg Woods — entering the forest.** Trigger: first entrance.
+  Shot: a restrained view along the tree-lined path, preserving the sense of
+  enclosure. Environment: story encounter **captured 3D**; entrance and
+  canopy views **check**.
+- [ ] **Rustboro — city and Devon.** Trigger: first suitable city arrival.
+  Shot: descending orbit, static Mart, Gym to Devon, then a flyover to the
+  player. Environment: **captured 3D** for the existing prototype; other
+  approaches **check**. The existing city-introduction entry above tracks this
+  same prototype; do not implement a second competing trigger.
+- [ ] **Dewford — arrival by sea.** Trigger: first arrival with Briney. Shot:
+  sea and shoreline, settle on the small town and return to the dock.
+  Environment: town building **assets exist**; boat, water and dock **check**.
+- [ ] **Granite Cave — the descent.** Trigger: first entrance or arrival at a
+  suitable opening. Shot: hold on the cave mouth or a safe interior vista.
+  Environment: Steven's room **captured 3D**; entrance, darkness and other
+  floors **check**. Avoid revealing areas through walls or spoiling navigation.
+- [ ] **Slateport — the harbor.** Trigger: first landfall on the beach or first
+  city entrance. Shot: coast to harbor and shipyard, ending at the player.
+  Environment: **check** beach, harbor, water, crowds and story-dependent ships.
+- [ ] **Mauville — crossroads and Gym.** Trigger: first arrival. Shot: show the
+  crossroads and a static Gym view before returning to the entrance.
+  Environment: some town buildings **assets exist**; scene and entrances **check**.
+- [ ] **Meteor Falls — waterfall and cave.** Trigger: first approach to the
+  entrance or first safe viewpoint inside. Shot: reveal the falls, then settle
+  near the player; coordinate with the story encounter. Environment: **check**
+  terrain, water, cave edges and villain-team state.
+- [ ] **Mt. Chimney — ascent and summit.** Trigger: first cable-car arrival.
+  Shot: reveal the crater and opposing teams from a safe angle, then return
+  before the encounter. Environment: **check** cable car, summit, smoke and
+  actor states; avoid exposing unloaded edges.
+- [ ] **Lavaridge — mountain town.** Trigger: first arrival from the mountain.
+  Shot: a short descending view toward town and the Gym. Environment: Gym
+  exterior **assets exist**; approach, terrain and town **check**.
+- [ ] **Fortree — city in the trees.** Trigger: first arrival from Route 119.
+  Shot: move through or above the canopy to reveal raised walkways, then return
+  to the player. Environment: **check** treehouses, bridges, canopy and depth.
+- [ ] **Lilycove — city and coastline.** Trigger: first arrival from Route 121.
+  Shot: city and Department Store, then coast/harbor, ending at the player.
+  Environment: some building **assets exist**; coastline and proposed camera
+  path **check**. Coordinate with the rival encounter near the store.
+- [ ] **Mt. Pyre — mountain of memorials.** Trigger: first view from the water
+  or first entrance; select one after scouting both. Shot: a slow, quiet reveal
+  of the mountain and approach, with a separate summit composition if the story
+  calls for it. Environment: **check** exterior, water, summit, fog and
+  memorials. Preserve the atmosphere and avoid previewing the orb theft.
+- [ ] **Mossdeep — island and Space Center.** Trigger: first arrival from the
+  sea. Shot: establish the shoreline, then the Space Center and Gym before
+  returning to the landing. Environment: shared Gym exterior **assets exist**;
+  island, Space Center, water and arrival approaches **check**.
+- [ ] **Seafloor Cavern — submerged entrance.** Trigger: first suitable approach
+  or surfacing inside. Shot: a restrained reveal of the entrance or chamber.
+  Environment: **check** underwater rendering, submarine, chamber and terrain.
+  Keep the route and Kyogre reveal for their own story beats.
+- [ ] **Sootopolis — crater city.** Trigger: first arrival, accounting for
+  underwater and airborne approaches and the weather-crisis story state. Shot:
+  reveal the crater walls and city, then descend to the player; a crisis arrival
+  may need a distinct composition coordinated with the legendary confrontation.
+  Environment: some buildings **assets exist**; crater, water, weather and
+  legendary actors **check**. Avoid playing the normal reveal over the crisis.
+- [ ] **Sky Pillar — tower and summit.** Trigger: first approach to the tower;
+  consider a separate summit shot before Rayquaza's awakening. Shot: reveal
+  the tower from the sea, then reserve the summit's focus for the story.
+  Environment: **check** tower exterior, sea, upper floors and summit.
+- [ ] **Ever Grande — waterfall and Pokémon League.** Trigger: first arrival at
+  a viewpoint that can show the approach; consider a second reveal at the League
+  entrance after Victory Road. Shot: waterfall and island first, then a held
+  League facade and return to the player. Environment: **check** waterfall,
+  exterior, map boundaries and League approach. Treat the two arrivals as
+  separate candidates, not one presumed continuous camera path.
+- [ ] **Victory Road — final approach.** Trigger: first entrance or a suitable
+  view near the exit. Shot: a brief cavern composition that leads into Wally's
+  encounter without revealing his position too early. Environment: **check**
+  cave, lighting, terrain and story actor states.
+
+For every reveal, record the exact maps and approach, one-time flag or replay
+policy, story-state variants, skip behavior, shot path, model/flat coverage,
+streaming and map-edge findings, and how gameplay control is restored. A
+missing model is an environment task; a shot that exposes a flat background
+may instead be composed differently. Evaluate scope and art needs after scouting.
+
 ## Before marking a scene complete
 
 Record the exact map and story state, what is modelled or flat, missing assets,
