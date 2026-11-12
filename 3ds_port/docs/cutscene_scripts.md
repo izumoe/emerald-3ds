@@ -457,9 +457,10 @@ the departure. Test captures use isolated scene setups, not a continuous save;
 other approaches, the May-house view and nickname/skip branches still require
 visual review. Small rooms can expose unmodelled space at their edges.
 
-The lab conversation now adds slow lateral and orbital moves during the starter
-and Pokédex dialogue. The Pokédex sequence begins off centre, eases around
-Birch, then moves toward the rival's side and drifts during the Poké Ball offer.
+The lab conversation uses 1,320-frame (about 22 seconds at 60 fps) lateral
+and orbital moves during the starter and Pokédex dialogue. The Pokédex framing
+uses offsets to centre the three-person group, then shifts its target toward the
+rival and drifts during the Poké Ball offer.
 These are continuous camera moves; the renderer does not implement a true
 crossfade between live views. The cues are allowed to be interrupted by dialogue
 advances and the next cue starts from the displayed pose.
