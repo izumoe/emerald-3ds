@@ -3,7 +3,7 @@
 Choose the story beat first, then the shot. A conversation can share one
 composition across several dialogue boxes; a new view should direct attention
 to something that has changed. Use this lookbook to plan, and the
-[script reference](cutscene_scripts.md) for command details.
+[script reference](cutscene_scripts.md) for command details. See the [main story checklist](story_camera_checklist.md) for scene and environment status.
 
 ## Choose a shot
 
