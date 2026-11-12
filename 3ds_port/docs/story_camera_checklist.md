@@ -147,12 +147,14 @@ entries remain open because an important shot is rejected, obscured or needs
 recomposition. Checked scenes still need branch and transition review.
 
 - [ ] **Meteor Falls and Mt. Chimney** — Meteor Falls / cable car / Mt. Chimney.
-  Camera: Meteor Falls confrontation recorded; summit opening rejected by
-  terrain visibility checks, as did the battle return. A scenic retest runs but
-  exposes black gaps in the mountain; its attempted close actor handoff is also
-  rejected. Recompose after investigating the terrain. Cable car still needs
-  direction. Environment: **check** each map and villain-team state. Stage the
-  Meteorite theft, opposing teams, ascent, Maxie battle and recovery.
+  Camera: Meteor Falls confrontation recorded. A revised Mt. Chimney pass cuts
+  between two scenic angles for Maxie, returns to the crater after the battle,
+  and cuts to Archie; one staged approach was recorded. The scenic views run,
+  but mountain seams remain visible and the shared battle push and queued
+  actor-focused reveal are rejected by visibility checks. Test both approaches,
+  rapid dialogue, other camera settings, stereo and hardware; investigate the
+  terrain. Cable car still needs direction. Environment: summit **captured 3D**
+  for the staged view; **check** other maps and villain-team states.
 
 - [ ] **Flannery and the Go-Goggles** — Lavaridge Gym / town. Camera: first
   battle recorded, but heavy steam obscures the shot. The rival gift completes

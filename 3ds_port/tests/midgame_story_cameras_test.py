@@ -8,6 +8,8 @@ for rel,patch in cases:
  new=(root/'build/upstream'/rel).read_text()
  with tempfile.TemporaryDirectory() as tmp:
   p=Path(tmp)/rel;p.parent.mkdir(parents=True);p.write_text(new)
+  if 'MtChimney' in rel:
+   subprocess.run(['git','apply','--reverse',str(root/'patches/pokeemerald/0114-mt-chimney-cuts.patch')],cwd=tmp,check=True)
   subprocess.run(['git','apply','--reverse',str(root/'patches/pokeemerald'/patch)],cwd=tmp,check=True);old=p.read_text()
  assert cpp(old)==cpp(new),rel
  def story(s):

@@ -1,0 +1,64 @@
+--- a/data/maps/MtChimney/scripts.inc
++++ b/data/maps/MtChimney/scripts.inc
+@@ -34,11 +34,13 @@
+ MtChimney_EventScript_Maxie::
+ 	lockall
+ #ifdef PORT_BRIDGE
+-    camera_pair LOCALID_PLAYER, LOCALID_MT_CHIMNEY_MAXIE
+-    camera_height 8
+-    camera_orbit 72, 60, -4, 125
++    @ Cut to a safe establishing view, then let the crater move slowly behind
++    @ the confrontation. Scenic views validate the camera eye at each cut.
++    camera_scene
++    camera_anchor 13, 16
++    camera_view 1, 80, 40, -30
+     waitcamera
+-    camera_orbit 1320, 55, -4, 145
++    camera_view 900, 80, 40, -20
+ #endif
+ 	playbgm MUS_ENCOUNTER_MAGMA, FALSE
+ 	msgbox MtChimney_Text_MeteoriteWillActivateVolcano, MSGBOX_DEFAULT
+@@ -49,11 +51,26 @@
+ 	waitmovement 0
+ 	applymovement LOCALID_MT_CHIMNEY_MAXIE, Common_Movement_Delay48
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    @ Reverse the angle for the challenge.
++    camera_anchor 13, 16
++    camera_view 1, 80, 40, 30
++    waitcamera
++    camera_view 900, 80, 40, 20
++#endif
+ 	msgbox MtChimney_Text_MaxieIntro, MSGBOX_DEFAULT
+ #ifdef PORT_BRIDGE
+     camera_reveal MAP_MT_CHIMNEY, LOCALID_PLAYER, LOCALID_MT_CHIMNEY_MAXIE, 55, -4, -35
+ #endif
+ 	trainerbattle_no_intro TRAINER_MAXIE_MT_CHIMNEY, MtChimney_Text_MaxieDefeat
++#ifdef PORT_BRIDGE
++    @ Re-establish the crater for the brief post-battle exchange.
++    camera_scene
++    camera_anchor 13, 16
++    camera_view 1, 80, 40, -30
++    waitcamera
++    camera_view 900, 80, 40, -20
++#endif
+ 	msgbox MtChimney_Text_MaxieYouHaventSeenLastOfMagma, MSGBOX_DEFAULT
+ 	closemessage
+ 	delay 30
+@@ -71,11 +88,12 @@
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
+ 	waitmovement 0
+ #ifdef PORT_BRIDGE
+-    camera_pair LOCALID_PLAYER, LOCALID_MT_CHIMNEY_ARCHIE
+-    camera_height 8
+-    camera_orbit 72, 55, -4, 125
++    @ Let Archie enter before cutting back to the two figures.
++    camera_scene
++    camera_anchor 12, 16
++    camera_view 1, 80, 40, 30
+     waitcamera
+-    camera_orbit 1320, 55, -4, 145
++    camera_view 900, 80, 40, 20
+ #endif
+ 	msgbox MtChimney_Text_ArchieThankYou, MSGBOX_DEFAULT
+ 	closemessage
