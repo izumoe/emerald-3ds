@@ -1,9 +1,12 @@
 # Main story camera checklist
 
 Working inventory for Pokémon Emerald's main story, from moving to Littleroot
-through the Hall of Fame. Tick a box only when the scene's direction, relevant
-branches and transitions have been reviewed. A prototype is a starting point,
-not a claim that every approach and gameplay camera setting is finished.
+through the Hall of Fame. A checked story-scene box means its core camera pass
+has been scripted and recorded, or its creative prototype was accepted. It is
+a progress marker, not final sign-off: alternate approaches, scene branches,
+transitions, updated geometry and hardware still need the review listed below.
+Unchecked entries may still contain partial scripts or recordings. Area-reveal
+boxes separately track a usable arrival sequence, including its trigger.
 
 **Environment** is tracked independently of camera work:
 
@@ -17,8 +20,9 @@ not a claim that every approach and gameplay camera setting is finished.
 
 Many towns, routes and interiors are only partly modelled; consult the
 map-by-map [voxel status](../../docs/VOXEL_STATUS.md) for known coverage and
-faults. A flat or partly modelled scene may still support a useful composition. Record what is missing before assigning art
-work. Proposed treatments are ideas, not final direction. Consult the
+faults. A flat or partly modelled scene may still support a useful composition.
+Record what is missing before assigning art work. Proposed treatments are
+ideas, not final direction. Consult the
 [camera lookbook](camera_lookbook.md) and [script reference](cutscene_scripts.md).
 
 ## Integration and verification
@@ -61,6 +65,10 @@ the modelling, alternate-branch and hardware notes remain open follow-ups.
   UI remains original. Environment: rescue and the shown lab setup **captured
   3D**; other views **check**. Give the cry for help, chase
   and first partner choice distinct beats.
+- [x] **Oldale Mart employee and Potion** — Oldale Town / Mart exterior.
+  Camera: greeting, walk, static Mart reveal and promotion orbit scripted and
+  recorded. Environment: shown street and Mart **captured 3D**. Recheck sprite
+  facing, quick dialogue advancement and the inventory-full branch.
 - [x] **First rival battle and Pokédex** — Route 103 / Birch's lab. Camera:
   Route 103 rival and lab Pokédex exchange prototypes recorded. Environment:
   Route 103 and the shown lab setup **captured 3D**. Hold the player's view
@@ -90,51 +98,50 @@ the modelling, alternate-branch and hardware notes remain open follow-ups.
 
 ## Dewford, Slateport and Mauville
 
-First-pass scripts are in progress. Briney, Wally, Brawly, Wattson, the Route
-110 rival and the museum have staged emulator recordings; the remaining shots,
-branches and map transitions need visual review. Checkboxes remain open pending
-that review.
+The core encounters below have staged emulator recordings. The first voyage
+is only partially covered; alternate shots, branches and transitions remain
+open review work even where a core pass is checked.
 
 - [ ] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: first
   offer and departure recorded; voyage and arrival still need camera direction.
   Environment: **check** scene maps; Dewford building assets exist. Establish
   the departure and destination; consider whether travel needs a full sequence.
 
-- [ ] **Steven and the Letter** — Granite Cave, Steven's room. Camera: exchange
+- [x] **Steven and the Letter** — Granite Cave, Steven's room. Camera: exchange
   and exit prototype recorded. Environment: **captured 3D** for the shown
   approach. Check alternate approaches and the return to the cave camera.
 
-- [ ] **Brawly** — Dewford Gym. Camera: introduction and battle return recorded.
+- [x] **Brawly** — Dewford Gym. Camera: introduction and battle return recorded.
   Environment: **captured 3D** for the shown darkness state; check others. Frame
   the introduction and shared battle transition.
 
-- [ ] **Captain Stern and the Oceanic Museum** — Slateport harbor / museum.
+- [x] **Captain Stern and the Oceanic Museum** — Slateport harbor / museum.
   Camera: museum confrontation and battle returns recorded; harbor and alternate
   states need review. Environment: museum **captured 3D** for the shown setup;
   harbor **check**. Stage the delivery, Aqua confrontation and Archie's
   introduction.
 
-- [ ] **Rival on Route 110** — Route 110. Camera: staged encounter and departure
+- [x] **Rival on Route 110** — Route 110. Camera: staged encounter and departure
   recorded; alternate approaches need review. Environment: **captured 3D** for
   the shown approach. Give the meeting and battle a clear two-shot and
   transition.
 
-- [ ] **Wally challenges the Gym** — Mauville Gym exterior. Camera: staged
+- [x] **Wally challenges the Gym** — Mauville Gym exterior. Camera: staged
   encounter and departures recorded. Environment: **assets exist** for some
   Mauville buildings; exact scene **check**. Stage Wally, his uncle and the
   player, including the battle and farewell. Wally's uncle is present here;
   Norman is not part of this scene.
 
-- [ ] **Wattson** — Mauville Gym. Camera: first battle and reward recorded;
+- [x] **Wattson** — Mauville Gym. Camera: first battle and reward recorded;
   alternate approaches need review. Environment: **check** interior and puzzle
   state. Introduce Wattson and the battle.
 
 ## Meteor Falls to Fortree
 
-First-pass scripts are in progress, including the battle handoffs and character
-departures. Meteor Falls, Route 119, Route 120, Flannery and Winona have staged
-emulator captures; the remaining shots, branches, map transitions and
-visibility need visual review. Checkboxes remain open pending that review.
+First-pass scripts include battle handoffs and character departures. The
+Meteor Falls/Mt. Chimney, Flannery/gift, Weather Institute and Route 119 rival
+entries remain open because an important shot is rejected, obscured or needs
+recomposition. Checked scenes still need branch and transition review.
 
 - [ ] **Meteor Falls and Mt. Chimney** — Meteor Falls / cable car / Mt. Chimney.
   Camera: Meteor Falls confrontation recorded; summit opening rejected by
@@ -149,7 +156,7 @@ visibility need visual review. Checkboxes remain open pending that review.
   recomposition. Environment: **assets exist** for the shared Gym exterior;
   Gym interior and rival scene **check**. Separate the victory from the gift.
 
-- [ ] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
+- [x] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
   battle, post-battle exchange and Surf gift recorded. Environment: both
   rooms **captured 3D** for the shown setups; review alternate entrances and
   the transition to the house.
@@ -167,57 +174,57 @@ visibility need visual review. Checkboxes remain open pending that review.
   terrain check, and alternate approaches need review. Environment: **captured
   3D** for the shown approach. Keep the player framed as the rival departs.
 
-- [ ] **Steven and the unseen obstacle** — Route 120. Camera: encounter
+- [x] **Steven and the unseen obstacle** — Route 120. Camera: encounter
   recorded through the Kecleon reveal, battle return and departure. Environment:
   **captured 3D** for the shown setup; review alternate approaches and choices.
   The 3D renderer suppresses the bridge shadow to preserve the surprise.
 
-- [ ] **Winona** — Fortree Gym. Camera: first battle and reward recorded;
+- [x] **Winona** — Fortree Gym. Camera: first battle and reward recorded;
   alternate approaches and puzzle state need review. Environment: **check**
   exterior, interior and puzzle state. Establish her introduction and battle.
 
 ## Lilycove to the weather crisis
 
-First camera scripts are in progress. Lilycove, Mt. Pyre and the twins have
-staged emulator captures; entries remain open for branch, model and hardware
-review.
+Lilycove, Mt. Pyre and the twins have staged emulator captures. Several
+other encounters have partial scripts but still need major story beats;
+checked captures also need branch, model and hardware review.
 
-- [ ] **Lilycove rival farewell** — Lilycove Department Store exterior. Camera:
+- [x] **Lilycove rival farewell** — Lilycove Department Store exterior. Camera:
   conversation, battle return and held departure recorded. Environment:
   **captured 3D** for the shown approach; check alternate interactions.
-- [ ] **Mt. Pyre and the stolen orbs** — Mt. Pyre summit. Camera: first pass.
+- [x] **Mt. Pyre and the stolen orbs** — Mt. Pyre summit. Camera: first pass.
   Environment: summit **captured 3D** for one staged approach, with heavy fog;
   check other approaches. The confrontation and explanation are recorded.
 - [ ] **Magma Hideout at Mt. Chimney** — hideout / Groudon chamber. Camera:
   first Maxie battle script; awakening needs direction and visual review.
   Environment: **check**. Stage Maxie's awakening attempt, battle and
   Groudon's departure, with clear views of the legendary Pokémon.
-- [ ] **Slateport submarine theft** — harbor. Camera: plan. Environment:
-  **check** harbor and submarine. Stern and Archie dialogue scripts added;
-  check all four approaches and the escape. Stage Stern, the crowd, Archie and
+- [ ] **Slateport submarine theft** — harbor. Camera: Stern and Archie dialogue scripted. Environment: **check** harbor
+  and submarine; check all four approaches and the escape. Stage Stern, the crowd, Archie and
   the getaway as a short sequence.
-- [ ] **Aqua Hideout** — Lilycove hideout / submarine bay. Camera: plan.
-  Environment: **check** interiors and moving actors. Matt's battle script
-  added; submarine escape composition still needs review. Build toward the
+- [ ] **Aqua Hideout** — Lilycove hideout / submarine bay. Camera: Matt's battle
+  scripted. Environment: **check** interiors and moving actors; submarine
+  escape composition still needs review. Build toward the
   administrator encounter and submarine escape.
-- [ ] **Mossdeep Space Center** — Space Center. Camera: plan. Environment:
-  **check** exterior, interiors and team positions. Steven's initial dialogue
-  is scripted; the multi-battle and aftermath need direction. Introduce the
+- [ ] **Mossdeep Space Center** — Space Center. Camera: Steven's initial
+  dialogue scripted. Environment: **check** exterior, interiors and team
+  positions; the multi-battle and aftermath need direction. Introduce the
   attack, Steven's partnership and the battle with Maxie and Tabitha.
-- [ ] **Tate and Liza** — Mossdeep Gym. Camera: group shot and battle return
+- [x] **Tate and Liza** — Mossdeep Gym. Camera: group shot and battle return
   recorded for one approach; the one-Pokémon branch keeps the original view.
   Environment: shown platform **captured 3D**, but most of the room appears
   black and needs modelling; review the other speaking position and puzzle.
-- [ ] **Seafloor Cavern** — cavern / Kyogre chamber. Camera: plan. Environment:
-  **check** underwater approach and chamber. Archie battle scripted; the
+- [ ] **Seafloor Cavern** — cavern / Kyogre chamber. Camera: Archie battle
+  scripted. Environment: **check** underwater approach and chamber; the
   awakening retains the original camera and needs direction. Stage Archie,
   Kyogre's awakening and the transition to the weather crisis.
 
 ## Sootopolis and the League
 
-First dialogue and battle scripts are in progress. Juan, Victory Road Wally,
-Sidney and the Champion sequence have staged emulator captures. Legendary
-sequences, other League rooms, transitions and branches still need review.
+Juan, Victory Road Wally, Sidney and the Champion sequence have staged
+emulator captures. The Elite Four entry remains open as a group because only
+Sidney was recorded; legendary sequences, other League rooms, transitions and
+branches still need review.
 
 - [ ] **Weather crisis and Sootopolis confrontation** — routes / Sootopolis.
   Camera: Steven's escort scripted; legendary confrontation needs direction.
@@ -233,10 +240,10 @@ sequences, other League rooms, transitions and branches still need review.
 - [ ] **Rayquaza and the aftermath** — Sootopolis. Camera: plan. Environment:
   **check** crisis and restored-weather states. Give the descent, confrontation,
   departure and leaders' reactions room to read.
-- [ ] **Juan** — Sootopolis Gym. Camera: introduction, battle return and reward
+- [x] **Juan** — Sootopolis Gym. Camera: introduction, battle return and reward
   recorded for one approach. Environment: **captured 3D** for the shown setup;
   review the puzzle state and alternate approaches.
-- [ ] **Wally's last challenge** — Victory Road. Camera: entrance challenge
+- [x] **Wally's last challenge** — Victory Road. Camera: entrance challenge
   and battle return recorded with the side angle. Environment:
   **captured 3D** for the shown approach; check the other approach and flags.
 - [ ] **Pokémon League and Elite Four** — Ever Grande / League rooms. Camera:
@@ -245,7 +252,7 @@ sequences, other League rooms, transitions and branches still need review.
   assets exist for all four rooms and their wall, lintel and dynamic-door
   fixes need fresh visual review. Check the exterior, each door and light
   state, and the other rooms. Use individual framing for each introduction.
-- [ ] **Champion Wallace and Hall of Fame** — Champion room / Hall of Fame.
+- [x] **Champion Wallace and Hall of Fame** — Champion room / Hall of Fame.
   Camera: Wallace battle, Champion procession and Hall of Fame recorded for
   one staged run, including return to the original recording effect.
   Environment: both rooms **captured 3D** for the shown setup; check credits
@@ -351,9 +358,9 @@ streaming and map-edge findings, and how gameplay control is restored. A
 missing model is an environment task; a shot that exposes a flat background
 may instead be composed differently. Evaluate scope and art needs after scouting.
 
-## Before marking a scene complete
+## Before final sign-off
 
-Record the exact map and story state, what is modelled or flat, missing assets,
+A checked first-pass box is not final sign-off. Record the exact map and story state, what is modelled or flat, missing assets,
 proposed framing, relevant script branches, and a recording or review reference.
 Check actor visibility, rapid dialogue input, exits, battle/fade transitions,
 return to gameplay, and alternate approach directions. Verify on real hardware
