@@ -1,5 +1,8 @@
 # Scripted camera scenes
 
+For shot choices, composition and pacing, see the
+[camera scripting lookbook](camera_lookbook.md).
+
 The Oldale Mart employee's first guided walk is the first authored scene.
 Direction lives in the existing event-script language, not C++ or a second VM.
 Patch 0083 adds macros backed by eight C specials in 3ds_game_full.c. Camera math
