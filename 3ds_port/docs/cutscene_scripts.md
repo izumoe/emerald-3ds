@@ -435,3 +435,24 @@ what is drawn. This matters on cave ledges and for mixed-size pairs such as
 Briney and Peeko. Cached art must match the active object; missing or stale bounds
 reject the move. The bounds harness exercises centre/push/deck transforms,
 human/Pokemon heights, 4/8-bit pixels, flipped frames and invalid cache guards.
+
+## Littleroot opening and lab pass
+
+The moving-in scene selects the player and Mom before the gender-specific
+wrapper initializes `VAR_0x8004` and `VAR_0x8005`. The shared event uses those
+variables for its original facing and movement calls, so it does not issue
+camera commands again until those uses are complete. The camera then returns
+before the event releases control. Both house variants preserve their original
+commands; the Brendan-house capture is the visually reviewed setup.
+
+The lab starter handover frames Birch and the player, then reselects them after
+the nickname branch because naming leaves the overworld. The Pokédex handover
+shifts focus from Birch to the rival after the rival approaches. Gender checks
+and conditional item calls remain adjacent. These additions are guarded by
+`PORT_BRIDGE`; the original dialogue, choice branches, gifts and flags remain.
+
+The Route 101 chase and plea use closer framing. The Route 103 rival scene uses
+stronger side angles to separate the actors and retains the held player view for
+the departure. Test captures use isolated scene setups, not a continuous save;
+other approaches, the May-house view and nickname/skip branches still require
+visual review. Small rooms can expose unmodelled space at their edges.

@@ -24,16 +24,18 @@ work. Proposed treatments are ideas, not final direction. Consult the
 ## Littleroot to Rustboro
 
 - [ ] **Move to Littleroot and meet Mom** — Player's house / Littleroot. Camera:
-  plan. Environment: **assets exist** for Littleroot buildings; house interior
-  **check**. Establish home and the journey's start.
+  moving-in conversation prototype recorded for Brendan's house; remaining intro
+  beats and May's house need review. Environment: Littleroot building **assets
+  exist**; Brendan's house **captured 3D**, with exposed room edges. Establish home and the journey's start.
 - [ ] **Birch's rescue and starter choice** — Route 101 / Birch's lab. Camera:
-  Route 101 rescue prototype recorded; choice/lab **check**. Environment:
-  rescue **captured 3D**; lab interior **check**. Give the cry for help, chase
+  Route 101 rescue and lab starter handover prototypes recorded; starter selection
+  UI remains original. Environment: rescue and the shown lab setup **captured
+  3D**; other views **check**. Give the cry for help, chase
   and first partner choice distinct beats.
 - [ ] **First rival battle and Pokédex** — Route 103 / Birch's lab. Camera:
-  Route 103 rival prototype recorded; lab exchange **check**. Environment:
-  Route 103 **captured 3D**; lab **check**. Hold the player's view for the
-  rival's departure; use the shared battle push.
+  Route 103 rival and lab Pokédex exchange prototypes recorded. Environment:
+  Route 103 and the shown lab setup **captured 3D**. Hold the player's view
+  for the rival's departure; use the shared battle push.
 - [ ] **Norman, Wally and the catching lesson** — Petalburg Gym / Route 102.
   Camera: introduction, walk and lesson prototype recorded. Environment:
   **captured 3D** for the shown setup. Review all entrance branches and the

@@ -1,0 +1,78 @@
+--- a/data/maps/LittlerootTown_ProfessorBirchsLab/scripts.inc
++++ b/data/maps/LittlerootTown_ProfessorBirchsLab/scripts.inc
+@@ -106,6 +106,12 @@
+ /* This is just where the game tells you its yours and lets you nickname it*/
+ LittlerootTown_ProfessorBirchsLab_EventScript_GiveStarterEvent::
+ 	lockall
++#ifdef PORT_BRIDGE
++    @ Birch introduces the first partner in a close two-shot.
++    camera_pair LOCALID_PLAYER, LOCALID_BIRCHS_LAB_BIRCH
++    camera_orbit 72, 60, -4, 145
++    waitcamera
++#endif
+ 	bufferleadmonspeciesname STR_VAR_1
+ 	message LittlerootTown_ProfessorBirchsLab_Text_LikeYouToHavePokemon
+ 	waitmessage
+@@ -123,6 +129,12 @@
+ 	end
+ 
+ LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival::
++#ifdef PORT_BRIDGE
++    @ Naming can leave the field, so select the pair again on return.
++    camera_pair LOCALID_PLAYER, LOCALID_BIRCHS_LAB_BIRCH
++    camera_orbit 60, 55, -4, 145
++    waitcamera
++#endif
+ 	msgbox LittlerootTown_ProfessorBirchsLab_Text_MightBeGoodIdeaToGoSeeRival, MSGBOX_YESNO
+ 	goto_if_eq VAR_RESULT, YES, LittlerootTown_ProfessorBirchsLab_EventScript_AgreeToSeeRival
+ 	goto_if_eq VAR_RESULT, NO, LittlerootTown_ProfessorBirchsLab_EventScript_DeclineSeeingRival
+@@ -132,6 +144,11 @@
+ 	msgbox LittlerootTown_ProfessorBirchsLab_Text_GetRivalToTeachYou, MSGBOX_DEFAULT
+ 	clearflag FLAG_HIDE_ROUTE_101_BOY
+ 	setvar VAR_BIRCH_LAB_STATE, 3
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+@@ -504,6 +521,12 @@
+ 	end
+ 
+ LittlerootTown_ProfessorBirchsLab_EventScript_GivePokedex::
++#ifdef PORT_BRIDGE
++    @ Hold Birch and the player for the Pokédex handover.
++    camera_pair LOCALID_PLAYER, LOCALID_BIRCHS_LAB_BIRCH
++    camera_orbit 72, 60, -4, 145
++    waitcamera
++#endif
+ 	msgbox LittlerootTown_ProfessorBirchsLab_Text_HeardYouBeatRivalTakePokedex, MSGBOX_DEFAULT
+ 	call LittlerootTown_ProfessorBirchsLab_EventScript_ReceivePokedex
+ 	msgbox LittlerootTown_ProfessorBirchsLab_Text_ExplainPokedex, MSGBOX_DEFAULT
+@@ -512,6 +535,12 @@
+ 	waitmovement 0
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    @ Shift attention to the rival after their approach.
++    camera_pair LOCALID_PLAYER, LOCALID_BIRCHS_LAB_RIVAL
++    camera_orbit 72, 55, -4, 145
++    waitcamera
++#endif
+ 	checkplayergender
+ 	call_if_eq VAR_RESULT, MALE, LittlerootTown_ProfessorBirchsLab_EventScript_MayGivePokeBalls
+ 	call_if_eq VAR_RESULT, FEMALE, LittlerootTown_ProfessorBirchsLab_EventScript_BrendanGivePokeBalls
+@@ -520,6 +549,11 @@
+ 	setvar VAR_OLDALE_TOWN_STATE, 1
+ 	setvar VAR_LITTLEROOT_RIVAL_STATE, 4
+ 	setvar VAR_LITTLEROOT_TOWN_STATE, 3
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 

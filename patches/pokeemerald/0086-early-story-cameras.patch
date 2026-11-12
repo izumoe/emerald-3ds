@@ -26,7 +26,7 @@
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_ROUTE101_BIRCH, LOCALID_ROUTE101_ZIGZAGOON
 +    camera_follow TRUE
-+    camera_move 96, 110, 2, -15
++    camera_move 96, 85, 0, -20
 +#endif
  	applymovement LOCALID_ROUTE101_ZIGZAGOON, Route101_Movement_ZigzagoonChaseInCircles
  	applymovement LOCALID_ROUTE101_BIRCH, Route101_Movement_BirchRunInCircles
@@ -38,7 +38,7 @@
 +#ifdef PORT_BRIDGE
 +    @ Stop tracking and settle before the plea; text then holds a fixed view.
 +    camera_follow FALSE
-+    camera_move 54, 70, 0, -28
++    camera_move 54, 60, -4, -28
 +    waitcamera
 +    msgbox Route101_Text_CameraPleaseHelp, MSGBOX_DEFAULT
 +    camera_anchor 7, 14
@@ -76,7 +76,7 @@
  	lockall
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_ROUTE103_RIVAL
-+    camera_move 60, 75, -4, -28
++    camera_orbit 60, 60, -4, 145
 +    waitcamera
 +#endif
  	checkplayergender
@@ -87,7 +87,7 @@
  	closemessage
  	playbgm MUS_ENCOUNTER_MAY, TRUE
 +#ifdef PORT_BRIDGE
-+    camera_move 72, 70, -4, -28
++    camera_orbit 72, 60, -4, 145
 +#endif
  	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_FacePlayer
  	waitmovement 0
@@ -96,7 +96,7 @@
  	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_Delay48
  	waitmovement 0
 +#ifdef PORT_BRIDGE
-+    camera_move 90, 65, 2, 28
++    camera_orbit 90, 55, -2, 35
 +#endif
  	msgbox Route103_Text_MayLetsBattle, MSGBOX_DEFAULT
 +#ifdef PORT_BRIDGE
@@ -111,7 +111,7 @@
  	closemessage
  	playbgm MUS_ENCOUNTER_BRENDAN, TRUE
 +#ifdef PORT_BRIDGE
-+    camera_move 72, 70, -4, -28
++    camera_orbit 72, 60, -4, 145
 +#endif
  	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_FacePlayer
  	waitmovement 0
@@ -120,7 +120,7 @@
  	applymovement LOCALID_ROUTE103_RIVAL, Common_Movement_Delay48
  	waitmovement 0
 +#ifdef PORT_BRIDGE
-+    camera_move 90, 65, 2, 28
++    camera_orbit 90, 55, -2, 35
 +#endif
  	msgbox Route103_Text_BrendanLetsBattle, MSGBOX_DEFAULT
 +#ifdef PORT_BRIDGE
@@ -137,7 +137,7 @@
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_ROUTE103_RIVAL
 +    camera_follow TRUE
-+    camera_move 60, 75, -4, -28
++    camera_orbit 60, 60, -4, 145
 +    waitcamera
 +#endif
  	msgbox Route103_Text_MayTimeToHeadBack, MSGBOX_DEFAULT
@@ -148,7 +148,7 @@
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_ROUTE103_RIVAL
 +    camera_follow TRUE
-+    camera_move 60, 75, -4, -28
++    camera_orbit 60, 60, -4, 145
 +    waitcamera
 +#endif
  	msgbox Route103_Text_BrendanTimeToHeadBack, MSGBOX_DEFAULT

@@ -1,0 +1,47 @@
+--- a/data/maps/LittlerootTown_BrendansHouse_1F/scripts.inc
++++ b/data/maps/LittlerootTown_BrendansHouse_1F/scripts.inc
+@@ -72,6 +72,13 @@
+ 
+ LittlerootTown_BrendansHouse_1F_EventScript_EnterHouseMovingIn::
+ 	lockall
++#ifdef PORT_BRIDGE
++    @ Compose Mom and the player before setting the shared script variables.
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYERS_HOUSE_1F_MOM
++    camera_offset -8, -8
++    camera_orbit 60, 50, -4, 145
++    waitcamera
++#endif
+ 	setvar VAR_0x8004, LOCALID_PLAYERS_HOUSE_1F_MOM
+ 	setvar VAR_0x8005, MALE
+ 	goto PlayersHouse_1F_EventScript_EnterHouseMovingIn
+--- a/data/maps/LittlerootTown_MaysHouse_1F/scripts.inc
++++ b/data/maps/LittlerootTown_MaysHouse_1F/scripts.inc
+@@ -71,6 +71,13 @@
+ 
+ LittlerootTown_MaysHouse_1F_EventScript_EnterHouseMovingIn::
+ 	lockall
++#ifdef PORT_BRIDGE
++    @ Compose Mom and the player before setting the shared script variables.
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYERS_HOUSE_1F_MOM
++    camera_offset -8, -8
++    camera_orbit 60, 50, -4, 35
++    waitcamera
++#endif
+ 	setvar VAR_0x8004, LOCALID_PLAYERS_HOUSE_1F_MOM
+ 	setvar VAR_0x8005, FEMALE
+ 	goto PlayersHouse_1F_EventScript_EnterHouseMovingIn
+--- a/data/scripts/players_house.inc
++++ b/data/scripts/players_house.inc
+@@ -14,6 +14,12 @@
+ 	applymovement LOCALID_PLAYER, PlayersHouse_1F_Movement_PlayerWalkIn
+ 	applymovement VAR_0x8004, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    @ The original shared script has finished using its scratch actor ID.
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
