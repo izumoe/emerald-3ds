@@ -165,12 +165,12 @@ recomposition. Checked scenes still need branch and transition review.
   the transition to the house.
 
 - [ ] **Weather Institute takeover** — Route 119 / Weather Institute. Camera:
-  administrator and rescue scripted; battle return recorded. Rescue framing
-  exposes a dark floor gap; shorter orbits clear in a staged retest. Environment:
-  interior **captured 3D** with that issue before the geometry merge; updated
-  bed and wall details need a new visual pass. Exterior building is still flat;
-  **check** terrain and weather. Stage the Aqua encounter, administrator battle
-  and rescue.
+  administrator and rescue scripted; battle transition and return recorded.
+  A staged retest after the interior fixes shows a black floor gap beneath the
+  player on the battle return and throughout the rescue dialogue. Investigate
+  the room's floor geometry before approving the shots. Environment: interior
+  **captured 3D** after the geometry merge; the exterior building remains flat.
+  **Check** weather and alternate approaches.
 
 - [ ] **Route 119 rival battle** — bridge south of Fortree. Camera: opening
   angle and revised battle return recorded. The battle push is rejected by the
