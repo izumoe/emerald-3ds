@@ -62,13 +62,13 @@ the modelling, alternate-branch and hardware notes remain open follow-ups.
 
 ## Dewford, Slateport and Mauville
 
-First-pass scripts are in progress. Wally, Brawly, Wattson, the Route 110 rival
-and the museum have staged emulator recordings; the remaining shots, branches
-and map transitions need visual review. Checkboxes remain open pending that
-review.
+First-pass scripts are in progress. Briney, Wally, Brawly, Wattson, the Route
+110 rival and the museum have staged emulator recordings; the remaining shots,
+branches and map transitions need visual review. Checkboxes remain open pending
+that review.
 
 - [ ] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: first
-  offer scripted; voyage and arrival still need direction and review.
+  offer and departure recorded; voyage and arrival still need camera direction.
   Environment: **check** scene maps; Dewford building assets exist. Establish
   the departure and destination; consider whether travel needs a full sequence.
 
@@ -105,8 +105,8 @@ review.
 
 First-pass scripts are in progress, including the battle handoffs and character
 departures. Meteor Falls, Route 119, Route 120, Flannery and Winona have staged
-emulator captures; the remaining shots, branches, map transitions and visibility need visual
-review. Checkboxes remain open pending that review.
+emulator captures; the remaining shots, branches, map transitions and
+visibility need visual review. Checkboxes remain open pending that review.
 
 - [ ] **Meteor Falls and Mt. Chimney** — Meteor Falls / cable car / Mt. Chimney.
   Camera: Meteor Falls confrontation recorded; summit opening rejected by
@@ -116,15 +116,15 @@ review. Checkboxes remain open pending that review.
   Meteorite theft, opposing teams, ascent, Maxie battle and recovery.
 
 - [ ] **Flannery and the Go-Goggles** — Lavaridge Gym / town. Camera: first
-  battle recorded, but heavy steam obscures the shot; rival gift scripted and
-  needs review. Environment: **assets exist** for the shared Gym exterior; Gym
-  interior and rival scene **check**. Separate the Gym victory from the rival's
-  gift.
+  battle recorded, but heavy steam obscures the shot. The rival gift completes
+  in gameplay view after the terrain check rejects the close camera; it needs
+  recomposition. Environment: **assets exist** for the shared Gym exterior;
+  Gym interior and rival scene **check**. Separate the victory from the gift.
 
 - [ ] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
-  battle and Surf gift scripted; visual review pending. Environment: Gym
-  introduction was **captured 3D**; battle setup and house **check**. Give
-  father and child room for a quieter post-battle beat.
+  battle, post-battle exchange and Surf gift recorded. Environment: both
+  rooms **captured 3D** for the shown setups; review alternate entrances and
+  the transition to the house.
 
 - [ ] **Weather Institute takeover** — Route 119 / Weather Institute. Camera:
   administrator and rescue scripted; battle return recorded. Rescue framing
@@ -133,9 +133,9 @@ review. Checkboxes remain open pending that review.
   Stage the Aqua encounter, administrator battle and rescue.
 
 - [ ] **Route 119 rival battle** — bridge south of Fortree. Camera: opening
-  angle recorded; revised battle return and alternate approach need review.
-  Environment: **check** bridge and approach directions. Use the setting for a
-  clear approach and held departure.
+  angle and revised battle return recorded. The battle push is rejected by the
+  terrain check, and alternate approaches need review. Environment: **captured
+  3D** for the shown approach. Keep the player framed as the rival departs.
 
 - [ ] **Steven and the unseen obstacle** — Route 120. Camera: encounter
   recorded through the Kecleon reveal, battle return and departure. Environment:
@@ -143,8 +143,8 @@ review. Checkboxes remain open pending that review.
   The 3D renderer suppresses the bridge shadow to preserve the surprise.
 
 - [ ] **Winona** — Fortree Gym. Camera: first battle and reward recorded;
-  alternate approaches and puzzle state need review. Environment: **check** exterior, interior and puzzle state. Establish
-  her introduction and battle.
+  alternate approaches and puzzle state need review. Environment: **check**
+  exterior, interior and puzzle state. Establish her introduction and battle.
 
 ## Lilycove to the weather crisis
 
