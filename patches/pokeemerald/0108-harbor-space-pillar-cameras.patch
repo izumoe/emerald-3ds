@@ -1,0 +1,134 @@
+--- a/data/maps/SlateportCity/scripts.inc
++++ b/data/maps/SlateportCity/scripts.inc
+@@ -560,6 +560,13 @@
+ 	waitmovement 0
+ 	removeobject LOCALID_SLATEPORT_GABBY
+ 	removeobject LOCALID_SLATEPORT_TY
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_SLATEPORT_CAPT_STERN
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox SlateportCity_Text_SternWhewFirstInterview, MSGBOX_DEFAULT
+ 	applymovement LOCALID_SLATEPORT_CAPT_STERN, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
+@@ -585,9 +592,17 @@
+ 	msgbox SlateportCity_Text_FromHarborTryingToTakeSub, MSGBOX_DEFAULT
+ 	msgbox SlateportCity_Text_PleaseComeWithMe, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_follow TRUE
++#endif
+ 	applymovement LOCALID_SLATEPORT_CAPT_STERN, SlateportCity_Movement_SternEnterHarbor
+ 	applymovement LOCALID_PLAYER, SlateportCity_Movement_PlayerEnterHarbor
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	removeobject LOCALID_SLATEPORT_CAPT_STERN
+ 	clearflag FLAG_HIDE_SLATEPORT_CITY_HARBOR_CAPTAIN_STERN
+ 	clearflag FLAG_HIDE_SLATEPORT_CITY_HARBOR_SUBMARINE_SHADOW
+--- a/data/maps/SlateportCity_Harbor/scripts.inc
++++ b/data/maps/SlateportCity_Harbor/scripts.inc
+@@ -52,8 +52,24 @@
+ 	applymovement LOCALID_SLATEPORT_HARBOR_GRUNT, Common_Movement_WalkInPlaceFasterDown
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    copyvar VAR_TEMP_6, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_SLATEPORT_HARBOR_ARCHIE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    copyvar VAR_0x8008, VAR_TEMP_6
++#endif
+ 	msgbox SlateportCity_Harbor_Text_ArchieYouAgainHideoutInLilycove, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 60, 60, -4, 125
++    waitcamera
++    copyvar VAR_0x8008, VAR_TEMP_6
++#endif
+ 	applymovement LOCALID_SLATEPORT_HARBOR_GRUNT, SlateportCity_Harbor_Movement_AquaBoardSub
+ 	applymovement LOCALID_SLATEPORT_HARBOR_ARCHIE, SlateportCity_Harbor_Movement_AquaBoardSub
+ 	applymovement LOCALID_SLATEPORT_HARBOR_SUBMARINE, SlateportCity_Harbor_Movement_SubmarineExit
+@@ -68,12 +84,24 @@
+ 	call_if_eq VAR_0x8008, 1, SlateportCity_Harbor_EventScript_SternApproachPlayer1
+ 	call_if_eq VAR_0x8008, 2, SlateportCity_Harbor_EventScript_SternApproachPlayer
+ 	call_if_eq VAR_0x8008, 3, SlateportCity_Harbor_EventScript_SternApproachPlayer
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_SLATEPORT_HARBOR_CAPT_STERN
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox SlateportCity_Harbor_Text_CaptSternWhyStealMySubmarine, MSGBOX_DEFAULT
+ 	closemessage
+ 	setflag FLAG_HIDE_AQUA_HIDEOUT_1F_GRUNT_1_BLOCKING_ENTRANCE
+ 	setflag FLAG_HIDE_AQUA_HIDEOUT_1F_GRUNT_2_BLOCKING_ENTRANCE
+ 	copyobjectxytoperm LOCALID_SLATEPORT_HARBOR_CAPT_STERN
+ 	setobjectmovementtype LOCALID_SLATEPORT_HARBOR_CAPT_STERN, MOVEMENT_TYPE_FACE_RIGHT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+--- a/data/maps/MossdeepCity_SpaceCenter_2F/scripts.inc
++++ b/data/maps/MossdeepCity_SpaceCenter_2F/scripts.inc
+@@ -180,9 +180,21 @@
+ 	lockall
+ 	goto_if_set FLAG_INTERACTED_WITH_STEVEN_SPACE_CENTER, MossdeepCity_SpaceCenter_2F_EventScript_ReadyForBattlePrompt
+ 	setflag FLAG_INTERACTED_WITH_STEVEN_SPACE_CENTER
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_SPACE_CENTER_2F_STEVEN
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox MossdeepCity_SpaceCenter_2F_Text_StevenWhyStealRocketFuel, MSGBOX_DEFAULT
+ 	msgbox MossdeepCity_SpaceCenter_2F_Text_MaxieUseFuelToEruptVolcano, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	delay 30
+ 	playse SE_NOT_EFFECTIVE
+ 	switch VAR_FACING
+--- a/data/maps/SkyPillar_Outside/scripts.inc
++++ b/data/maps/SkyPillar_Outside/scripts.inc
+@@ -36,8 +36,21 @@
+ 	waitmovement 0
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_SKY_PILLAR_WALLACE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox SkyPillar_Outside_Text_OpenedDoorToSkyPillar, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Return before the original earthquake and camera effects.
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	delay 30
+ 	setvar VAR_0x8004, 1  /* vertical pan*/
+ 	setvar VAR_0x8005, 1  /* horizontal pan*/

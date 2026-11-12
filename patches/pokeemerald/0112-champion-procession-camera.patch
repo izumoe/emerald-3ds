@@ -1,0 +1,40 @@
+--- a/data/maps/EverGrandeCity_ChampionsRoom/scripts.inc
++++ b/data/maps/EverGrandeCity_ChampionsRoom/scripts.inc
+@@ -116,9 +116,25 @@
+ 	waitmovement 0
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    @ Give Birch and the player the frame once the arrival has settled.
++    camera_pair LOCALID_PLAYER, LOCALID_CHAMPIONS_ROOM_BIRCH
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox EverGrandeCity_ChampionsRoom_Text_BirchArriveRatePokedex, MSGBOX_DEFAULT
+ 	call ProfBirch_EventScript_RatePokedex
+ 	msgbox EverGrandeCity_ChampionsRoom_Text_BirchCongratulations, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_CHAMPIONS_ROOM_WALLACE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    camera_follow TRUE
++#endif
+ 	applymovement LOCALID_CHAMPIONS_ROOM_WALLACE, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
+ 	delay 20
+@@ -143,6 +159,11 @@
+ 	applymovement LOCALID_CHAMPIONS_ROOM_WALLACE, EverGrandeCity_ChampionsRoom_Movement_WallaceExit
+ 	applymovement LOCALID_PLAYER, EverGrandeCity_ChampionsRoom_Movement_PlayerExit
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	setflag FLAG_HIDE_PETALBURG_GYM_GREETER
+ 	warp MAP_EVER_GRANDE_CITY_HALL_OF_FAME, 7, 16
+ 	waitstate

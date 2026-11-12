@@ -1,0 +1,180 @@
+--- a/data/maps/LilycoveCity/scripts.inc
++++ b/data/maps/LilycoveCity/scripts.inc
+@@ -229,6 +229,13 @@
+ LilycoveCity_EventScript_Rival::
+ 	lock
+ 	faceplayer
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, 17
++    camera_height 8
++    camera_orbit 72, 55, -4, 55
++    waitcamera
++    camera_orbit 1320, 55, -4, 70
++#endif
+ 	checkplayergender
+ 	goto_if_eq VAR_RESULT, MALE, LilycoveCity_EventScript_May
+ 	goto_if_eq VAR_RESULT, FEMALE, LilycoveCity_EventScript_Brendan
+@@ -239,6 +246,9 @@
+ 	call_if_set FLAG_DECLINED_RIVAL_BATTLE_LILYCOVE, LilycoveCity_EventScript_MayAskToBattleAgain
+ 	call_if_unset FLAG_DECLINED_RIVAL_BATTLE_LILYCOVE, LilycoveCity_EventScript_MayAskToBattle
+ 	goto_if_eq VAR_RESULT, NO, LilycoveCity_EventScript_DeclineMayBattle
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_LILYCOVE_CITY, LOCALID_PLAYER, 17, 55, -4, 35
++#endif
+ 	msgbox LilycoveCity_Text_MayWontBeBeaten, MSGBOX_DEFAULT
+ 	switch VAR_STARTER_MON
+ 	case 0, LilycoveCity_EventScript_BattleMayTreecko
+@@ -257,6 +267,11 @@
+ LilycoveCity_EventScript_DeclineMayBattle::
+ 	setflag FLAG_DECLINED_RIVAL_BATTLE_LILYCOVE
+ 	msgbox LilycoveCity_Text_MayNotRaisingPokemon, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	savebgm MUS_DUMMY
+ 	fadedefaultbgm
+ 	release
+@@ -267,6 +282,9 @@
+ 	call_if_set FLAG_DECLINED_RIVAL_BATTLE_LILYCOVE, LilycoveCity_EventScript_BrendanAskToBattleAgain
+ 	call_if_unset FLAG_DECLINED_RIVAL_BATTLE_LILYCOVE, LilycoveCity_EventScript_BrendanAskToBattle
+ 	goto_if_eq VAR_RESULT, NO, LilycoveCity_EventScript_DeclineBrendanBattle
++#ifdef PORT_BRIDGE
++    camera_reveal MAP_LILYCOVE_CITY, LOCALID_PLAYER, 17, 55, -4, 35
++#endif
+ 	msgbox LilycoveCity_Text_BrendanWontBeBeaten, MSGBOX_DEFAULT
+ 	switch VAR_STARTER_MON
+ 	case 0, LilycoveCity_EventScript_BattleBrendanTreecko
+@@ -285,6 +303,11 @@
+ LilycoveCity_EventScript_DeclineBrendanBattle::
+ 	setflag FLAG_DECLINED_RIVAL_BATTLE_LILYCOVE
+ 	msgbox LilycoveCity_Text_BrendanNoConfidence, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	savebgm MUS_DUMMY
+ 	fadedefaultbgm
+ 	release
+@@ -378,6 +401,13 @@
+ 
+ LilycoveCity_EventScript_RivalFlyAway::
+ 	closemessage
++#ifdef PORT_BRIDGE
++    @ Stay on the player as the rival flies out of the shot.
++    camera_pair LOCALID_PLAYER, LOCALID_PLAYER
++    camera_height 8
++    camera_orbit 72, 50, -4, 55
++    waitcamera
++#endif
+ 	applymovement VAR_LAST_TALKED, Common_Movement_WalkInPlaceFasterDown
+ 	waitmovement 0
+ 	delay 50
+@@ -389,6 +419,11 @@
+ 	savebgm MUS_DUMMY
+ 	fadedefaultbgm
+ 	setflag FLAG_MET_RIVAL_LILYCOVE
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+--- a/data/maps/VictoryRoad_1F/scripts.inc
++++ b/data/maps/VictoryRoad_1F/scripts.inc
+@@ -38,6 +38,16 @@
+ VictoryRoad_1F_EventScript_WallyEntranceBattle::
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterDown
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    copyvar VAR_TEMP_6, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_VICTORY_ROAD_ENTRANCE_WALLY
++    camera_height 8
++    camera_orbit 72, 55, -4, 30
++    waitcamera
++    camera_orbit 1320, 50, -4, 40
++    camera_reveal MAP_VICTORY_ROAD_1F, LOCALID_PLAYER, LOCALID_VICTORY_ROAD_ENTRANCE_WALLY, 55, -4, 60
++    copyvar VAR_0x8008, VAR_TEMP_6
++#endif
+ 	msgbox VictoryRoad_1F_Text_WallyNotGoingToLoseAnymore, MSGBOX_DEFAULT
+ 	trainerbattle_no_intro TRAINER_WALLY_VR_1, VictoryRoad_1F_Text_WallyEntranceDefeat
+ 	msgbox VictoryRoad_1F_Text_WallyPostEntranceBattle, MSGBOX_DEFAULT
+@@ -45,6 +55,11 @@
+ 	copyobjectxytoperm LOCALID_VICTORY_ROAD_ENTRANCE_WALLY
+ 	setflag FLAG_DEFEATED_WALLY_VICTORY_ROAD
+ 	copyvar VAR_VICTORY_ROAD_1F_STATE, VAR_0x8008
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 
+--- a/data/maps/SootopolisCity_Gym_1F/scripts.inc
++++ b/data/maps/SootopolisCity_Gym_1F/scripts.inc
+@@ -80,6 +80,19 @@
+ 	step_end
+ 
+ SootopolisCity_Gym_1F_EventScript_Juan::
++#ifdef PORT_BRIDGE
++    goto_if_defeated TRAINER_JUAN_1, SootopolisGym_CameraOriginalJuan
++    lock
++    faceplayer
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_offset 0, -6
++    camera_orbit 72, 55, -4, 55
++    waitcamera
++    camera_orbit 1320, 55, -4, 70
++    camera_reveal MAP_SOOTOPOLIS_CITY_GYM_1F, LOCALID_PLAYER, 1, 55, -4, 35
++SootopolisGym_CameraOriginalJuan:
++#endif
+ 	trainerbattle_single TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanIntro, SootopolisCity_Gym_1F_Text_JuanDefeat, SootopolisCity_Gym_1F_EventScript_JuanDefeated, NO_MUSIC
+ 	specialvar VAR_RESULT, ShouldTryRematchBattle
+ 	goto_if_eq VAR_RESULT, TRUE, SootopolisCity_Gym_1F_EventScript_JuanRematch
+--- a/data/maps/MtPyre_Summit/scripts.inc
++++ b/data/maps/MtPyre_Summit/scripts.inc
+@@ -39,6 +39,15 @@
+ 	call_if_eq VAR_0x8008, 0, MtPyre_Summit_EventScript_ArchieFacePlayer0
+ 	call_if_eq VAR_0x8008, 1, MtPyre_Summit_EventScript_ArchieFacePlayer1
+ 	call_if_eq VAR_0x8008, 2, MtPyre_Summit_EventScript_ArchieFacePlayer2
++#ifdef PORT_BRIDGE
++    copyvar VAR_TEMP_6, VAR_0x8008
++    camera_pair LOCALID_PLAYER, LOCALID_MT_PYRE_SUMMIT_ARCHIE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    copyvar VAR_0x8008, VAR_TEMP_6
++#endif
+ 	msgbox MtPyre_Summit_Text_ArchieWeGotTheOrbLetsGo, MSGBOX_DEFAULT
+ 	closemessage
+ 	fadescreen FADE_TO_BLACK
+@@ -56,10 +65,22 @@
+ 	call_if_eq VAR_0x8008, 0, MtPyre_Summit_EventScript_OldLadyApproachPlayer0
+ 	call_if_eq VAR_0x8008, 1, MtPyre_Summit_EventScript_OldLadyApproachPlayer1
+ 	call_if_eq VAR_0x8008, 2, MtPyre_Summit_EventScript_OldLadyApproachPlayer2
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MT_PYRE_SUMMIT_OLD_LADY
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox MtPyre_Summit_Text_BothOrbsTakenMagmaLeftThis, MSGBOX_DEFAULT
+ 	giveitem ITEM_MAGMA_EMBLEM
+ 	setflag FLAG_RECEIVED_RED_OR_BLUE_ORB
+ 	setflag FLAG_HIDE_JAGGED_PASS_MAGMA_GUARD
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	releaseall
+ 	end
+ 

@@ -1,0 +1,91 @@
+--- a/data/maps/CaveOfOrigin_B1F/scripts.inc
++++ b/data/maps/CaveOfOrigin_B1F/scripts.inc
+@@ -4,6 +4,13 @@
+ CaveOfOrigin_B1F_EventScript_Wallace::
+ 	lock
+ 	faceplayer
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_CAVE_OF_ORIGIN_WALLACE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox CaveOfOrigin_B1F_Text_WallaceStory, MSGBOX_DEFAULT
+ 	closemessage
+ 	applymovement LOCALID_CAVE_OF_ORIGIN_WALLACE, Common_Movement_WalkInPlaceFasterUp
+@@ -49,6 +56,11 @@
+ CaveOfOrigin_B1F_EventScript_AtSkyPillar::
+ 	msgbox CaveOfOrigin_B1F_Text_WellHeadToSkyPillar, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	playse SE_EXIT
+ 	fadescreenspeed FADE_TO_BLACK, 4
+ 	setflag FLAG_WALLACE_GOES_TO_SKY_PILLAR
+--- a/data/maps/SootopolisCity/scripts.inc
++++ b/data/maps/SootopolisCity/scripts.inc
+@@ -904,8 +904,18 @@
+ 	end
+ 
+ SootopolisCity_EventScript_StevenLeadPlayerCaveOfOrigin::
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_SOOTOPOLIS_STEVEN
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++#endif
+ 	msgbox SootopolisCity_Text_InvolvedWithCrisisComeWithMe, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_follow TRUE
++#endif
+ 	call_if_eq VAR_FACING, DIR_WEST, SootopolisCity_EventScript_StartWalkToCaveOfOriginWest
+ 	call_if_eq VAR_FACING, DIR_NORTH, SootopolisCity_EventScript_StartWalkToCaveOfOriginNorth
+ 	msgbox SootopolisCity_Text_DoesThisMakeYourFearPokemon, MSGBOX_DEFAULT
+@@ -922,6 +932,11 @@
+ 	msgbox SootopolisCity_Text_HereWereAreHelpWallace, MSGBOX_DEFAULT
+ 	closemessage
+ 	setflag FLAG_STEVEN_GUIDES_TO_CAVE_OF_ORIGIN
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	applymovement LOCALID_PLAYER, SootopolisCity_Movement_PlayerEnterCaveOfOrigin
+ 	waitmovement 0
+ 	warp MAP_CAVE_OF_ORIGIN_ENTRANCE, 9, 20
+--- a/data/maps/EverGrandeCity_HallOfFame/scripts.inc
++++ b/data/maps/EverGrandeCity_HallOfFame/scripts.inc
+@@ -23,6 +23,14 @@
+ 	applymovement LOCALID_HALL_OF_FAME_WALLACE, Common_Movement_WalkInPlaceFasterRight
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_HALL_OF_FAME_WALLACE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    camera_follow TRUE
++#endif
+ 	msgbox EverGrandeCity_HallOfFame_Text_HereWeHonorLeagueChampions, MSGBOX_DEFAULT
+ 	closemessage
+ 	applymovement LOCALID_HALL_OF_FAME_WALLACE, EverGrandeCity_HallOfFame_Movement_WalkIntoHallOfFame2
+@@ -38,6 +46,12 @@
+ 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
+ 	waitmovement 0
+ 	delay 20
++#ifdef PORT_BRIDGE
++    @ Preserve the original Hall of Fame recording and credits transition.
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	dofieldeffect FLDEFF_HALL_OF_FAME_RECORD
+ 	waitfieldeffect FLDEFF_HALL_OF_FAME_RECORD
+ 	delay 40

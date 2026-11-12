@@ -1,0 +1,205 @@
+--- a/data/maps/EverGrandeCity_SidneysRoom/scripts.inc
++++ b/data/maps/EverGrandeCity_SidneysRoom/scripts.inc
+@@ -46,6 +46,14 @@
+ 	lock
+ 	faceplayer
+ 	goto_if_set FLAG_DEFEATED_ELITE_4_SIDNEY, EverGrandeCity_SidneysRoom_EventScript_PostBattleSpeech
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    camera_reveal MAP_EVER_GRANDE_CITY_SIDNEYS_ROOM, LOCALID_PLAYER, 1, 55, -4, -35
++#endif
+ 	playbgm MUS_ENCOUNTER_ELITE_FOUR, FALSE
+ 	msgbox EverGrandeCity_SidneysRoom_Text_IntroSpeech, MSGBOX_DEFAULT
+ 	trainerbattle_no_intro TRAINER_SIDNEY, EverGrandeCity_SidneysRoom_Text_Defeat
+@@ -61,6 +69,11 @@
+ 	setflag FLAG_DEFEATED_ELITE_4_SIDNEY
+ 	call PokemonLeague_EliteFour_SetAdvanceToNextRoomMetatiles
+ 	msgbox EverGrandeCity_SidneysRoom_Text_PostBattleSpeech, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+--- a/data/maps/EverGrandeCity_PhoebesRoom/scripts.inc
++++ b/data/maps/EverGrandeCity_PhoebesRoom/scripts.inc
+@@ -40,6 +40,14 @@
+ 	lock
+ 	faceplayer
+ 	goto_if_set FLAG_DEFEATED_ELITE_4_PHOEBE, EverGrandeCity_PhoebesRoom_EventScript_PostBattleSpeech
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_orbit 72, 55, -4, 55
++    waitcamera
++    camera_orbit 1320, 55, -4, 70
++    camera_reveal MAP_EVER_GRANDE_CITY_PHOEBES_ROOM, LOCALID_PLAYER, 1, 55, -4, 35
++#endif
+ 	playbgm MUS_ENCOUNTER_ELITE_FOUR, FALSE
+ 	msgbox EverGrandeCity_PhoebesRoom_Text_IntroSpeech, MSGBOX_DEFAULT
+ 	trainerbattle_no_intro TRAINER_PHOEBE, EverGrandeCity_PhoebesRoom_Text_Defeat
+@@ -55,6 +63,11 @@
+ 	setflag FLAG_DEFEATED_ELITE_4_PHOEBE
+ 	call PokemonLeague_EliteFour_SetAdvanceToNextRoomMetatiles
+ 	msgbox EverGrandeCity_PhoebesRoom_Text_PostBattleSpeech, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+--- a/data/maps/EverGrandeCity_GlaciasRoom/scripts.inc
++++ b/data/maps/EverGrandeCity_GlaciasRoom/scripts.inc
+@@ -40,6 +40,14 @@
+ 	lock
+ 	faceplayer
+ 	goto_if_set FLAG_DEFEATED_ELITE_4_GLACIA, EverGrandeCity_GlaciasRoom_EventScript_PostBattleSpeech
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_orbit 72, 55, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    camera_reveal MAP_EVER_GRANDE_CITY_GLACIAS_ROOM, LOCALID_PLAYER, 1, 55, -4, -35
++#endif
+ 	playbgm MUS_ENCOUNTER_ELITE_FOUR, FALSE
+ 	msgbox EverGrandeCity_GlaciasRoom_Text_IntroSpeech, MSGBOX_DEFAULT
+ 	trainerbattle_no_intro TRAINER_GLACIA, EverGrandeCity_GlaciasRoom_Text_Defeat
+@@ -55,6 +63,11 @@
+ 	setflag FLAG_DEFEATED_ELITE_4_GLACIA
+ 	call PokemonLeague_EliteFour_SetAdvanceToNextRoomMetatiles
+ 	msgbox EverGrandeCity_GlaciasRoom_Text_PostBattleSpeech, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+--- a/data/maps/EverGrandeCity_DrakesRoom/scripts.inc
++++ b/data/maps/EverGrandeCity_DrakesRoom/scripts.inc
+@@ -41,6 +41,14 @@
+ 	lock
+ 	faceplayer
+ 	goto_if_set FLAG_DEFEATED_ELITE_4_DRAKE, EverGrandeCity_DrakesRoom_EventScript_PostBattleSpeech
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, 1
++    camera_height 8
++    camera_orbit 72, 55, -4, 55
++    waitcamera
++    camera_orbit 1320, 55, -4, 70
++    camera_reveal MAP_EVER_GRANDE_CITY_DRAKES_ROOM, LOCALID_PLAYER, 1, 55, -4, 35
++#endif
+ 	playbgm MUS_ENCOUNTER_ELITE_FOUR, FALSE
+ 	msgbox EverGrandeCity_DrakesRoom_Text_IntroSpeech, MSGBOX_DEFAULT
+ 	trainerbattle_no_intro TRAINER_DRAKE, EverGrandeCity_DrakesRoom_Text_Defeat
+@@ -58,6 +66,11 @@
+ 	setflag FLAG_DEFEATED_ELITE_4_DRAKE
+ 	call PokemonLeague_EliteFour_SetAdvanceToNextRoomMetatiles
+ 	msgbox EverGrandeCity_DrakesRoom_Text_PostBattleSpeech, MSGBOX_DEFAULT
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 
+--- a/data/maps/EverGrandeCity_ChampionsRoom/scripts.inc
++++ b/data/maps/EverGrandeCity_ChampionsRoom/scripts.inc
+@@ -38,6 +38,14 @@
+ 	step_end
+ 
+ EverGrandeCity_ChampionsRoom_EventScript_Wallace::
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_CHAMPIONS_ROOM_WALLACE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 50, -4, 145
++    camera_reveal MAP_EVER_GRANDE_CITY_CHAMPIONS_ROOM, LOCALID_PLAYER, LOCALID_CHAMPIONS_ROOM_WALLACE, 55, -4, -35
++#endif
+ 	playbgm MUS_ENCOUNTER_CHAMPION, FALSE
+ 	msgbox EverGrandeCity_ChampionsRoom_Text_IntroSpeech, MSGBOX_DEFAULT
+ 	trainerbattle_no_intro TRAINER_WALLACE, EverGrandeCity_ChampionsRoom_Text_Defeat
+@@ -51,6 +59,11 @@
+ 	special DrawWholeMapView
+ 	msgbox EverGrandeCity_ChampionsRoom_Text_PostBattleSpeech, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	playse SE_DOOR
+ 	checkplayergender
+ 	call_if_eq VAR_RESULT, MALE, EverGrandeCity_ChampionsRoom_EventScript_PlayMayMusic
+--- a/data/maps/MagmaHideout_4F/scripts.inc
++++ b/data/maps/MagmaHideout_4F/scripts.inc
+@@ -52,11 +52,24 @@
+ 	delay 30
+ 	applymovement LOCALID_MAGMA_HIDEOUT_4F_MAXIE, Common_Movement_FacePlayer
+ 	waitmovement 0
++#ifdef PORT_BRIDGE
++    camera_pair LOCALID_PLAYER, LOCALID_MAGMA_HIDEOUT_4F_MAXIE
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    camera_reveal MAP_MAGMA_HIDEOUT_4F, LOCALID_PLAYER, LOCALID_MAGMA_HIDEOUT_4F_MAXIE, 55, -4, -35
++#endif
+ 	msgbox MagmaHideout_4F_Text_MaxieOhItWasYou, MSGBOX_DEFAULT
+ 	closemessage
+ 	trainerbattle_no_intro TRAINER_MAXIE_MAGMA_HIDEOUT, MagmaHideout_4F_Text_MaxieDefeat
+ 	msgbox MagmaHideout_4F_Text_MaxieImGoingAfterGroudon, MSGBOX_DEFAULT
+ 	closemessage
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	clearflag FLAG_HIDE_SLATEPORT_CITY_CAPTAIN_STERN
+ 	clearflag FLAG_HIDE_SLATEPORT_CITY_GABBY_AND_TY
+ 	setvar VAR_SLATEPORT_CITY_STATE, 1
+--- a/data/maps/AquaHideout_B2F/scripts.inc
++++ b/data/maps/AquaHideout_B2F/scripts.inc
+@@ -23,6 +23,18 @@
+ 	end
+ 
+ AquaHideout_B2F_EventScript_Matt::
++#ifdef PORT_BRIDGE
++    goto_if_defeated TRAINER_MATT, AquaHideout_CameraOriginalMatt
++    lock
++    faceplayer
++    camera_pair LOCALID_PLAYER, LOCALID_AQUA_HIDEOUT_MATT
++    camera_height 8
++    camera_orbit 72, 60, -4, 125
++    waitcamera
++    camera_orbit 1320, 55, -4, 145
++    camera_reveal MAP_AQUA_HIDEOUT_B2F, LOCALID_PLAYER, LOCALID_AQUA_HIDEOUT_MATT, 55, -4, -35
++AquaHideout_CameraOriginalMatt:
++#endif
+ 	trainerbattle_single TRAINER_MATT, AquaHideout_B2F_Text_MattIntro, AquaHideout_B2F_Text_MattDefeat, AquaHideout_B2F_EventScript_SubmarineEscape
+ 	msgbox AquaHideout_B2F_Text_MattPostBattle, MSGBOX_DEFAULT
+ 	release
+@@ -48,6 +60,11 @@
+ 	msgbox AquaHideout_B2F_Text_MattPostBattle, MSGBOX_DEFAULT
+ 	setflag FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE
+ 	setflag FLAG_HIDE_LILYCOVE_CITY_AQUA_GRUNTS
++#ifdef PORT_BRIDGE
++    camera_return 60
++    waitcamera
++    camera_end
++#endif
+ 	release
+ 	end
+ 

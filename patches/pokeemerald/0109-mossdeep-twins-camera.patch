@@ -1,0 +1,26 @@
+--- a/data/maps/MossdeepCity_Gym/scripts.inc
++++ b/data/maps/MossdeepCity_Gym/scripts.inc
+@@ -49,6 +49,23 @@
+ 	end
+ 
+ MossdeepCity_Gym_EventScript_TateAndLiza::
++#ifdef PORT_BRIDGE
++    @ Do not queue a battle return for the insufficient-party branch.
++    goto_if_defeated TRAINER_TATE_AND_LIZA_1, MossdeepGym_CameraOriginalTwins
++    special HasEnoughMonsForDoubleBattle
++    goto_if_ne VAR_RESULT, PLAYER_HAS_TWO_USABLE_MONS, MossdeepGym_CameraOriginalTwins
++    lock
++    faceplayer
++    @ Frame the two leaders together, leaving room for the player below.
++    camera_pair 1, 9
++    camera_height 8
++    camera_offset 0, 4
++    camera_orbit 72, 65, -4, 125
++    waitcamera
++    camera_orbit 1320, 60, -4, 145
++    camera_reveal MAP_MOSSDEEP_CITY_GYM, 1, 9, 65, -4, -35
++MossdeepGym_CameraOriginalTwins:
++#endif
+ 	trainerbattle_double TRAINER_TATE_AND_LIZA_1, MossdeepCity_Gym_Text_TateAndLizaIntro, MossdeepCity_Gym_Text_TateAndLizaDefeat, MossdeepCity_Gym_Text_TateAndLizaNeedTwoMons, MossdeepCity_Gym_EventScript_TateAndLizaDefeated, NO_MUSIC
+ 	specialvar VAR_RESULT, ShouldTryRematchBattle
+ 	goto_if_eq VAR_RESULT, TRUE, MossdeepCity_Gym_EventScript_TateAndLizaRematch

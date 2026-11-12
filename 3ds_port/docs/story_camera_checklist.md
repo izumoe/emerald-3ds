@@ -148,53 +148,75 @@ visibility need visual review. Checkboxes remain open pending that review.
 
 ## Lilycove to the weather crisis
 
+First camera scripts are in progress. Lilycove, Mt. Pyre and the twins have
+staged emulator captures; entries remain open for branch, model and hardware
+review.
+
 - [ ] **Lilycove rival farewell** — Lilycove Department Store exterior. Camera:
-  plan. Environment: **assets exist** for some Lilycove buildings; exact
-  location **check**. Give the final rival encounter a distinct closing beat.
-- [ ] **Mt. Pyre and the stolen orbs** — Mt. Pyre summit. Camera: plan.
-  Environment: **check** summit, fog and characters. Stage the theft, the
-  teams' departures and the elderly couple's explanation.
+  conversation, battle return and held departure recorded. Environment:
+  **captured 3D** for the shown approach; check alternate interactions.
+- [ ] **Mt. Pyre and the stolen orbs** — Mt. Pyre summit. Camera: first pass.
+  Environment: summit **captured 3D** for one staged approach, with heavy fog;
+  check other approaches. The confrontation and explanation are recorded.
 - [ ] **Magma Hideout at Mt. Chimney** — hideout / Groudon chamber. Camera:
-  plan. Environment: **check**. Stage Maxie's awakening attempt, battle and
+  first Maxie battle script; awakening needs direction and visual review.
+  Environment: **check**. Stage Maxie's awakening attempt, battle and
   Groudon's departure, with clear views of the legendary Pokémon.
 - [ ] **Slateport submarine theft** — harbor. Camera: plan. Environment:
-  **check** harbor and submarine. Stage Stern, the crowd, Archie and the
-  getaway as a short sequence.
+  **check** harbor and submarine. Stern and Archie dialogue scripts added;
+  check all four approaches and the escape. Stage Stern, the crowd, Archie and
+  the getaway as a short sequence.
 - [ ] **Aqua Hideout** — Lilycove hideout / submarine bay. Camera: plan.
-  Environment: **check** interiors and moving actors. Build toward the
+  Environment: **check** interiors and moving actors. Matt's battle script
+  added; submarine escape composition still needs review. Build toward the
   administrator encounter and submarine escape.
 - [ ] **Mossdeep Space Center** — Space Center. Camera: plan. Environment:
-  **check** exterior, interiors and team positions. Introduce the attack,
-  Steven's partnership and the battle with Maxie and Tabitha.
-- [ ] **Tate and Liza** — Mossdeep Gym. Camera: plan. Environment: **check**
-  interior and puzzle state. Compose both leaders for the double battle.
+  **check** exterior, interiors and team positions. Steven's initial dialogue
+  is scripted; the multi-battle and aftermath need direction. Introduce the
+  attack, Steven's partnership and the battle with Maxie and Tabitha.
+- [ ] **Tate and Liza** — Mossdeep Gym. Camera: group shot and battle return
+  recorded for one approach; the one-Pokémon branch keeps the original view.
+  Environment: shown platform **captured 3D**, but most of the room appears
+  black and needs modelling; review the other speaking position and puzzle.
 - [ ] **Seafloor Cavern** — cavern / Kyogre chamber. Camera: plan. Environment:
-  **check** underwater approach and chamber. Stage Archie, Kyogre's awakening
-  and the transition to the weather crisis.
+  **check** underwater approach and chamber. Archie battle scripted; the
+  awakening retains the original camera and needs direction. Stage Archie,
+  Kyogre's awakening and the transition to the weather crisis.
 
 ## Sootopolis and the League
 
+First dialogue and battle scripts are in progress. Juan, Victory Road Wally,
+Sidney and the Champion sequence have staged emulator captures. Legendary
+sequences, other League rooms, transitions and branches still need review.
+
 - [ ] **Weather crisis and Sootopolis confrontation** — routes / Sootopolis.
-  Camera: plan. Environment: **assets exist** for some Sootopolis buildings;
+  Camera: Steven's escort scripted; legendary confrontation needs direction.
+  Environment: **assets exist** for some Sootopolis buildings;
   weather effects, legendary actors and exact viewpoints **check**. Establish
   the abnormal weather, Groudon and Kyogre, then Wallace and Steven.
 - [ ] **Cave of Origin and Sky Pillar** — Cave of Origin / Sky Pillar summit.
-  Camera: plan. Environment: **check** both interiors and summit. Give Wallace's
-  request and Rayquaza's awakening distinct beats; preserve player control on
-  the climb.
+  Camera: Cave of Origin and Sky Pillar Wallace dialogue scripted; original
+  shake and camera effects retained. Environment: **check** both interiors
+  and summit. Give Wallace's request and Rayquaza's awakening distinct beats;
+  preserve player control on the climb.
 - [ ] **Rayquaza and the aftermath** — Sootopolis. Camera: plan. Environment:
   **check** crisis and restored-weather states. Give the descent, confrontation,
   departure and leaders' reactions room to read.
-- [ ] **Juan** — Sootopolis Gym. Camera: plan. Environment: **check** interior
-  and puzzle state. Introduce the final Gym battle and reward.
-- [ ] **Wally's last challenge** — Victory Road. Camera: plan. Environment:
-  **check** cave and entrance routes. Give the reunion, battle and farewell a
-  character-focused treatment.
+- [ ] **Juan** — Sootopolis Gym. Camera: introduction, battle return and reward
+  recorded for one approach. Environment: **captured 3D** for the shown setup;
+  review the puzzle state and alternate approaches.
+- [ ] **Wally's last challenge** — Victory Road. Camera: entrance challenge
+  and battle return recorded with the side angle. Environment:
+  **captured 3D** for the shown approach; check the other approach and flags.
 - [ ] **Pokémon League and Elite Four** — Ever Grande / League rooms. Camera:
-  plan. Environment: **check** exterior and each room. Establish the approach;
-  use a consistent battle-introduction pattern with individual framing.
+  first dialogue and battle-return scripts for all four; Sidney recorded.
+  Environment: Sidney's room **captured 3D** for the shown setup; check the
+  exterior and other rooms. Use individual framing for each introduction.
 - [ ] **Champion Wallace and Hall of Fame** — Champion room / Hall of Fame.
-  Camera: plan. Environment: **check** rooms and battle/credits transitions.
+  Camera: Wallace battle, Champion procession and Hall of Fame recorded for
+  one staged run, including return to the original recording effect.
+  Environment: both rooms **captured 3D** for the shown setup; check credits
+  and alternate party and rival states.
   Give the Champion entrance, victory and final procession a full sequence.
 - [ ] **Return home after the credits** — Littleroot / house. Camera: plan.
   Environment: Littleroot building **assets exist**; interior **check**.
