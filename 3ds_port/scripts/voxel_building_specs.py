@@ -5420,6 +5420,12 @@ def mossdeep_gym():
     return pieces + boxes + [sofa]
 
 
+def mossdeep_gym_decks():
+    """The leaders' raised stage carries actors on its original map cells."""
+    return [("LAYOUT_MOSSDEEP_CITY_GYM", x, y, 12, 12, 0)
+            for y in (7, 8) for x in range(22, 26)]
+
+
 
 # Fortree's gym: a maze of green columns on a grass floor, the rotating
 # gates between them (sprites, src/rotating_gate.c: no tile of the floor

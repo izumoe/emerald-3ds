@@ -263,9 +263,11 @@ checked captures also need branch, model and hardware review.
   attack, Steven's partnership and the battle with Maxie and Tabitha.
 - [x] **Tate and Liza** — Mossdeep Gym. Camera: group shot and battle return
   recorded for one approach; the one-Pokémon branch keeps the original view.
-  A staged retest confirms extensive black surroundings around the platform.
-  Environment: shown platform **captured 3D**, but most of the room appears
-  black and needs modelling; review the other speaking position and puzzle.
+  The leaders' stage now lifts actors to its surface rather than leaving them
+  embedded in its model. Both speaking positions and a walk off and back onto
+  the stage were checked in staged emulator takes. Environment: shown platform
+  **captured 3D**; the original map has black void between islands. Review the
+  battle return, other puzzle states and hardware.
 - [ ] **Seafloor Cavern** — cavern / Kyogre chamber. Camera: Archie battle
   scripted. Environment: **check** underwater approach and chamber; the
   awakening retains the original camera and needs direction. Stage Archie,
