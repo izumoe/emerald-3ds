@@ -7,7 +7,7 @@
 +#ifdef PORT_BRIDGE
 +    @ Hold a gentle moving portrait through the first sailing offer.
 +    camera_pair LOCALID_PLAYER, LOCALID_BRINEYS_HOUSE_BRINEY
-+    camera_height 8
++    camera_height -4
 +    camera_orbit 72, 55, -4, 125
 +    waitcamera
 +    camera_orbit 1320, 55, -4, 145

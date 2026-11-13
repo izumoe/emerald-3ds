@@ -36,10 +36,10 @@
  	lockall
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_WALLYS_HOUSE_WALLYS_DAD
-+    camera_height 8
-+    camera_orbit 72, 55, -4, 125
++    camera_height -4
++    camera_orbit 72, 55, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 55, -4, 128
++    camera_orbit 1320, 55, -4, 52
 +#endif
  	msgbox PetalburgCity_WallysHouse_Text_PleaseExcuseUs, MSGBOX_DEFAULT
  	giveitem ITEM_HM_SURF

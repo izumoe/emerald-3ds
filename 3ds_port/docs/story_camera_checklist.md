@@ -95,7 +95,9 @@ the modelling, alternate-branch and hardware notes remain open follow-ups.
   retain the original side and review its framing. Environment:
   **captured 3D**. Review alternate approaches and all exits.
 - [x] **Mr. Stone's first meeting** — Devon Corp 3F. Camera: employee escort,
-  desk orbit and PokéNav push prototype recorded. Environment: **captured 3D**.
+  desk orbit and PokéNav push prototype recorded. The escort opening was
+  rechecked in a staged take; the complete meeting remains to be rechecked.
+  Environment: **captured 3D**.
   Review the complete meeting and healing fade.
 - [x] **Rustboro city introduction** — Rustboro. Camera: multi-shot city
   prototype recorded. Environment: **captured 3D**; building assets exist.
@@ -112,7 +114,8 @@ checked.
 
 - [x] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: the
   offer, boarding, boat-follow and scenic dock arrival are scripted and recorded,
-  including Norman's call. Tracking crossed a connected-map seam in the staged
+  including Norman's call. The offer's adjusted framing was checked in a staged
+  take; the voyage and arrival were not recaptured for that change. Tracking crossed a connected-map seam in the staged
   run, and the arrival returned to gameplay. The close actor shot was rejected
   by dock visibility checks; the recorded arrival uses a scenic cut instead.
   Review the no-call and repeat-travel branches, other camera settings, water
@@ -131,7 +134,9 @@ checked.
   the introduction and shared battle transition.
 
 - [x] **Captain Stern and the Oceanic Museum** — Slateport harbor / museum.
-  Camera: museum confrontation and battle returns recorded; harbor and alternate
+  Camera: museum confrontation and battle returns recorded. A trial reverse
+  of the opening reveals black beyond the room edges, so the existing shot is
+  retained pending environment work; harbor and alternate
   states need review. Environment: museum **captured 3D** for the shown setup;
   harbor **check**. Stage the delivery, Aqua confrontation and Archie's
   introduction.
@@ -182,7 +187,8 @@ recomposition. Checked scenes still need branch and transition review.
   for the staged view; **check** other maps and villain-team states.
 
 - [ ] **Flannery and the Go-Goggles** — Lavaridge Gym / town. Camera: first
-  battle recorded, but heavy steam obscures the shot. The rival gift completes
+  battle recorded, but heavy steam obscures the shot; this persists in a staged
+  retest. The rival gift completes
   in gameplay view after the terrain check rejects the close camera. Both a
   normal scenic anchor and a closer scenic test were rejected as well; the
   experiments were discarded and the safe fallback remains. Environment:
@@ -192,7 +198,8 @@ recomposition. Checked scenes still need branch and transition review.
 - [x] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
   battle, post-battle exchange and Surf gift recorded. A reverse-side opening
   frames Norman over the player's shoulder in a staged take; review the
-  post-battle and Surf shots separately. Environment: both
+  post-battle shot separately. The Surf gift's reverse-side opening was
+  checked in a staged take. Environment: both
   rooms **captured 3D** for the shown setups; review alternate entrances and
   the transition to the house.
 
@@ -221,7 +228,8 @@ recomposition. Checked scenes still need branch and transition review.
   The 3D renderer suppresses the bridge shadow to preserve the surprise.
 
 - [x] **Winona** — Fortree Gym. Camera: first battle and reward recorded;
-  alternate approaches and puzzle state need review. Environment: **check**
+  opening aim adjusted and checked in a staged take. Alternate approaches,
+  battle return and puzzle state need review. Environment: **check**
   exterior, interior and puzzle state. Establish her introduction and battle.
 
 ## Lilycove to the weather crisis
@@ -231,10 +239,12 @@ other encounters have partial scripts but still need major story beats;
 checked captures also need branch, model and hardware review.
 
 - [x] **Lilycove rival farewell** — Lilycove Department Store exterior. Camera:
-  conversation, battle return and held departure recorded. Environment:
+  conversation, battle return and held departure recorded; opening aim adjusted
+  and checked for one staged approach. Review the later beats after this change. Environment:
   **captured 3D** for the shown approach; check alternate interactions.
 - [x] **Mt. Pyre and the stolen orbs** — Mt. Pyre summit. Camera: first pass.
-  Environment: summit **captured 3D** for one staged approach, with heavy fog;
+  Archie's opening aim was adjusted and checked in a staged take, but heavy fog
+  washes out the group. Environment: summit **captured 3D** for one staged approach, with heavy fog;
   check other approaches. The confrontation and explanation are recorded.
 - [ ] **Magma Hideout at Mt. Chimney** — hideout / Groudon chamber. Camera:
   first Maxie battle script; awakening needs direction and visual review.
@@ -253,6 +263,7 @@ checked captures also need branch, model and hardware review.
   attack, Steven's partnership and the battle with Maxie and Tabitha.
 - [x] **Tate and Liza** — Mossdeep Gym. Camera: group shot and battle return
   recorded for one approach; the one-Pokémon branch keeps the original view.
+  A staged retest confirms extensive black surroundings around the platform.
   Environment: shown platform **captured 3D**, but most of the room appears
   black and needs modelling; review the other speaking position and puzzle.
 - [ ] **Seafloor Cavern** — cavern / Kyogre chamber. Camera: Archie battle
