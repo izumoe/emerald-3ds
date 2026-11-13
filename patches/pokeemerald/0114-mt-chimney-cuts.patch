@@ -45,7 +45,7 @@
  	msgbox MtChimney_Text_MaxieYouHaventSeenLastOfMagma, MSGBOX_DEFAULT
  	closemessage
  	delay 30
-@@ -71,11 +88,12 @@
+@@ -71,11 +88,13 @@
  	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
  	waitmovement 0
  #ifdef PORT_BRIDGE
@@ -55,6 +55,7 @@
 +    @ Center the shot on the row where Archie and the player finish walking.
 +    camera_scene
 +    camera_anchor 12, 17
++    camera_offset 4, 5
 +    camera_view 1, 55, 34, 50
      waitcamera
 -    camera_orbit 1320, 55, -4, 145

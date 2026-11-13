@@ -75,6 +75,8 @@ those script branches.
   of a world tile, clamped to +/-32 (two tiles). Positive z looks south;
   negative z composes towards the landmark north of the pair. Set before the
   next move; selection resets the offset. The same offset follows the actors.
+  After `camera_anchor`, it also offsets a scenic target; each new anchor
+  resets it. This allows framing between tile centres.
 - `camera_height height`: aim above the actors’ ground, in sixteenths of a
   tile (0..24). Set after `camera_pair` and before a move; selecting a new pair
   resets it. This changes the look-at height, not terrain height. A queued

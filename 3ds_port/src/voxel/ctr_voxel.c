@@ -6059,7 +6059,8 @@ bool CtrVoxel_ScriptOrbit(unsigned frames,int distance,int pitch,int heading)
 /* Scenic anchors are local to the current map, never an actor or a saved
  * camera pose. Bounds and eye-path checks fail closed on unavailable scenery. */
 static int sScenicX, sScenicZ;
-void CtrVoxel_ScriptAnchor(int x,int z) { sScenicX=x; sScenicZ=z; }
+void CtrVoxel_ScriptAnchor(int x,int z) { sScenicX=x; sScenicZ=z;
+    sScriptCamera.offsetX=sScriptCamera.offsetZ=0; }
 bool CtrVoxel_ScriptView(unsigned frames,int distance,int pitch,int yaw)
 {
 #if !CTR_VOXEL_LIGHTING
@@ -6073,8 +6074,8 @@ bool CtrVoxel_ScriptView(unsigned frames,int distance,int pitch,int yaw)
         return false;
     VoxelCamera follow=sDirector.active?sFollowCamera:sCamera;
     VoxelCamera anchor=follow;
-    anchor.targetX=map->originX+sScenicX+0.5f;
-    anchor.targetZ=map->originY+sScenicZ+0.5f;
+    anchor.targetX=map->originX+sScenicX+0.5f+sScriptCamera.offsetX;
+    anchor.targetZ=map->originY+sScenicZ+0.5f+sScriptCamera.offsetZ;
     anchor.ground=VoxelRelief_SurfaceAt(anchor.targetX,anchor.targetZ);
     anchor.distance=follow.distance*(distance<50?50:distance>180?180:distance)/100.0f;
     anchor.pitch=pitch<30?30:pitch>55?55:pitch;
