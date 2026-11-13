@@ -124,8 +124,11 @@ checked.
 - [x] **Steven and the Letter** — Granite Cave, Steven's room. Camera: exchange
   and exit prototype recorded. A revised opening holds on the letter handoff,
   then pushes in for the gift; review its transition into the gift
-  and the held departure. Environment: **captured 3D** for the shown
-  approach. Check alternate approaches and the return to the cave camera.
+  and the held departure. Environment: the shown approach was captured with
+  the voxel renderer; two rock clusters now have a first model, but the cave
+  walls and remaining rocks stay flat. See the
+  [story environment audit](story_voxel_audit.md). Model the room and review
+  alternate approaches and the return to the cave camera.
 
 - [x] **Brawly** — Dewford Gym. Camera: introduction and battle return recorded.
   A reverse-side opening and its visual light pool were checked in a staged
@@ -347,8 +350,10 @@ Do not play a reveal over an existing event without coordinating ownership.
   Environment: town building **assets exist**; boat, water and dock **check**.
 - [ ] **Granite Cave — the descent.** Trigger: first entrance or arrival at a
   suitable opening. Shot: hold on the cave mouth or a safe interior vista.
-  Environment: Steven's room **captured 3D**; entrance, darkness and other
-  floors **check**. Avoid revealing areas through walls or spoiling navigation.
+  Environment: Steven's room was captured with the voxel renderer and has two
+  modelled rock clusters; its walls and remaining rocks are flat. The entrance
+  and other floors also need modelling and review, including darkness states.
+  Avoid revealing areas through walls or spoiling navigation.
 - [ ] **Slateport — the harbor.** Trigger: first landfall on the beach or first
   city entrance. Shot: coast to harbor and shipyard, ending at the player.
   Environment: **check** beach, harbor, water, crowds and story-dependent ships.

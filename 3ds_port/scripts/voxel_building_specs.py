@@ -9512,3 +9512,16 @@ SPECS += [{"name": "magma_hideout_%s" % f.lower(),
                                          ht, leave=MAGMA_FLOOR)
                                    for (k, x, y, w, h, ht) in machines]}}
           for f, machines in MAGMA_MACHINES.items()]
+
+# Steven's room has two identical rock clusters on blocked cells. Keep this
+# first pass local to the room until the same tiles have been checked on the
+# other cave maps; their surrounding terrain and collision may differ.
+_granite_steven_rocks = [
+    piece("rock_%d_%d" % (x, y), cells_rects([(x, y)]), 8, round="dome")
+    for x, y in ((5, 5), (10, 8))
+]
+for _rock in _granite_steven_rocks:
+    _rock["alone"] = True
+SPECS += [{"name": "granite_steven_room", "interior": {
+    "layout": "LAYOUT_GRANITE_CAVE_STEVENS_ROOM", "ground": [0x201],
+    "pieces": _granite_steven_rocks}}]
