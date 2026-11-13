@@ -151,8 +151,9 @@ recomposition. Checked scenes still need branch and transition review.
   between two scenic angles for Maxie, returns to the crater after the battle,
   and cuts to Archie; one staged approach was recorded. A closer, more angled
   pass uses 50–55% scenic distance, 34° pitch and headings up to 50° to either
-  side; its scenic views play in the staged approach. The dialogue box overlaps
-  the player slightly during the Archie shot. Mountain seams remain visible and
+  side; its scenic views play in the staged approach. The Archie shot targets
+  the row where the characters finish walking; a staged retest centers them
+  above the dialogue box. Mountain seams remain visible and
   the shared battle push and queued actor-focused reveal are rejected by
   visibility checks. Test both approaches,
   rapid dialogue, other camera settings, stereo and hardware; investigate the
