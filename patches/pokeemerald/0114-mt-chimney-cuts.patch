@@ -11,10 +11,10 @@
 +    @ the confrontation. Scenic views validate the camera eye at each cut.
 +    camera_scene
 +    camera_anchor 13, 16
-+    camera_view 1, 80, 40, -30
++    camera_view 1, 55, 34, -50
      waitcamera
 -    camera_orbit 1320, 55, -4, 145
-+    camera_view 900, 80, 40, -20
++    camera_view 900, 50, 34, -35
  #endif
  	playbgm MUS_ENCOUNTER_MAGMA, FALSE
  	msgbox MtChimney_Text_MeteoriteWillActivateVolcano, MSGBOX_DEFAULT
@@ -25,9 +25,9 @@
 +#ifdef PORT_BRIDGE
 +    @ Reverse the angle for the challenge.
 +    camera_anchor 13, 16
-+    camera_view 1, 80, 40, 30
++    camera_view 1, 55, 34, 50
 +    waitcamera
-+    camera_view 900, 80, 40, 20
++    camera_view 900, 50, 34, 35
 +#endif
  	msgbox MtChimney_Text_MaxieIntro, MSGBOX_DEFAULT
  #ifdef PORT_BRIDGE
@@ -38,9 +38,9 @@
 +    @ Re-establish the crater for the brief post-battle exchange.
 +    camera_scene
 +    camera_anchor 13, 16
-+    camera_view 1, 80, 40, -30
++    camera_view 1, 55, 34, -50
 +    waitcamera
-+    camera_view 900, 80, 40, -20
++    camera_view 900, 50, 34, -35
 +#endif
  	msgbox MtChimney_Text_MaxieYouHaventSeenLastOfMagma, MSGBOX_DEFAULT
  	closemessage
@@ -55,10 +55,10 @@
 +    @ Let Archie enter before cutting back to the two figures.
 +    camera_scene
 +    camera_anchor 12, 16
-+    camera_view 1, 80, 40, 30
++    camera_view 1, 55, 34, 50
      waitcamera
 -    camera_orbit 1320, 55, -4, 145
-+    camera_view 900, 80, 40, 20
++    camera_view 900, 50, 34, 35
  #endif
  	msgbox MtChimney_Text_ArchieThankYou, MSGBOX_DEFAULT
  	closemessage

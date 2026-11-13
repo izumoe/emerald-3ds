@@ -149,9 +149,12 @@ recomposition. Checked scenes still need branch and transition review.
 - [ ] **Meteor Falls and Mt. Chimney** — Meteor Falls / cable car / Mt. Chimney.
   Camera: Meteor Falls confrontation recorded. A revised Mt. Chimney pass cuts
   between two scenic angles for Maxie, returns to the crater after the battle,
-  and cuts to Archie; one staged approach was recorded. The scenic views run,
-  but mountain seams remain visible and the shared battle push and queued
-  actor-focused reveal are rejected by visibility checks. Test both approaches,
+  and cuts to Archie; one staged approach was recorded. A closer, more angled
+  pass uses 50–55% scenic distance, 34° pitch and headings up to 50° to either
+  side; its scenic views play in the staged approach. The dialogue box overlaps
+  the player slightly during the Archie shot. Mountain seams remain visible and
+  the shared battle push and queued actor-focused reveal are rejected by
+  visibility checks. Test both approaches,
   rapid dialogue, other camera settings, stereo and hardware; investigate the
   terrain. Cable car still needs direction. Environment: summit **captured 3D**
   for the staged view; **check** other maps and villain-team states.

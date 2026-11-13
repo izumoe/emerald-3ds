@@ -6076,7 +6076,7 @@ bool CtrVoxel_ScriptView(unsigned frames,int distance,int pitch,int yaw)
     anchor.targetX=map->originX+sScenicX+0.5f;
     anchor.targetZ=map->originY+sScenicZ+0.5f;
     anchor.ground=VoxelRelief_SurfaceAt(anchor.targetX,anchor.targetZ);
-    anchor.distance=follow.distance*(distance<80?80:distance>180?180:distance)/100.0f;
+    anchor.distance=follow.distance*(distance<50?50:distance>180?180:distance)/100.0f;
     anchor.pitch=pitch<30?30:pitch>55?55:pitch;
     anchor.yaw=yaw<-60?-60:yaw>60?60:yaw;
     VoxelCameraShot shot={0,0,1,0,frames,0,0};

@@ -178,7 +178,7 @@ existing scene timing are unchanged.
 Patch 0085 adds `camera_scene`, `camera_anchor x, y`, and
 `camera_view frames, distance, pitch, yaw`. Anchors are current-map tile
 coordinates. Scenic pitch (30..55 degrees) and yaw (-60..60) are authored
-absolute angles; distance (80..180 percent) uses the independent gameplay
+absolute angles; distance (50..180 percent) uses the independent gameplay
 camera distance. Each view starts at the displayed pose, so consecutive views
 form a dolly/flyover path; a one-frame view cuts to its destination instead.
 FOV remains fixed. Dialogue framing limits remain
