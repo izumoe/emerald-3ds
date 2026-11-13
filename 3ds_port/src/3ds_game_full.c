@@ -1582,10 +1582,25 @@ static void ConversationCamera(void)
     }
 }
 
+/* The printer may finish before the player dismisses the box or a choice. */
+static bool DialogueStereoHeld(bool held, bool overworld, bool locked, bool message)
+{
+    if (!overworld) return false;
+    if (message) return true;
+    return held && locked;
+}
+
 void CtrGame_WaitFrame(void)
 {
     static MainCallback lastCallback;
     static u32 nextReport;
+    static bool dialogueHeld;
+    extern void CtrVoxel_SetDialogueVisible(bool visible);
+
+    dialogueHeld = DialogueStereoHeld(dialogueHeld, gMain.callback2 == CB2_Overworld,
+                                      ArePlayerFieldControlsLocked(),
+                                      GetFieldMessageBoxMode() != FIELD_MESSAGE_BOX_HIDDEN);
+    CtrVoxel_SetDialogueVisible(dialogueHeld);
 
     /* The boot crash reported on hardware happens between AgbMain and the first
      * logged frame, so the first frames are traced step by step. */

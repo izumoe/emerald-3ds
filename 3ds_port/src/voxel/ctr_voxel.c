@@ -804,6 +804,7 @@ static void FitToLogicalSurface(C3D_Mtx *mtx);
 static float sStereoSlider;
 static float sStereoRequested, sStableOverlayShift;
 static bool sStereoStableOverlay;
+static bool sStereoDialogue;
 static int sDrawEye = -1;
 static float StereoIod(float *screen);
 static float CameraTanX(void);
@@ -6321,9 +6322,8 @@ bool CtrVoxel_Update(void)
     /* The swoop to or from the 2D field, on top of the player's pose. */
     if (!sBattle.on)
         VoxelCamera_Swoop(&sCamera, sSwoop);
-    /* Keep the stereo interface steady while an authored or conversation
-     * camera moves, without letting near scenery cross in front of it. */
-    StereoConstrainOverlay(sDirector.active && !sBattle.on && sSwoop <= 0.0f);
+    /* Keep field dialogue and directed shots at a modest, stable depth. */
+    StereoConstrainOverlay((sDirector.active || sStereoDialogue) && !sBattle.on && sSwoop <= 0.0f);
     if (sBattle.on)
     {
         if (!sBattle.chosen)
@@ -9299,17 +9299,21 @@ void CtrVoxel_Draw(C3D_RenderTarget *target, int eye)
  * camera to the player, so the player is just behind the glass and the
  * ground along the bottom edge comes a few pixels out of it. The game's
  * weather is composed on the glass; text and prompts remain in front of the
- * bounded near world. Directed shots use a stable overlay depth and reduce
+ * bounded near world. Dialogue and directed shots use a stable overlay depth and reduce
  * world separation if needed (CtrVoxel_OverlayParallax, 3ds_video.c).
  * On an Old 3DS the second pass took the field under 60 fps,
  * so 3ds_video.c keeps the world flat there.
  */
 #define VOXEL_STEREO_FAR_PX 7.0f
 #define VOXEL_STEREO_FOCUS 0.85f
-/* Stable per-eye interface displacement in logical pixels for a directed
- * shot. The maximum also bounds the optional 150% and 200% depth settings. */
-#define VOXEL_STEREO_UI_PX 6.0f
-#define VOXEL_STEREO_UI_MAX_PX 8.0f
+/* Small per-eye shift reduces visible ghost edges around high-contrast text. */
+#define VOXEL_STEREO_UI_PX 2.0f
+#define VOXEL_STEREO_UI_MAX_PX 3.0f
+
+void CtrVoxel_SetDialogueVisible(bool visible)
+{
+    sStereoDialogue = visible;
+}
 
 void CtrVoxel_SetStereo(float slider)
 {
@@ -9357,7 +9361,7 @@ static float StereoParallax(int eye, float depth)
 
 /*
  * The text windows and prompts laid over the world (3ds_video.c,
- * ComposeVoxelOverlay). During directed shots their eye separation is fixed
+ * ComposeVoxelOverlay). During dialogue or directed shots their eye separation is fixed
  * for the slider, and world separation is limited to keep the bounded near
  * world behind the UI. Otherwise the overlay follows the nearest world as
  * before. Shifts use whole pixels to preserve the GBA's pixel grid.

@@ -1,6 +1,6 @@
 """Check the voxel text overlay against bounded near scenery in stereo.
 
-Gameplay uses the nearest scenery depth; directed shots hold a stable UI depth
+Gameplay uses the nearest scenery depth; dialogue and directed shots hold a stable UI depth
 and limit the world's separation when necessary. A brute-force screen sample
 checks that neither leaves bounded scenery in front of the text. Mono remains
 unshifted.
@@ -43,6 +43,7 @@ def main():
     parser.add_argument('--cc', default='gcc')
     args = parser.parse_args()
     voxel = (ROOT / 'src/voxel/ctr_voxel.c').read_text(encoding='utf-8')
+    game = (ROOT / 'src/3ds_game_full.c').read_text(encoding='utf-8')
     source = r'''
 #include <math.h>
 #include <stdbool.h>
@@ -72,6 +73,7 @@ float CtrVoxel_OverlayParallax(void);
                       'static void StereoConstrainOverlay(bool active)',
                       'float CtrVoxel_OverlayParallax(void)'):
         source += function(voxel, signature)
+    source += function(game, 'static bool DialogueStereoHeld(bool held, bool overworld, bool locked, bool message)')
     source += r'''
 static int sFails, sCases;
 
@@ -186,6 +188,12 @@ int main(void)
         }
     }
 
+    Expect(DialogueStereoHeld(false, true, true, true), "message activates policy", 1, 1);
+    Expect(DialogueStereoHeld(true, true, true, false), "waiting holds policy", 1, 1);
+    Expect(!DialogueStereoHeld(true, true, false, false), "unlock releases policy", 0, 0);
+    Expect(!DialogueStereoHeld(true, false, true, true), "leaving field releases policy", 0, 0);
+    Expect(!DialogueStereoHeld(false, true, true, false), "other locked scripts do not activate policy", 0, 0);
+
     /* A directed zoom keeps the UI at one depth. If scenery would cross it,
      * the stereo world is reduced just enough to stay behind the UI. */
     for (int i = 0; i <= 20; ++i)
@@ -198,7 +206,7 @@ int main(void)
         sDrawEye = 0; left = CtrVoxel_OverlayParallax();
         nearest = NearestParallax();
         sDrawEye = 1; right = CtrVoxel_OverlayParallax();
-        Expect(left == 6.0f && right == -6.0f, "stable directed overlay", left, 6.0f);
+        Expect(left == 2.0f && right == -2.0f, "stable directed overlay", left, 2.0f);
         Expect(nearest <= left + 1e-4f, "directed world behind UI", nearest, left);
         Expect(sStereoSlider > 0.0f && sStereoSlider <= 1.0f,
                "directed stereo retained", sStereoSlider, 1.0f);
@@ -206,10 +214,10 @@ int main(void)
     CtrVoxel_SetStereo(2.0f);
     StereoConstrainOverlay(true);
     sDrawEye = 0;
-    Expect(CtrVoxel_OverlayParallax() == 8.0f, "high depth bounded", CtrVoxel_OverlayParallax(), 8.0f);
+    Expect(CtrVoxel_OverlayParallax() == 3.0f, "high depth bounded", CtrVoxel_OverlayParallax(), 3.0f);
     CtrVoxel_SetStereo(0.25f);
     StereoConstrainOverlay(true);
-    Expect(CtrVoxel_OverlayParallax() == 2.0f, "partial slider", CtrVoxel_OverlayParallax(), 2.0f);
+    Expect(CtrVoxel_OverlayParallax() == 1.0f, "partial slider", CtrVoxel_OverlayParallax(), 1.0f);
     CtrVoxel_SetStereo(0.0f);
     StereoConstrainOverlay(true);
     Expect(CtrVoxel_OverlayParallax() == 0.0f, "directed mono", CtrVoxel_OverlayParallax(), 0.0f);

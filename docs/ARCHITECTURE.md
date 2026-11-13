@@ -134,8 +134,8 @@ moved half an interocular distance sideways with the asymmetric frustum of a
 stereo pair (`Mtx_PerspStereo`); the chunk cache, atlases and billboards are
 shared, so the second eye costs its draw calls and fill. The plane of zero
 parallax stands just in front of the player; weather is composed on that plane.
-Field text is kept in front of bounded near scenery. During directed camera
-shots its stereo separation stays fixed for the slider setting, and the world
+Field text is kept in front of bounded near scenery. During field dialogue and
+directed camera shots its stereo separation stays small and fixed for the slider setting, and the world
 separation is limited as needed to avoid crossing the text plane. This prevents
 close camera moves from making the textbox appear to change depth or size.
 A New 3DS has the frame for the second
