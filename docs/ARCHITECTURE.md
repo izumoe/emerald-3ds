@@ -157,7 +157,9 @@ opaque scenery. Their brightness follows daylight; the woods' shafts are also
 suppressed in unsuitable weather. Cave dust uses the existing world-space mote
 renderer. These are art-directed approximations, not shadow-traced volumes:
 their apparent source and occlusion need review from the supported camera
-angles. `voxel_shafts=0` in settings disables the authored shafts.
+angles. Small glints drift within the beams, and an area grade slightly
+darkens the surroundings; neither effect is a physically simulated light.
+`voxel_shafts=0` in settings disables these authored effects and the grade.
 
 ## The camera at a map's edge
 

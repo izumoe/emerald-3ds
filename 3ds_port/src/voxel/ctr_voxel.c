@@ -234,6 +234,9 @@ static VoxelGpuVertex *sMotes;
  * before either eye draws, so stereo draws share the same vertices. */
 #define VOXEL_SHAFT_MAX 14
 #define VOXEL_SHAFT_VERTICES 36
+#define VOXEL_SHAFT_DUST 8
+#define VOXEL_SHAFT_DUST_VERTICES 12
+#define VOXEL_SHAFT_BUDGET (VOXEL_SHAFT_VERTICES + VOXEL_SHAFT_DUST * VOXEL_SHAFT_DUST_VERTICES)
 static VoxelGpuVertex *sShafts;
 static unsigned sShaftCount;
 #if CTR_VOXEL_LIGHTING
@@ -7500,7 +7503,7 @@ static void MoteVertex(VoxelGpuVertex *v, float x, float y, float z, float stren
 
 static void MakeShafts(void)
 {
-    sShafts = linearAlloc(VOXEL_SHAFT_MAX * VOXEL_SHAFT_VERTICES * sizeof(*sShafts));
+    sShafts = linearAlloc(VOXEL_SHAFT_MAX * VOXEL_SHAFT_BUDGET * sizeof(*sShafts));
     if (sShafts == NULL)
         CtrLog_Write(CTR_LOG_ERROR, "VOXEL: no linear memory for authored light shafts");
 }
@@ -7516,6 +7519,7 @@ static void PrepareShafts(void)
     const VoxelMapInstance *inst = VoxelWorld_Instance(0);
     const VoxelShaftProfile *profile;
     float dx, dz, length, rx, rz, daylight;
+    unsigned active = 0;
     float seconds = (float)fmod((double)svcGetSystemTick() / SYSCLOCK_ARM11, 3600.0);
 
     sShaftCount = 0;
@@ -7542,12 +7546,13 @@ static void PrepareShafts(void)
     sShaftOriginZ = inst->originY;
     sShaftBrightness = daylight * (profile->forest ? 2.5f : 1.0f);
 
-    for (size_t i = 0; i < profile->count && sShaftCount < VOXEL_SHAFT_MAX * VOXEL_SHAFT_VERTICES; ++i)
+    for (size_t i = 0; i < profile->count && active < VOXEL_SHAFT_MAX; ++i)
     {
         const VoxelShaft *shaft = &profile->shafts[i];
         float wx = inst->originX + shaft->x, wz = inst->originY + shaft->z;
         float ground, shift, sway;
         if (fabsf(wx - sCamera.targetX) > 20.0f || fabsf(wz - sCamera.targetZ) > 20.0f) continue;
+        ++active;
         ground = VoxelRelief_LiftAt(wx, wz);
         shift = VoxelRelief_ShiftAt(wx, wz);
         sway = 0.05f * sinf(seconds * 0.35f + (float)i);
@@ -7565,6 +7570,30 @@ static void PrepareShafts(void)
                                shaft->z + shift + shaft->leanZ * t + rz * side * width,
                                strength);
                 }
+        /* Small camera-facing glints drift within each shaft's volume. Their
+         * shared buffer is prepared once per frame for both stereo eyes. */
+        for (unsigned m = 0; m < VOXEL_SHAFT_DUST; ++m)
+        {
+            unsigned seed = (unsigned)i * VOXEL_SHAFT_DUST + m;
+            float t = Wrap(MoteRandom(seed, 10) + seconds * (0.025f + 0.02f * MoteRandom(seed, 11)), 1.0f);
+            float side = (MoteRandom(seed, 12) - 0.5f) * shaft->width;
+            float x = shaft->x + shaft->leanX * t + rx * side + sway * t;
+            float y = ground + 0.08f + shaft->height * t;
+            float z = shaft->z + shift + shaft->leanZ * t + rz * side;
+            float fadeIn = fminf(1.0f, fminf(t * 5.0f, (1.0f - t) * 5.0f));
+            float glint = fadeIn * (0.28f + 0.12f * sinf(seconds * 1.1f + (float)seed));
+            float size = 0.035f + 0.025f * MoteRandom(seed, 13);
+            VoxelGpuVertex *v = &sShafts[sShaftCount];
+            MoteVertex(&v[0], x, y, z, glint);
+            MoteVertex(&v[1], x, y + size, z, 0.0f);
+            MoteVertex(&v[2], x + rx * size, y, z + rz * size, 0.0f);
+            v[3] = v[0]; v[4] = v[2];
+            MoteVertex(&v[5], x, y - size, z, 0.0f);
+            v[6] = v[0]; v[7] = v[5];
+            MoteVertex(&v[8], x - rx * size, y, z - rz * size, 0.0f);
+            v[9] = v[0]; v[10] = v[8]; v[11] = v[1];
+            sShaftCount += VOXEL_SHAFT_DUST_VERTICES;
+        }
     }
     if (sShaftCount)
     {
@@ -7572,7 +7601,7 @@ static void PrepareShafts(void)
         if (loggedGroup != inst->mapGroup || loggedMap != inst->mapNum)
         {
             CtrLog_Write(CTR_LOG_VIDEO, "VOXEL authored shafts: map=%d/%d active=%u daylight=%.2f",
-                         inst->mapGroup, inst->mapNum, sShaftCount / VOXEL_SHAFT_VERTICES,
+                         inst->mapGroup, inst->mapNum, active,
                          (double)sShaftBrightness);
             loggedGroup = inst->mapGroup;
             loggedMap = inst->mapNum;
@@ -9067,6 +9096,21 @@ void CtrVoxel_Draw(C3D_RenderTarget *target, int eye)
     CtrDayNightBlend moon = CtrDayNight_Moonlight(cycle, 0.0f, cycle->rgb);
 
 #if CTR_VOXEL_LIGHTING
+    /* Give these areas a little more contrast around their authored light.
+     * This is an area grade, not illumination cast by the shaft geometry. */
+    if (current && !sBattle.on && CtrSettings_GetInt("voxel_shafts", 1))
+    {
+        const VoxelShaftProfile *profile = VoxelShaft_Profile(current->mapGroup, current->mapNum);
+        if (profile)
+        {
+            float grade = 1.0f - (profile->forest ? 0.16f : 0.14f) * (1.0f - neutral);
+            for (unsigned channel = 0; channel < 3; ++channel)
+            {
+                light.sun[channel] *= grade;
+                light.shade[channel] *= grade;
+            }
+        }
+    }
     if (neutral > 0.0f)
     {
         /* Neutral is what the 2D compositor does to the field: the day-night
