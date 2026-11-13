@@ -155,7 +155,8 @@ recomposition. Checked scenes still need branch and transition review.
   the row where the characters finish walking; a staged retest centers them
   above the dialogue box. Mountain seams remain visible and
   the shared battle push and queued actor-focused reveal are rejected by
-  visibility checks. Test both approaches,
+  visibility checks. The summit uses hand-marked terraces, but the engine mesh
+  scan still finds crater holes; the meteorite machine remains flat. Test both approaches,
   rapid dialogue, other camera settings, stereo and hardware; investigate the
   terrain. Cable car still needs direction. Environment: summit **captured 3D**
   for the staged view; **check** other maps and villain-team states.
