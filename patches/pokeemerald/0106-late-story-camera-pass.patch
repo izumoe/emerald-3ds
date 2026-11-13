@@ -9,7 +9,7 @@
 +    camera_height -4
 +    camera_orbit 72, 55, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 55, -4, 70
++    camera_orbit 1320, 50, -4, 55
 +#endif
  	checkplayergender
  	goto_if_eq VAR_RESULT, MALE, LilycoveCity_EventScript_May

@@ -73,7 +73,7 @@
  	goto_if_eq VAR_RESULT, TRUE, LavaridgeTown_Gym_1F_EventScript_FlanneryRematch
 --- a/data/maps/FortreeCity_Gym/scripts.inc
 +++ b/data/maps/FortreeCity_Gym/scripts.inc
-@@ -17,6 +17,21 @@
+@@ -17,6 +17,19 @@
  	end
  
  FortreeCity_Gym_EventScript_Winona::
@@ -87,8 +87,6 @@
 +    camera_offset 0, -6
 +    camera_orbit 72, 55, -4, 55
 +    waitcamera
-+    @ A long, subtle move plays under the original challenge text.
-+    camera_orbit 1320, 55, -4, 70
 +    camera_reveal MAP_FORTREE_CITY_GYM, LOCALID_PLAYER, 1, 55, -4, 35
 +FortreeCity_Gym_CameraOriginalWinona:
 +#endif

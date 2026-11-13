@@ -9,7 +9,7 @@
 +    camera_height -4
 +    camera_orbit 72, 55, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 50, -4, 52
++    camera_orbit 1320, 50, -4, 55
 +    camera_reveal MAP_PETALBURG_CITY_GYM, LOCALID_PLAYER, LOCALID_PETALBURG_GYM_NORMAN, 55, -4, -35
 +#endif
  	msgbox PetalburgCity_Gym_Text_NormanIntro, MSGBOX_DEFAULT
@@ -30,7 +30,7 @@
  	delay 10
 --- a/data/maps/PetalburgCity_WallysHouse/scripts.inc
 +++ b/data/maps/PetalburgCity_WallysHouse/scripts.inc
-@@ -18,11 +18,23 @@
+@@ -18,11 +18,22 @@
  
  PetalburgCity_WallysHouse_EventScript_GiveHMSurf::
  	lockall
@@ -39,7 +39,6 @@
 +    camera_height -4
 +    camera_orbit 72, 55, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 55, -4, 52
 +#endif
  	msgbox PetalburgCity_WallysHouse_Text_PleaseExcuseUs, MSGBOX_DEFAULT
  	giveitem ITEM_HM_SURF

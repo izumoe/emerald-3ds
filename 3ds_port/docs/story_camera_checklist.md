@@ -197,9 +197,9 @@ recomposition. Checked scenes still need branch and transition review.
 
 - [x] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
   battle, post-battle exchange and Surf gift recorded. A reverse-side opening
-  frames Norman over the player's shoulder in a staged take; review the
-  post-battle shot separately. The Surf gift's reverse-side opening was
-  checked in a staged take. Environment: both
+  frames Norman over the player's shoulder and pushes in on a fixed heading.
+  The Surf gift holds a steady two-shot. Both openings were checked in staged
+  takes; review the post-battle shot separately. Environment: both
   rooms **captured 3D** for the shown setups; review alternate entrances and
   the transition to the house.
 
@@ -228,7 +228,8 @@ recomposition. Checked scenes still need branch and transition review.
   The 3D renderer suppresses the bridge shadow to preserve the surprise.
 
 - [x] **Winona** — Fortree Gym. Camera: first battle and reward recorded;
-  opening aim adjusted and checked in a staged take. Alternate approaches,
+  the opening holds on a two-shot. A trial lateral move was rejected by the
+  visibility check; the hold was checked in a staged take. Alternate approaches,
   battle return and puzzle state need review. Environment: **check**
   exterior, interior and puzzle state. Establish her introduction and battle.
 
@@ -239,8 +240,8 @@ other encounters have partial scripts but still need major story beats;
 checked captures also need branch, model and hardware review.
 
 - [x] **Lilycove rival farewell** — Lilycove Department Store exterior. Camera:
-  conversation, battle return and held departure recorded; opening aim adjusted
-  and checked for one staged approach. Review the later beats after this change. Environment:
+  conversation, battle return and held departure recorded; the opening uses a
+  straight push, checked for one staged approach. Review the later beats after this change. Environment:
   **captured 3D** for the shown approach; check alternate interactions.
 - [x] **Mt. Pyre and the stolen orbs** — Mt. Pyre summit. Camera: first pass.
   Archie's opening aim was adjusted and checked in a staged take, but heavy fog
