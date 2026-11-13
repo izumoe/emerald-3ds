@@ -59,15 +59,21 @@ shot. A locked view can punctuate a sequence that otherwise moves continuously.
 **Use:** greetings, ordinary exchanges and the base composition for longer scenes.
 
 Frame the speaker and listener together. Try both sides of the pair before
-choosing the angle. Leave room above the dialogue box and around heads.
+choosing the angle. Find the midpoint of their visible bodies, then place it
+near the center of the picture left unobstructed by the dialogue box. Leave
+room around both heads and feet.
 
 **Starting point:** actor distance 50–65%, with a modest side angle. Lower distance
 means closer framing; these values describe camera distance, not image scale.
 
 **Check:** the player does not cover the speaker, and neither sprite becomes
 uncomfortably large. The camera normally aims at ground height; use
-`camera_height 8` as a starting point to centre the characters vertically in
-close shots, then account for the dialogue box. Preview at the intended size.
+`camera_height 8` as an initial aim, then adjust for the dialogue box. A lower
+aim places the pair higher on screen; a negative height can be useful for a
+close scenic shot. A scenic anchor can use `camera_offset` for sub-tile
+adjustments. Check horizontal and vertical placement together at the beginning
+and end of an orbit, with the actual dialogue box visible; aiming at the tile
+or the characters' feet alone can leave the pair too low.
 
 ### Shoulder view
 

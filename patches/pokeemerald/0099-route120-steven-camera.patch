@@ -7,7 +7,7 @@
 +#ifdef PORT_BRIDGE
 +    @ Meet Steven before revealing what blocks the bridge.
 +    camera_pair LOCALID_PLAYER, LOCALID_ROUTE120_STEVEN
-+    camera_height 8
++    camera_height -4
 +    camera_orbit 72, 60, -4, 125
 +    waitcamera
 +    camera_orbit 1320, 55, -4, 145
@@ -43,7 +43,7 @@
  	waitmovement 0
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_ROUTE120_STEVEN
-+    camera_height 8
++    camera_height -4
 +    camera_orbit 72, 55, -4, 125
 +    waitcamera
 +    camera_orbit 1320, 55, -4, 145

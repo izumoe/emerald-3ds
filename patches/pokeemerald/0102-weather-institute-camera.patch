@@ -9,7 +9,7 @@
 +    lock
 +    faceplayer
 +    camera_pair LOCALID_PLAYER, LOCALID_WEATHER_INSTITUTE_2F_SHELLY
-+    camera_height 8
++    camera_height -4
 +    camera_orbit 72, 60, -4, 125
 +    waitcamera
 +    camera_orbit 1320, 55, -4, 135
@@ -25,7 +25,7 @@
  	copyobjectxytoperm LOCALID_WEATHER_INSTITUTE_2F_SCIENTIST
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_WEATHER_INSTITUTE_2F_SCIENTIST
-+    camera_height 8
++    camera_height -4
 +    camera_orbit 72, 55, -4, 125
 +    waitcamera
 +    camera_orbit 1320, 55, -4, 135
@@ -40,7 +40,7 @@
 +#ifdef PORT_BRIDGE
 +    @ Reacquire the scientist if the naming screen interrupted the field.
 +    camera_pair LOCALID_PLAYER, LOCALID_WEATHER_INSTITUTE_2F_SCIENTIST
-+    camera_height 8
++    camera_height -4
 +    camera_orbit 72, 55, -4, 125
 +    waitcamera
 +    camera_orbit 1320, 55, -4, 135

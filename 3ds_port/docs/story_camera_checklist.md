@@ -176,6 +176,8 @@ recomposition. Checked scenes still need branch and transition review.
 
 - [ ] **Weather Institute takeover** — Route 119 / Weather Institute. Camera:
   administrator and rescue scripted; battle transition and return recorded.
+  The administrator's opening pair was reframed and checked in a staged
+  emulator take; the rescue pair uses the same revised aim but needs a retest.
   A staged retest after the interior fixes shows a black floor gap beneath the
   player on the battle return and throughout the rescue dialogue. Investigate
   the room's floor geometry before approving the shots. Environment: interior
@@ -183,12 +185,16 @@ recomposition. Checked scenes still need branch and transition review.
   **Check** weather and alternate approaches.
 
 - [ ] **Route 119 rival battle** — bridge south of Fortree. Camera: opening
-  angle and revised battle return recorded. The battle push is rejected by the
+  angle and revised battle return recorded. The opening pair was reframed and
+  checked in a staged emulator take; the Scott exchange uses the same revised
+  aim but needs a retest. The battle push is rejected by the
   terrain check, and alternate approaches need review. Environment: **captured
   3D** for the shown approach. Keep the player framed as the rival departs.
 
 - [x] **Steven and the unseen obstacle** — Route 120. Camera: encounter
-  recorded through the Kecleon reveal, battle return and departure. Environment:
+  recorded through the Kecleon reveal, battle return and departure. The opening
+  pair's revised framing was checked in a staged emulator take; the post-battle
+  exchange uses the same revised aim but needs a retest. Environment:
   **captured 3D** for the shown setup; review alternate approaches and choices.
   The 3D renderer suppresses the bridge shadow to preserve the surprise.
 

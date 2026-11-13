@@ -82,7 +82,10 @@ those script branches.
   and before a move; selecting a new pair or anchor resets it. This changes
   the look-at height, not terrain height. A queued
   `camera_reveal` retains the selected height across the transition. Try 8
-  (half a tile) for a close dialogue, and check heads, feet and the text box.
+  (half a tile) for a close dialogue, then adjust it while viewing the actual
+  text box. Center the visible bodies of the pair within the unobstructed
+  picture, not just their feet or the midpoint of the full screen. Lowering
+  the aim moves the subjects up; negative values can help when zoomed in.
 - `camera_light radius`: set a minimum *visual* light-pool radius in dark
   voxel scenes, in game pixels (0..160), for the selected pair. It eases in
   with the shot and does not change the puzzle flash level. Selecting a new
