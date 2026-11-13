@@ -1,4 +1,4 @@
-/* GBA compatibility compositor on PICA200. CPU work only decodes dirty tiles
+﻿/* GBA compatibility compositor on PICA200. CPU work only decodes dirty tiles
  * into a texture atlas and submits geometry. All rasterization, transforms,
  * transparency, priority composition and scaling happen on the GPU. */
 #include <citro2d.h>
@@ -768,6 +768,11 @@ void CtrVideo_NotifyTilesetAnimWrite(const void *dest, unsigned bytes)
 }
 static CtrVideoStats sStats;
 static C3D_Tex sAtlas, sSurface;
+/* Optional depth-of-field colour surface; its target borrows sLogical's depth. */
+static C3D_Tex sDofTex;
+static C3D_RenderTarget *sDof;
+static bool sDofWanted;
+static uint32_t sDofUsedFrame, sDofRetryFrame;
 /* The voxel bloom's quarter-size target (VoxelBloomPrepare); absent, no bloom. */
 static C3D_Tex sBloomTex;
 static C3D_RenderTarget *sBloom;
@@ -9942,59 +9947,107 @@ static void GpuSplit(void)
     C3D_FrameSplit(0);
 }
 
-/*
- * HD-2D diorama: the tilt-shift of a miniature. The camera always looks north,
- * so the top of the screen is the distance and the bottom the nearest ground;
- * both are blurred, most at the screen's edge and not at all by the focus band
- * around the player. Each band is two copies of the world surface drawn over
- * it with bilinear filtering half a texel off either way, so each copy is the
- * average of four texels and the two together are centred on the pixel;
- * fading in from the focus band to the edge. A wider
- * blur than the four one-pixel taps it replaces, for about the same fill.
- * The surface is sampled NEAREST again afterwards: the picture itself stays
- * pixel-sharp.
- */
-#define DIORAMA_TOP 100    /* rows blurred at the top */
-#define DIORAMA_BOTTOM 56  /* ... and at the bottom */
-
-static void DioramaTap(int y0, int rows, bool top, float dx, float dy, float alpha)
+/* A second 512x256 colour surface borrows the voxel world's depth buffer.
+ * The render target never owns that depth, and both targets are the same size.
+ * Allocate and release only outside a frame; give atlas pages priority. */
+static void DofRelease(void)
 {
-    /* One column short at each side: the surface past the picture is not
-     * part of it. */
-    const Tex3DS_SubTexture region = {CTR_GAME_WIDTH - 2, (u16)rows,
-        (1.0f + dx) / 512.0f, 1.0f - (y0 + dy) / 256.0f,
-        (1.0f + dx + CTR_GAME_WIDTH - 2) / 512.0f, 1.0f - (y0 + dy + rows) / 256.0f};
+    if (sDof) { ClearWhenMadeForget(sDof); C3D_RenderTargetDelete(sDof); }
+    sDof = NULL;
+    if (sDofTex.data) C3D_TexDelete(&sDofTex);
+    memset(&sDofTex, 0, sizeof(sDofTex));
+}
+
+static void DofManage(void)
+{
+    bool wanted = sDofWanted && CtrSettings_VoxelBlur() && !sTransitionRequested;
+    sDofWanted = false;
+    if (sDof && (sVramAsked || !wanted || sStats.frames - sDofUsedFrame > 60))
+    {
+        DofRelease();
+        sDofRetryFrame = sStats.frames + 120;
+    }
+    if (!sDof && wanted && !sVramAsked && sStats.frames >= sDofRetryFrame)
+    {
+        if (C3D_TexInitVRAM(&sDofTex, 512, 256, GPU_RGB565))
+        {
+            C3D_TexSetFilter(&sDofTex, GPU_NEAREST, GPU_NEAREST);
+            C3D_TexSetWrap(&sDofTex, GPU_CLAMP_TO_EDGE, GPU_CLAMP_TO_EDGE);
+            sDof = C3D_RenderTargetCreateFromTex(&sDofTex, GPU_TEXFACE_2D, 0, -1);
+            if (sDof)
+            {
+                C3D_FrameBufDepth(&sDof->frameBuf, sLogical->frameBuf.depthBuf, GPU_RB_DEPTH16);
+                CtrLog_Write(CTR_LOG_VIDEO, "depth of field surface ready (VRAM free=%lu)",
+                             (unsigned long)vramSpaceFree());
+            }
+        }
+        if (!sDof)
+        {
+            DofRelease();
+            sDofRetryFrame = sStats.frames + 120;
+            CtrLog_Write(CTR_LOG_VIDEO, "depth of field surface unavailable; retrying later");
+        }
+    }
+}
+
+/* The world uses reversed PICA depth, with near=1 and far=200. Citro2D's
+ * orthographic z is [-1,1] and maps to [0,1] in that same depth buffer. */
+static float DofQuadDepth(float distance)
+{
+    const float near = 1.0f, far = 200.0f;
+    float d = fmaxf(near, fminf(distance, far));
+    float depth = (far / d - 1.0f) * near / (far - near);
+    return 2.0f * depth - 1.0f;
+}
+
+static void DofLayer(float distance, GPU_TESTFUNC compare, float strength)
+{
+    const Tex3DS_SubTexture region = {CTR_GAME_WIDTH - 4, CTR_GAME_HEIGHT - 4,
+        3.5f / 512.0f, 1.0f - 3.5f / 256.0f,
+        (CTR_GAME_WIDTH - 0.5f) / 512.0f, 1.0f - (CTR_GAME_HEIGHT - 0.5f) / 256.0f};
+    const Tex3DS_SubTexture opposite = {CTR_GAME_WIDTH - 4, CTR_GAME_HEIGHT - 4,
+        0.5f / 512.0f, 1.0f - 0.5f / 256.0f,
+        (CTR_GAME_WIDTH - 3.5f) / 512.0f, 1.0f - (CTR_GAME_HEIGHT - 3.5f) / 256.0f};
     C2D_ImageTint tint;
+    float z = DofQuadDepth(distance);
 
-    C2D_AlphaImageTint(&tint, 0.0f);
-    if (top)
-        C2D_TopImageTint(&tint, C2D_Color32f(1.0f, 1.0f, 1.0f, alpha), 0.0f);
-    else
-        C2D_BottomImageTint(&tint, C2D_Color32f(1.0f, 1.0f, 1.0f, alpha), 0.0f);
-    C2D_DrawImageAt((C2D_Image){&sSurface, &region}, 1, y0, 0, &tint, 1, 1);
+    C3D_DepthTest(true, compare, GPU_WRITE_COLOR);
+    C2D_AlphaImageTint(&tint, strength * 0.75f);
+    C2D_DrawImageAt((C2D_Image){&sSurface, &region}, 2, 2, z, &tint, 1, 1);
+    C2D_DrawImageAt((C2D_Image){&sSurface, &opposite}, 2, 2, z, &tint, 1, 1);
+    C2D_Flush(); /* complete this depth comparison before changing it */
 }
 
-/* The strength chosen in OPTIONS: 1 is the full blur, the taps' own alphas. */
-static float DioramaStrength(void)
+/* Focus at the current camera aim, not a screen-space strip. Each eye gets
+ * its own scene and depth buffer. Four depth bands approximate a smooth
+ * falloff; the far side uses GREATER because the world uses reversed depth.
+ * UI and weather are composed later and stay crisp. */
+static C3D_Tex *VoxelDepthOfField(void)
 {
-    return CtrSettings_VoxelBlurStrength() / 100.0f;
-}
-
-static void VoxelDiorama(void)
-{
-    /* The swoop takes the blur off with the grade (CtrVoxel_SwoopNeutral). */
-    float strength = DioramaStrength() * (1.0f - CtrVoxel_SwoopNeutral());
-
-    if (strength <= 0.005f) return;
-
+    const Tex3DS_SubTexture logical = {CTR_GAME_WIDTH, CTR_GAME_HEIGHT, 0, 1,
+        CTR_GAME_WIDTH / 512.0f, 1 - CTR_GAME_HEIGHT / 256.0f};
+    float strength = CtrSettings_VoxelBlurStrength() / 100.0f * (1.0f - CtrVoxel_SwoopNeutral());
+    float focus = CtrVoxel_FocusDistance();
+    if (strength <= 0.005f) return &sSurface;
+    sDofWanted = true;
+    if (!sDof) return &sSurface;
+    sDofUsedFrame = sStats.frames;
+    ColourClear(sDof, 0);
+    SceneOn(sDof);
+    C2D_ViewReset();
+    C3D_DepthTest(false, GPU_ALWAYS, GPU_WRITE_COLOR);
+    Blend(5, false, false);
+    C2D_DrawImageAt((C2D_Image){&sSurface, &logical}, 0, 0, 0, NULL, 1, 1);
+    C2D_Flush();
     SurfaceFilter(GPU_LINEAR);
-    /* Half a texel either way: two 2x2 averages on either side of each
-     * pixel, together centred on it - a blur that does not shift the picture. */
-    DioramaTap(0, DIORAMA_TOP, true, 0.5f, 0.5f, 0.67f * strength);
-    DioramaTap(0, DIORAMA_TOP, true, -0.5f, -0.5f, 0.50f * strength);
-    DioramaTap(CTR_GAME_HEIGHT - DIORAMA_BOTTOM, DIORAMA_BOTTOM, false, 0.5f, 0.5f, 0.60f * strength);
-    DioramaTap(CTR_GAME_HEIGHT - DIORAMA_BOTTOM, DIORAMA_BOTTOM, false, -0.5f, -0.5f, 0.45f * strength);
+    DofLayer(focus * 1.25f, GPU_GREATER, strength * 0.55f);
+    DofLayer(focus * 1.70f, GPU_GREATER, strength * 0.80f);
+    DofLayer(focus * 0.75f, GPU_LESS, strength * 0.55f);
+    DofLayer(focus * 0.50f, GPU_LESS, strength * 0.80f);
     SurfaceFilter(GPU_NEAREST);
+    C3D_DepthTest(false, GPU_ALWAYS, GPU_WRITE_COLOR);
+    BlendForget();
+    return &sDofTex;
 }
 
 /*
@@ -10342,7 +10395,7 @@ static void StereoSurfaceManage(void)
 /*
  * The world to one screen target: the logical surface cleared and the world
  * drawn into it from `eye` (-1: the middle camera; 0, 1: one eye of the
- * pair), then the picture to the target with its tilt-shift, glow and the
+ * pair), then the picture to the target with its depth of field, glow and the
  * dark of a cave, and the game's text and weather over it. With the slider
  * up this runs once per eye, the logical surface and the bloom's target
  * reused in turn: the GPU takes the frame's commands in order, so the second
@@ -10357,6 +10410,7 @@ static void RenderVoxelTo(C3D_RenderTarget *target, int eye, uint32_t clear, boo
     const Tex3DS_SubTexture logical = {CTR_GAME_WIDTH, CTR_GAME_HEIGHT, 0, 1,
         CTR_GAME_WIDTH / 512.0f, 1 - CTR_GAME_HEIGHT / 256.0f};
     float bloom;
+    C3D_Tex *picture;
 
     /* C2D_TargetClear clears colour and depth, which the 3D pass needs. */
     C2D_TargetClear(sLogical, clear);
@@ -10378,6 +10432,7 @@ static void RenderVoxelTo(C3D_RenderTarget *target, int eye, uint32_t clear, boo
     C2D_Prepare();
     C3D_DepthTest(false, GPU_ALWAYS, GPU_WRITE_COLOR);
     BlendForget();
+    picture = CtrSettings_VoxelBlur() ? VoxelDepthOfField() : &sSurface;
     bloom = sBloom != NULL ? CtrVoxel_Bloom() : 0.0f;
     if (bloom > 0.005f)
         VoxelBloomPrepare();
@@ -10385,9 +10440,7 @@ static void RenderVoxelTo(C3D_RenderTarget *target, int eye, uint32_t clear, boo
     SceneOn(target);
     C2D_ViewReset();
     Blend(5, false, false);
-    C2D_DrawImageAt((C2D_Image){&sSurface, &logical}, 0, 0, 0, NULL, 1, 1);
-    if (CtrSettings_VoxelBlur())
-        VoxelDiorama();
+    C2D_DrawImageAt((C2D_Image){picture, &logical}, 0, 0, 0, NULL, 1, 1);
     if (bloom > 0.005f)
         VoxelBloomCompose(bloom);
     VoxelGloom();
@@ -10424,7 +10477,7 @@ static unsigned BandMask(unsigned band, unsigned count);
 static float BandDepth(unsigned band, unsigned count);
 
 /* The whole logical picture laid over the target, moved by a fraction of a
- * pixel with the linear filter on: one tap of a blur (see DioramaTap). */
+ * pixel with the linear filter on: one tap of a blur (see DofLayer). */
 static void SwoopBlurTap(float dx, float dy, float alpha)
 {
     const Tex3DS_SubTexture region = {CTR_GAME_WIDTH - 2, CTR_GAME_HEIGHT - 2,
@@ -10664,7 +10717,7 @@ static float BattleScenerySway(unsigned reg)
  * as fast as it travels, a dark indigo vignette as high as it climbs, cinema
  * bars framing it, a white flash and a burst of glow where it lands. A few
  * quads and, while it travels, two copies of the world surface: about what
- * the diorama blur costs, for a second and a half, and nothing once landed.
+ * the depth-of-field effect costs, for a second and a half, and nothing once landed.
  * All of it is the world's, under the battle's own picture.
  */
 /* The world's lowest line on screen: the text box covers the rest. */
@@ -10802,6 +10855,7 @@ static void RenderBattleWorld(uint32_t clear, float slider)
     unsigned control = Reg(0x50), effect = (control >> 6) & 3;
     float bright = effect >= 2 ? Min(Reg(0x54) & 31, 16) / 16.0f : 0.0f;
     float bloom;
+    C3D_Tex *picture;
     bool stereo = slider > 0.0f && sScene;
     /* With the slider up the picture goes into the scene surface's first
      * columns, where RenderBattleStereo copies it behind each eye. */
@@ -10825,6 +10879,7 @@ static void RenderBattleWorld(uint32_t clear, float slider)
     C2D_Prepare();
     C3D_DepthTest(false, GPU_ALWAYS, GPU_WRITE_COLOR);
     BlendForget();
+    picture = CtrSettings_VoxelBlur() ? VoxelDepthOfField() : &sSurface;
     CtrVoxel_BattleIntro(&intro);
     bloom = sBloom != NULL ? CtrVoxel_Bloom() : 0.0f;
     /* The landing glows: a burst of the bloom dying away with its flash. */
@@ -10849,9 +10904,7 @@ static void RenderBattleWorld(uint32_t clear, float slider)
     SceneOn(world);
     C2D_ViewReset();
     Blend(5, false, false);
-    C2D_DrawImageAt((C2D_Image){&sSurface, &logical}, 0, 0, 0, NULL, 1, 1);
-    if (CtrSettings_VoxelBlur())
-        VoxelDiorama();
+    C2D_DrawImageAt((C2D_Image){picture, &logical}, 0, 0, 0, NULL, 1, 1);
     BattleIntroBlur(&intro);
     if (bloom > 0.005f)
         VoxelBloomCompose(bloom);
@@ -12425,6 +12478,7 @@ void CtrVideo_Present(void)
     }
     VoxelVramManage();
     StereoSurfaceManage();
+    DofManage();
     /*
      * The view of this frame. The voxel overworld is never a stage, so a stage
      * only waits on the voxel decision in the unlikely case both are asked.
@@ -13136,6 +13190,7 @@ void CtrVideo_Shutdown(void)
     BottomRelease();
     CtrVoxel_Shutdown();
     StereoSurfaceRelease();
+    DofRelease();
     LayersRelease();
     SceneRelease();
     /* Target deletion waits for queued GPU work before buffers are freed. */

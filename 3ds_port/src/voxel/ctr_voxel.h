@@ -71,6 +71,8 @@ void CtrVoxel_SetSwoop(float t, float height, bool cards, bool shadows);
 /* How far the swoop has taken the world's light to neutral, 0..1 (the
  * grade, haze and bloom gone with it): 3ds_video.c eases its blur the same way. */
 float CtrVoxel_SwoopNeutral(void);
+/* View-space distance to the camera's current aim, in world tiles. */
+float CtrVoxel_FocusDistance(void);
 /* The GBA brightness effect (BLDY) of the frame about to be drawn, as the
  * compositor reads it: on the backgrounds and on the sprites, towards white
  * or black. The palette fade is read by the voxel module itself. */

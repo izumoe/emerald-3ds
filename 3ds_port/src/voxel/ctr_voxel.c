@@ -9330,6 +9330,14 @@ static float CameraTanX(void)
     return tanf(C3D_AngleFromDegrees(sCamera.fov) * 0.5f) * (float)CTR_GAME_WIDTH / (float)CTR_GAME_HEIGHT;
 }
 
+float CtrVoxel_FocusDistance(void)
+{
+    float dx = sCamera.x - sCamera.targetX;
+    float dy = sCamera.y - sCamera.targetY;
+    float dz = sCamera.z - sCamera.targetZ;
+    return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
 /* The pair's interocular distance in world units for this frame's slider,
  * and the distance of the plane of zero parallax, both from the camera. */
 static float StereoIod(float *screen)

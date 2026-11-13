@@ -143,6 +143,13 @@ pass; on an Old 3DS the world stays flat unless OPTIONS' 3D WORLD says ON
 (`sVoxelStereo` in `3ds_video.c`), and 3D DEPTH scales the slider. Both are
 extras on the SETTINGS tab's second screen (`3ds_extras.c`).
 
+The optional 3D blur is depth of field. After each voxel eye is drawn, a
+second colour surface borrows that eye's depth buffer. Depth-tested blur
+passes soften scenery in front of or behind the camera's aim, leaving a
+sharp focus range; UI and weather are composed afterwards. The extra surface
+is allocated only when needed and released when VRAM is needed for the world;
+if allocation fails, the frame stays sharp and allocation is retried later.
+
 ## The camera at a map's edge
 
 The 400x240 screen shows more of a map than the GBA's, and past a map's edge
@@ -155,8 +162,8 @@ camera still follows the player, as the scripts expect of it; the
 picture, backgrounds and sprites alike, is held back from it by a shift, and
 the tilemap's ring follows the picture rather than the camera. A map narrower
 than the screen, stopped at both ends, is centred on it. In voxel
-(`voxel_camera.c`) the point the camera looks at stops short of the player instead, never so far that the
-player walks into the diorama's blur. Both ease to a new place when the edges
+(`voxel_camera.c`) the point the camera looks at stops a limited distance short
+of the player instead. Both ease to a new place when the edges
 change under them, as on a crossing, and the people spawned move with the
 view (`3ds_field_view.c`).
 

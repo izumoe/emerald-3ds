@@ -120,7 +120,7 @@ int CtrSettings_VoxelPitch(void);
 int CtrSettings_VoxelZoom(void);
 void CtrSettings_StepVoxelPitch(int direction);
 void CtrSettings_StepVoxelZoom(int direction);
-/* The voxel picture's tilt-shift blur: its strength in percent, 0 (off) to
+/* The voxel picture's depth-of-field blur: its strength in percent, 0 (off) to
  * 100 (the default) in steps of 10. */
 bool CtrSettings_VoxelBlur(void);
 int CtrSettings_VoxelBlurStrength(void);

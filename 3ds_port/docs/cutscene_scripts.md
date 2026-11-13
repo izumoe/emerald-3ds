@@ -116,7 +116,9 @@ both actors stand at roughly the same ground height (within a quarter tile).
 The walking hold tracks interpolated positions but does not yet continuously
 recheck occlusion. Roofs, thin props, missing model sides, other moving actors
 and all dialogue approach directions still need scene-by-scene visual review.
-The existing tilt-shift focus band remains screen-based.
+The voxel depth-of-field effect focuses at the camera's current aim point and
+uses scene depth for its foreground and background falloff. Its strength is
+controlled by the existing 3D blur option; the dialogue UI stays sharp.
 
 Angular composition and tracking are previewed in Oldale. This is the first
 small script framework and scene, not directed versions of the entire story.

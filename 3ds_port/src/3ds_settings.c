@@ -32,7 +32,7 @@ static const int sPitches[] = {34, 37, 40, 43, 46};
 static const int sZooms[] = {90, 100, 110, 120};
 #define COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))
 static int sPitch = 2, sZoom = 1;
-/* The HD-2D tilt-shift blur over the voxel picture (3ds_video.c): its
+/* Depth-of-field strength for the voxel picture (3ds_video.c): its
  * strength in percent, full unless turned down; 0 turns it off. Settings
  * written before it had a strength say 1 for on. */
 static const int sBlurs[] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};

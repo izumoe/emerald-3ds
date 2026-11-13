@@ -35,9 +35,8 @@
 /*
  * How far the camera may stop short of the player at an edge, in parts of
  * its distance: up the picture, down it and to either side. The player walks
- * on towards the edge of the picture, but not into what the diorama blurs
- * (3ds_video.c), nor up to the top, far off and small; a little of what lies
- * past the edge shows instead, in the distance, where that blur is.
+ * on towards the edge of the picture, but not all the way to its edge;
+ * a little of what lies past the map edge shows in the distance.
  */
 #define VOXEL_EDGE_UP 0.4f
 #define VOXEL_EDGE_DOWN 0.25f
