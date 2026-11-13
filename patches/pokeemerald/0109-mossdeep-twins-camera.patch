@@ -17,7 +17,7 @@
 +    camera_offset 0, 4
 +    camera_orbit 72, 55, -4, 120
 +    waitcamera
-+    camera_orbit 1320, 50, -4, 125
++    camera_orbit 1320, 50, -4, 120
 +    camera_reveal MAP_MOSSDEEP_CITY_GYM, 1, 9, 65, -4, -35
 +MossdeepGym_CameraOriginalTwins:
 +#endif

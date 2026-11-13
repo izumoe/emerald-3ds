@@ -1,6 +1,6 @@
 --- a/data/maps/MauvilleCity/scripts.inc
 +++ b/data/maps/MauvilleCity/scripts.inc
-@@ -86,6 +86,15 @@
+@@ -86,6 +86,14 @@
  MauvilleCity_EventScript_Wally::
  	lockall
  	goto_if_set FLAG_DECLINED_WALLY_BATTLE_MAUVILLE, MauvilleCity_EventScript_WallyRequestBattleAgain
@@ -11,7 +11,6 @@
 +    camera_offset 8, -6
 +    camera_orbit 72, 60, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 55, -4, 35
 +#endif
  	applymovement LOCALID_MAUVILLE_WALLY, Common_Movement_WalkInPlaceFasterRight
  	waitmovement 0

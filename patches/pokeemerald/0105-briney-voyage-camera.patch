@@ -1,16 +1,15 @@
 --- a/data/maps/Route104_MrBrineysHouse/scripts.inc
 +++ b/data/maps/Route104_MrBrineysHouse/scripts.inc
-@@ -30,8 +30,23 @@
+@@ -30,8 +30,22 @@
  
  Route104_MrBrineysHouse_EventScript_SailingIntro::
  	setflag FLAG_MR_BRINEY_SAILING_INTRO
 +#ifdef PORT_BRIDGE
-+    @ Hold a gentle moving portrait through the first sailing offer.
++    @ Settle into a steady portrait for the first sailing offer.
 +    camera_pair LOCALID_PLAYER, LOCALID_BRINEYS_HOUSE_BRINEY
 +    camera_height -4
-+    camera_orbit 72, 55, -4, 125
++    camera_orbit 72, 55, -2, 55
 +    waitcamera
-+    camera_orbit 1320, 55, -4, 145
 +#endif
  	msgbox Route104_MrBrineysHouse_Text_WaitUpPeeko, MSGBOX_DEFAULT
  	msgbox Route104_MrBrineysHouse_Text_ItsYouLetsSailToDewford, MSGBOX_YESNO

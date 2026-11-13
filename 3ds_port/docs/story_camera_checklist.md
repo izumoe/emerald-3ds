@@ -114,16 +114,16 @@ checked.
 
 - [x] **Mr. Briney's first voyage** — coast / boat / Dewford. Camera: the
   offer, boarding, boat-follow and scenic dock arrival are scripted and recorded,
-  including Norman's call. The offer's adjusted framing was checked in a staged
-  take; the voyage and arrival were not recaptured for that change. Tracking crossed a connected-map seam in the staged
+  including Norman's call. The offer now settles into a steady, gently angled
+  portrait; the voyage and arrival were not recaptured for this change. Tracking crossed a connected-map seam in the staged
   run, and the arrival returned to gameplay. The close actor shot was rejected
   by dock visibility checks; the recorded arrival uses a scenic cut instead.
   Review the no-call and repeat-travel branches, other camera settings, water
   edges, and Dewford building coverage. Boat route and dock **captured 3D**.
 
 - [x] **Steven and the Letter** — Granite Cave, Steven's room. Camera: exchange
-  and exit prototype recorded. A revised opening uses a slow orbit during the
-  letter handoff, checked in a staged take; review its transition into the gift
+  and exit prototype recorded. A revised opening holds on the letter handoff,
+  then pushes in for the gift; review its transition into the gift
   and the held departure. Environment: **captured 3D** for the shown
   approach. Check alternate approaches and the return to the cave camera.
 
@@ -142,14 +142,14 @@ checked.
   introduction.
 
 - [x] **Rival on Route 110** — Route 110. Camera: staged encounter and departure
-  recorded; the opening aim was adjusted and checked through the battle lead-in
-  in one staged approach. Review the other approaches and the return and
+  recorded; the opening now pushes in on a fixed heading toward the battle
+  lead-in. Review the other approaches and the return and
   departure after the change. Environment: **captured 3D** for
   the shown approach. Give the meeting and battle a clear two-shot and
   transition.
 
 - [x] **Wally challenges the Gym** — Mauville Gym exterior. Camera: staged
-  encounter and departures recorded. A reverse-side opening group shot keeps
+  encounter and departures recorded. A held, reverse-side opening group shot keeps
   Wally, his uncle and the player visible in a staged take; later shots and
   alternate branches still need review. Environment: **assets exist** for some
   Mauville buildings; exact scene **check**. Stage Wally, his uncle and the
@@ -265,7 +265,8 @@ checked captures also need branch, model and hardware review.
   recorded for one approach; the one-Pokémon branch keeps the original view.
   The leaders' stage now lifts actors to its surface rather than leaving them
   embedded in its model. Both speaking positions and a walk off and back onto
-  the stage were checked in staged emulator takes. Environment: shown platform
+  the stage were checked in staged emulator takes. The conversation uses a
+  straight push at a fixed heading. Environment: shown platform
   **captured 3D**; the original map has black void between islands. Review the
   battle return, other puzzle states and hardware.
 - [ ] **Seafloor Cavern** — cavern / Kyogre chamber. Camera: Archie battle

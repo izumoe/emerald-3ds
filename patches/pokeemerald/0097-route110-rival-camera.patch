@@ -12,7 +12,7 @@
 +    camera_offset 0, -6
 +    camera_orbit 72, 55, -4, 125
 +    waitcamera
-+    camera_orbit 1320, 55, -4, 145
++    camera_orbit 900, 50, -4, 125
 +    camera_reveal MAP_ROUTE110, LOCALID_PLAYER, LOCALID_ROUTE110_RIVAL, 55, -4, -35
 +    copyvar VAR_0x8008, VAR_TEMP_6
 +#endif

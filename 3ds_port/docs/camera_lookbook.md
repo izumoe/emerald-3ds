@@ -25,11 +25,12 @@ to something that has changed. Use this lookbook to plan, and the
 
 ## Motion during dialogue
 
-A slow, subtle pan or orbit is a useful default during a dialogue hold. Give
-the movement a clear direction and keep the important faces readable throughout.
-Let a shot settle when stillness helps a landmark, reveal, entrance or departure;
-use the scene’s pace and space to decide. Test quick dialogue advances so a new
-cue starts cleanly from the displayed pose.
+Choose movement for the beat: a steady two-shot can let a conversation breathe,
+a push can emphasize a gift or a challenge, and an orbit can reveal a change in
+the characters' relationship. A pan can follow attention toward a new subject.
+Vary the starting angle as well as the motion; strong side views are one option,
+not a default. Keep faces readable and test quick dialogue advances so a new cue
+starts cleanly from the displayed pose.
 
 ## Compose the scene
 
