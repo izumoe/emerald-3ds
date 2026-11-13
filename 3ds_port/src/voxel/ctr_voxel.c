@@ -53,6 +53,7 @@
 #include "voxel_relief.h"
 #include "voxel_lighting.h"
 #include "voxel_sign.h"
+#include "voxel_shaft_profiles.h"
 
 #define VOXEL_SHADER_PATH "romfs:/shaders/voxel.shbin"
 
@@ -229,6 +230,16 @@ static VoxelGpuVertex *sRays;
 static unsigned sRayCount;
 /* The sunlit dust's vertices, rewritten every frame, linear; see DrawMotes. */
 static VoxelGpuVertex *sMotes;
+/* Authored, camera-facing world-space light shafts. Updated once per frame,
+ * before either eye draws, so stereo draws share the same vertices. */
+#define VOXEL_SHAFT_MAX 14
+#define VOXEL_SHAFT_VERTICES 36
+static VoxelGpuVertex *sShafts;
+static unsigned sShaftCount;
+#if CTR_VOXEL_LIGHTING
+static int sShaftOriginX, sShaftOriginZ;
+static float sShaftBrightness;
+#endif
 /* This frame's bloom strength, for the 2D compositor (CtrVoxel_Bloom). */
 static float sBloomStrength;
 /* The fog's drifting banks and the dark of a cave (FogSheets, MakeGloom). */
@@ -254,6 +265,8 @@ static float sGloomX, sGloomY;
 static void MakeDapple(void);
 static void MakeRays(void);
 static void MakeMotes(void);
+static void PrepareShafts(void);
+static void MakeShafts(void);
 static void MakeFog(void);
 static void MakeGloom(void);
 static void MakeWeather(void);
@@ -2375,6 +2388,7 @@ bool CtrVoxel_Init(void)
     MakeDapple();
     MakeRays();
     MakeMotes();
+    MakeShafts();
     MakeFog();
     MakeGloom();
     MakeWeather();
@@ -2467,6 +2481,9 @@ void CtrVoxel_Shutdown(void)
     sRayCount = 0;
     linearFree(sMotes);
     sMotes = NULL;
+    linearFree(sShafts);
+    sShafts = NULL;
+    sShaftCount = 0;
     if (sFogTex.data != NULL)
     {
         C3D_TexDelete(&sFogTex);
@@ -6356,6 +6373,9 @@ bool CtrVoxel_Update(void)
          * HandleMapChange has moved the last position with them. */
         TrackMotion(smoothX, smoothZ, cut);
     }
+#if CTR_VOXEL_LIGHTING
+    PrepareShafts();
+#endif
     NotePart(PART_PLACE, &partStart);
     /* Heading off the current map into the one beside it (see
      * VOXEL_CROSSING_RESERVE_MS)? */
@@ -7476,6 +7496,118 @@ static void MoteVertex(VoxelGpuVertex *v, float x, float y, float z, float stren
     v->y = (int16_t)(y * 512.0f);
     v->z = (int16_t)(z * 512.0f);
     v->shade = (int16_t)(strength * VOXEL_SHADE_SCALE);
+}
+
+static void MakeShafts(void)
+{
+    sShafts = linearAlloc(VOXEL_SHAFT_MAX * VOXEL_SHAFT_VERTICES * sizeof(*sShafts));
+    if (sShafts == NULL)
+        CtrLog_Write(CTR_LOG_ERROR, "VOXEL: no linear memory for authored light shafts");
+}
+
+/* A softly feathered ribbon, anchored to the map and turned towards the
+ * centre camera. Its centre line is fixed in world space and it is prepared
+ * once for both eyes; the depth test hides it behind opaque scenery. */
+static void PrepareShafts(void)
+{
+    static const float rows[] = {0.0f, 0.22f, 0.78f, 1.0f};
+    static const float fade[] = {0.0f, 0.9f, 0.8f, 0.0f};
+    static const unsigned corners[6][2] = {{0,0}, {1,0}, {1,1}, {0,0}, {1,1}, {0,1}};
+    const VoxelMapInstance *inst = VoxelWorld_Instance(0);
+    const VoxelShaftProfile *profile;
+    float dx, dz, length, rx, rz, daylight;
+    float seconds = (float)fmod((double)svcGetSystemTick() / SYSCLOCK_ARM11, 3600.0);
+
+    sShaftCount = 0;
+    if (!sShafts || !inst || sBattle.on || sSwoop > 0.0f || !CtrSettings_GetInt("voxel_shafts", 1))
+        return;
+    profile = VoxelShaft_Profile(inst->mapGroup, inst->mapNum);
+    if (!profile) return;
+    daylight = CtrDayNight_Get()->daylight;
+    if (profile->forest)
+    {
+        VoxelWeatherClass weather = VoxelWorld_Weather();
+        if (weather != VOXEL_WEATHER_CLEAR && weather != VOXEL_WEATHER_SUN
+            && weather != VOXEL_WEATHER_SHADE)
+            return;
+    }
+    if (daylight <= 0.01f) return;
+    dx = sCamera.x - sCamera.targetX;
+    dz = sCamera.z - sCamera.targetZ;
+    length = sqrtf(dx * dx + dz * dz);
+    if (length < 0.001f) return;
+    rx = dz / length;
+    rz = -dx / length;
+    sShaftOriginX = inst->originX;
+    sShaftOriginZ = inst->originY;
+    sShaftBrightness = daylight * (profile->forest ? 2.5f : 1.0f);
+
+    for (size_t i = 0; i < profile->count && sShaftCount < VOXEL_SHAFT_MAX * VOXEL_SHAFT_VERTICES; ++i)
+    {
+        const VoxelShaft *shaft = &profile->shafts[i];
+        float wx = inst->originX + shaft->x, wz = inst->originY + shaft->z;
+        float ground, shift, sway;
+        if (fabsf(wx - sCamera.targetX) > 20.0f || fabsf(wz - sCamera.targetZ) > 20.0f) continue;
+        ground = VoxelRelief_LiftAt(wx, wz);
+        shift = VoxelRelief_ShiftAt(wx, wz);
+        sway = 0.05f * sinf(seconds * 0.35f + (float)i);
+        for (unsigned row = 0; row < 3; ++row)
+            for (unsigned col = 0; col < 2; ++col)
+                for (unsigned k = 0; k < 6; ++k)
+                {
+                    unsigned y = row + corners[k][1], x = col + corners[k][0];
+                    float t = rows[y], side = (float)x - 1.0f;
+                    float width = shaft->width * (1.0f - 0.32f * t);
+                    float strength = shaft->strength * fade[y] * (x == 1 ? 1.0f : 0.0f);
+                    MoteVertex(&sShafts[sShaftCount++],
+                               shaft->x + shaft->leanX * t + rx * side * width + sway * t,
+                               ground + 0.08f + shaft->height * t,
+                               shaft->z + shift + shaft->leanZ * t + rz * side * width,
+                               strength);
+                }
+    }
+    if (sShaftCount)
+    {
+        static int loggedGroup = -1, loggedMap = -1;
+        if (loggedGroup != inst->mapGroup || loggedMap != inst->mapNum)
+        {
+            CtrLog_Write(CTR_LOG_VIDEO, "VOXEL authored shafts: map=%d/%d active=%u daylight=%.2f",
+                         inst->mapGroup, inst->mapNum, sShaftCount / VOXEL_SHAFT_VERTICES,
+                         (double)sShaftBrightness);
+            loggedGroup = inst->mapGroup;
+            loggedMap = inst->mapNum;
+        }
+        GSPGPU_FlushDataCache(sShafts, sShaftCount * sizeof(*sShafts));
+    }
+}
+
+static void DrawShafts(const C3D_Mtx *view, const VoxelLight *unlit)
+{
+    C3D_TexEnv *env;
+    unsigned alpha = (unsigned)(0.32f * sShaftBrightness * 255.0f);
+    if (!sShaftCount || !alpha) return;
+    SetModelView(view, sShaftOriginX, sShaftOriginZ);
+    SetGrade(unlit);
+    env = C3D_GetTexEnv(0);
+    C3D_TexEnvInit(env);
+    C3D_TexEnvSrc(env, C3D_RGB, GPU_CONSTANT, GPU_CONSTANT, GPU_CONSTANT);
+    C3D_TexEnvFunc(env, C3D_RGB, GPU_REPLACE);
+    C3D_TexEnvSrc(env, C3D_Alpha, GPU_PRIMARY_COLOR, GPU_CONSTANT, GPU_CONSTANT);
+    C3D_TexEnvOpAlpha(env, GPU_TEVOP_A_SRC_R, GPU_TEVOP_A_SRC_ALPHA, GPU_TEVOP_A_SRC_ALPHA);
+    C3D_TexEnvFunc(env, C3D_Alpha, GPU_MODULATE);
+    C3D_TexEnvScale(env, C3D_Alpha, GPU_TEVSCALE_2);
+    C3D_TexEnvColor(env, (alpha << 24) | 0x00D8F0FFu);
+    C3D_TexEnvInit(C3D_GetTexEnv(1));
+    C3D_TexEnvInit(C3D_GetTexEnv(2));
+    FadeFor(false);
+    C3D_AlphaTest(false, GPU_ALWAYS, 0);
+    C3D_DepthTest(true, GPU_GREATER, GPU_WRITE_COLOR);
+    C3D_AlphaBlend(GPU_BLEND_ADD, GPU_BLEND_ADD, GPU_SRC_ALPHA, GPU_ONE, GPU_ZERO, GPU_ONE);
+    BindVertices(sShafts);
+    C3D_DrawArrays(GPU_TRIANGLES, 0, (int)sShaftCount);
+    C3D_DepthTest(true, GPU_GREATER, GPU_WRITE_ALL);
+    C3D_AlphaBlend(GPU_BLEND_ADD, GPU_BLEND_ADD,
+                   GPU_SRC_ALPHA, GPU_ONE_MINUS_SRC_ALPHA, GPU_ZERO, GPU_ONE);
 }
 
 /*
@@ -9240,6 +9372,14 @@ void CtrVoxel_Draw(C3D_RenderTarget *target, int eye)
     {
         FadeFor(false);
         DrawBanks(&view, &light, sSandBanks, 0xFF88BEE0u, weatherAmount);
+    }
+    /* Authored shafts share the world's depth; cave dust catches their light. */
+    if (sShaftCount)
+    {
+        const VoxelShaftProfile *profile = current ? VoxelShaft_Profile(current->mapGroup, current->mapNum) : NULL;
+        DrawShafts(&view, &unlit);
+        if (profile && !profile->forest)
+            light.motes = fmaxf(light.motes, 0.20f * sShaftBrightness);
     }
     /* Before the rays, which leave the orthographic projection behind. */
     if (sMotes != NULL && light.motes > 0.005f)

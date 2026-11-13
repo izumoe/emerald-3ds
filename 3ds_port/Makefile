@@ -315,6 +315,14 @@ verify: verify-night-windows
 verify: verify-night-lamps
 verify: verify-encounters
 verify: verify-field-view verify-field-fade-hold verify-voxel-overlay-depth
+verify: verify-voxel-shafts
+
+.PHONY: verify-voxel-shafts
+verify-voxel-shafts: build/voxel_shaft_profiles_test$(EXESUFFIX)
+	./$<
+build/voxel_shaft_profiles_test$(EXESUFFIX): tests/voxel_shaft_profiles_test.c src/voxel/voxel_shaft_profiles.h
+	@mkdir -p build
+	$(HOSTCC) -std=c99 -O2 -Wall -Wextra -Werror -Isrc/voxel $< -o $@
 
 .PHONY: verify-field-fade-hold verify-voxel-overlay-depth
 verify-field-fade-hold:

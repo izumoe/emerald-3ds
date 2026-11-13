@@ -150,6 +150,15 @@ sharp focus range; UI and weather are composed afterwards. The extra surface
 is allocated only when needed and released when VRAM is needed for the world;
 if allocation fails, the frame stays sharp and allocation is retried later.
 
+Authored sunlight shafts in Steven's room, Rusturf Tunnel and Petalburg Woods
+use small map-local profiles (`voxel_shaft_profiles.h`). Feathered ribbons are
+anchored in the world, prepared once for both eyes and depth-tested against
+opaque scenery. Their brightness follows daylight; the woods' shafts are also
+suppressed in unsuitable weather. Cave dust uses the existing world-space mote
+renderer. These are art-directed approximations, not shadow-traced volumes:
+their apparent source and occlusion need review from the supported camera
+angles. `voxel_shafts=0` in settings disables the authored shafts.
+
 ## The camera at a map's edge
 
 The 400x240 screen shows more of a map than the GBA's, and past a map's edge
