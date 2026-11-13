@@ -133,8 +133,12 @@ With the 3D slider up the world is drawn once per eye, each from a camera
 moved half an interocular distance sideways with the asymmetric frustum of a
 stereo pair (`Mtx_PerspStereo`); the chunk cache, atlases and billboards are
 shared, so the second eye costs its draw calls and fill. The plane of zero
-parallax stands just in front of the player; the game's text and weather are
-composed on it, the same in both eyes. A New 3DS has the frame for the second
+parallax stands just in front of the player; weather is composed on that plane.
+Field text is kept in front of bounded near scenery. During directed camera
+shots its stereo separation stays fixed for the slider setting, and the world
+separation is limited as needed to avoid crossing the text plane. This prevents
+close camera moves from making the textbox appear to change depth or size.
+A New 3DS has the frame for the second
 pass; on an Old 3DS the world stays flat unless OPTIONS' 3D WORLD says ON
 (`sVoxelStereo` in `3ds_video.c`), and 3D DEPTH scales the slider. Both are
 extras on the SETTINGS tab's second screen (`3ds_extras.c`).

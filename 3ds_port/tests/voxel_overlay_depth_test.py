@@ -1,11 +1,10 @@
-"""The voxel field's text in 3D (#82), on the host: the overlay's per-eye
-shift (CtrVoxel_OverlayParallax, StereoNearestDepth and the stereo pair's
-StereoParallax/StereoIod/CameraTanX, taken from src/voxel/ctr_voxel.c) is
-checked against a brute-force walk of the world the picture can hold - every
-row and column of the screen down to the ground, up to the height the bound
-names - so that no point of it comes out in front of the text, and the shift
-is no more than a whole pixel past the nearest one. One picture and the
-slider down keep the old placement (0)."""
+"""Check the voxel text overlay against bounded near scenery in stereo.
+
+Gameplay uses the nearest scenery depth; directed shots hold a stable UI depth
+and limit the world's separation when necessary. A brute-force screen sample
+checks that neither leaves bounded scenery in front of the text. Mono remains
+unshifted.
+"""
 import argparse
 from pathlib import Path
 import re
@@ -53,18 +52,24 @@ def main():
 #define CTR_GAME_HEIGHT 240
 #define C3D_AngleFromDegrees(d) ((d) * (float)M_PI / 180.0f)
 '''
-    for name in ('VOXEL_NEAR', 'VOXEL_STEREO_FAR_PX', 'VOXEL_STEREO_FOCUS', 'VOXEL_STEREO_NEAR_LIFT'):
+    for name in ('VOXEL_NEAR', 'VOXEL_STEREO_FAR_PX', 'VOXEL_STEREO_FOCUS', 'VOXEL_STEREO_NEAR_LIFT',
+                 'VOXEL_STEREO_UI_PX', 'VOXEL_STEREO_UI_MAX_PX'):
         source += define(voxel, name)
     source += r'''
 static VoxelCamera sCamera;
 static float sStereoSlider;
+static float sStereoRequested, sStableOverlayShift;
+static bool sStereoStableOverlay;
 static int sDrawEye = -1;
 static bool sReady = true;
 float CtrVoxel_OverlayParallax(void);
 '''
-    for signature in ('static float CameraTanX(void)', 'static float StereoIod(float *screen)',
+    for signature in ('void CtrVoxel_SetStereo(float slider)',
+                      'static float CameraTanX(void)', 'static float StereoIod(float *screen)',
                       'static float StereoParallax(int eye, float depth)',
                       'static float StereoNearestDepth(float drop, float forwardY, float upY, float tanY)',
+                      'static float StereoNearestParallax(void)',
+                      'static void StereoConstrainOverlay(bool active)',
                       'float CtrVoxel_OverlayParallax(void)'):
         source += function(voxel, signature)
     source += r'''
@@ -94,7 +99,7 @@ static void Place(float height, float back, float fov)
 static float Shift(int eye, float slider)
 {
     sDrawEye = eye;
-    sStereoSlider = slider;
+    CtrVoxel_SetStereo(slider);
     return CtrVoxel_OverlayParallax();
 }
 
@@ -181,6 +186,39 @@ int main(void)
         }
     }
 
+    /* A directed zoom keeps the UI at one depth. If scenery would cross it,
+     * the stereo world is reduced just enough to stay behind the UI. */
+    for (int i = 0; i <= 20; ++i)
+    {
+        float distance = 10.0f - 5.5f * i / 20.0f;
+        float nearest, left, right;
+        Place(tanf(C3D_AngleFromDegrees(34.0f)) * distance - 0.25f, distance, 35.0f);
+        CtrVoxel_SetStereo(1.0f);
+        StereoConstrainOverlay(true);
+        sDrawEye = 0; left = CtrVoxel_OverlayParallax();
+        nearest = NearestParallax();
+        sDrawEye = 1; right = CtrVoxel_OverlayParallax();
+        Expect(left == 6.0f && right == -6.0f, "stable directed overlay", left, 6.0f);
+        Expect(nearest <= left + 1e-4f, "directed world behind UI", nearest, left);
+        Expect(sStereoSlider > 0.0f && sStereoSlider <= 1.0f,
+               "directed stereo retained", sStereoSlider, 1.0f);
+    }
+    CtrVoxel_SetStereo(2.0f);
+    StereoConstrainOverlay(true);
+    sDrawEye = 0;
+    Expect(CtrVoxel_OverlayParallax() == 8.0f, "high depth bounded", CtrVoxel_OverlayParallax(), 8.0f);
+    CtrVoxel_SetStereo(0.25f);
+    StereoConstrainOverlay(true);
+    Expect(CtrVoxel_OverlayParallax() == 2.0f, "partial slider", CtrVoxel_OverlayParallax(), 2.0f);
+    CtrVoxel_SetStereo(0.0f);
+    StereoConstrainOverlay(true);
+    Expect(CtrVoxel_OverlayParallax() == 0.0f, "directed mono", CtrVoxel_OverlayParallax(), 0.0f);
+    CtrVoxel_SetStereo(1.0f);
+    StereoConstrainOverlay(false);
+    Expect(!sStereoStableOverlay && sStereoSlider == 1.0f,
+           "ordinary gameplay retains slider", sStereoSlider, 1.0f);
+    sStereoStableOverlay = false;
+
     /* A camera that does not look down bounds nothing: left on the glass. */
     Place(4.0f, 8.0f, 30.0f);
     sCamera.targetY = sCamera.y + 6.0f;
@@ -197,7 +235,7 @@ int main(void)
     }
     if (sFails)
         return 1;
-    printf("PASS voxel overlay depth: %d cases (in front of the nearest world, whole pixels, flat at 0)\n", sCases);
+    printf("PASS voxel overlay depth: %d cases (stable directed UI, bounded world, mono flat)\n", sCases);
     return 0;
 }
 '''

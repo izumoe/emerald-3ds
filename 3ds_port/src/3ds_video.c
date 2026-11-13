@@ -1257,7 +1257,7 @@ static bool WirelessIndicatorApart(void);
  * Zero for the 2D compositor, which reproduces the GBA frame as it is. */
 static float sLayerOrigin;
 /* The voxel overlay's text and prompts in this eye, in whole pixels: in
- * front of the nearest world (ComposeVoxelOverlay). Zero everywhere else. */
+ * front of bounded near scenery (ComposeVoxelOverlay). Zero everywhere else. */
 static int sOverlayEyeShift;
 
 /*
