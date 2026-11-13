@@ -5983,7 +5983,7 @@ void CtrVoxel_ScriptPair(unsigned a,unsigned b) { sScriptCamera.a=a; sScriptCame
     sScriptCamera.offsetX=sScriptCamera.offsetZ=0; sScriptCamera.height16=0; sScriptCamera.lightRadius=0; }
 void CtrVoxel_GetScriptPair(unsigned *a,unsigned *b) { *a=sScriptCamera.a; *b=sScriptCamera.b; }
 void CtrVoxel_ScriptFollow(bool enabled) { sScriptCamera.follow=enabled; }
-void CtrVoxel_ScriptHeight(int height16) { sScriptCamera.height16=height16<0?0:height16>24?24:height16; }
+void CtrVoxel_ScriptHeight(int height16) { sScriptCamera.height16=height16<-24?-24:height16>24?24:height16; }
 int CtrVoxel_GetScriptHeight(void) { return sScriptCamera.height16; }
 void CtrVoxel_ScriptLight(int radius) { sScriptCamera.lightRadius=radius<0?0:radius>160?160:radius; }
 float CtrVoxel_CinematicLightRadius(void)
@@ -6060,7 +6060,7 @@ bool CtrVoxel_ScriptOrbit(unsigned frames,int distance,int pitch,int heading)
  * camera pose. Bounds and eye-path checks fail closed on unavailable scenery. */
 static int sScenicX, sScenicZ;
 void CtrVoxel_ScriptAnchor(int x,int z) { sScenicX=x; sScenicZ=z;
-    sScriptCamera.offsetX=sScriptCamera.offsetZ=0; }
+    sScriptCamera.offsetX=sScriptCamera.offsetZ=0; sScriptCamera.height16=0; }
 bool CtrVoxel_ScriptView(unsigned frames,int distance,int pitch,int yaw)
 {
 #if !CTR_VOXEL_LIGHTING
@@ -6077,6 +6077,7 @@ bool CtrVoxel_ScriptView(unsigned frames,int distance,int pitch,int yaw)
     anchor.targetX=map->originX+sScenicX+0.5f+sScriptCamera.offsetX;
     anchor.targetZ=map->originY+sScenicZ+0.5f+sScriptCamera.offsetZ;
     anchor.ground=VoxelRelief_SurfaceAt(anchor.targetX,anchor.targetZ);
+    anchor.focusHeight=sScriptCamera.height16/16.0f;
     anchor.distance=follow.distance*(distance<50?50:distance>180?180:distance)/100.0f;
     anchor.pitch=pitch<30?30:pitch>55?55:pitch;
     anchor.yaw=yaw<-60?-60:yaw>60?60:yaw;

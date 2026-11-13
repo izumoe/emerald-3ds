@@ -77,9 +77,10 @@ those script branches.
   next move; selection resets the offset. The same offset follows the actors.
   After `camera_anchor`, it also offsets a scenic target; each new anchor
   resets it. This allows framing between tile centres.
-- `camera_height height`: aim above the actors’ ground, in sixteenths of a
-  tile (0..24). Set after `camera_pair` and before a move; selecting a new pair
-  resets it. This changes the look-at height, not terrain height. A queued
+- `camera_height height`: adjust the aim height relative to the ground, in
+  sixteenths of a tile (-24..24). Set after `camera_pair` or `camera_anchor`
+  and before a move; selecting a new pair or anchor resets it. This changes
+  the look-at height, not terrain height. A queued
   `camera_reveal` retains the selected height across the transition. Try 8
   (half a tile) for a close dialogue, and check heads, feet and the text box.
 - `camera_light radius`: set a minimum *visual* light-pool radius in dark

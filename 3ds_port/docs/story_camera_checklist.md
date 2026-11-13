@@ -152,8 +152,8 @@ recomposition. Checked scenes still need branch and transition review.
   and cuts to Archie; one staged approach was recorded. A closer, more angled
   pass uses 50–55% scenic distance, 34° pitch and headings up to 50° to either
   side; its scenic views play in the staged approach. The Archie shot targets
-  the row where the characters finish walking; a staged retest centers them
-  above the dialogue box. Mountain seams remain visible and
+  the pair's shared framing above the dialogue box; the staged north approach
+  has been reviewed. Mountain seams remain visible and
   the shared battle push and queued actor-focused reveal are rejected by
   visibility checks. The summit uses hand-marked terraces, but the engine mesh
   scan still finds crater holes; the meteorite machine remains flat. Test both approaches,
