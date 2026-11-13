@@ -119,10 +119,14 @@ checked.
   edges, and Dewford building coverage. Boat route and dock **captured 3D**.
 
 - [x] **Steven and the Letter** — Granite Cave, Steven's room. Camera: exchange
-  and exit prototype recorded. Environment: **captured 3D** for the shown
+  and exit prototype recorded. A revised opening uses a slow orbit during the
+  letter handoff, checked in a staged take; review its transition into the gift
+  and the held departure. Environment: **captured 3D** for the shown
   approach. Check alternate approaches and the return to the cave camera.
 
 - [x] **Brawly** — Dewford Gym. Camera: introduction and battle return recorded.
+  A reverse-side opening and its visual light pool were checked in a staged
+  take. Review the battle return after the change and alternate darkness states.
   Environment: **captured 3D** for the shown darkness state; check others. Frame
   the introduction and shared battle transition.
 
@@ -133,7 +137,9 @@ checked.
   introduction.
 
 - [x] **Rival on Route 110** — Route 110. Camera: staged encounter and departure
-  recorded; alternate approaches need review. Environment: **captured 3D** for
+  recorded; the opening aim was adjusted and checked through the battle lead-in
+  in one staged approach. Review the other approaches and the return and
+  departure after the change. Environment: **captured 3D** for
   the shown approach. Give the meeting and battle a clear two-shot and
   transition.
 

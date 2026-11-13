@@ -8,7 +8,7 @@
 +    @ This scene stores its approach branch in 0x8008, also used by camera macros.
 +    copyvar VAR_TEMP_6, VAR_0x8008
 +    camera_pair LOCALID_PLAYER, LOCALID_ROUTE110_RIVAL
-+    camera_height 8
++    camera_height -4
 +    camera_offset 0, -6
 +    camera_orbit 72, 55, -4, 125
 +    waitcamera

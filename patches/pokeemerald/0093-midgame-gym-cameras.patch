@@ -11,12 +11,12 @@
 +    faceplayer
 +    camera_pair LOCALID_PLAYER, 1
 +    camera_light 96
-+    camera_height 8
++    camera_height -4
 +    camera_offset 0, -6
-+    camera_orbit 72, 55, -4, 125
++    camera_orbit 72, 55, -4, 55
 +    waitcamera
 +    @ A long, subtle move plays under the original challenge text.
-+    camera_orbit 1320, 55, -4, 110
++    camera_orbit 1320, 55, -4, 70
 +    camera_reveal MAP_DEWFORD_TOWN_GYM, LOCALID_PLAYER, 1, 55, -4, -35
 +DewfordTown_Gym_CameraOriginalBrawly:
 +#endif

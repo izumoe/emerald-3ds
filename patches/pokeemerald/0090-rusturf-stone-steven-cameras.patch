@@ -210,15 +210,17 @@
  
 --- a/data/maps/GraniteCave_StevensRoom/scripts.inc
 +++ b/data/maps/GraniteCave_StevensRoom/scripts.inc
-@@ -4,6 +4,12 @@
+@@ -4,6 +4,14 @@
  GraniteCave_StevensRoom_EventScript_Steven::
  	lock
  	faceplayer
 +
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_GRANITE_CAVE_STEVEN
++    camera_height -4
 +    camera_orbit 72, 55, -4, 145
 +    waitcamera
++    camera_orbit 1320, 55, -4, 125
 +#endif
  	msgbox GraniteCave_StevensRoom_Text_ImStevenLetterForMe, MSGBOX_DEFAULT
  	setvar VAR_0x8004, ITEM_LETTER
