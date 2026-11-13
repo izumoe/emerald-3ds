@@ -35,7 +35,7 @@
 +    lock
 +    faceplayer
 +    camera_pair LOCALID_PLAYER, 1
-+    camera_height 8
++    camera_height -4
 +    camera_offset 0, -6
 +    camera_orbit 72, 55, -4, 55
 +    waitcamera

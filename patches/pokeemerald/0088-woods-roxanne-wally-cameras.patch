@@ -234,7 +234,7 @@
  	end
 --- a/data/maps/RustboroCity_Gym/scripts.inc
 +++ b/data/maps/RustboroCity_Gym/scripts.inc
-@@ -2,7 +2,26 @@
+@@ -2,7 +2,27 @@
  	.byte 0
  
  RustboroCity_Gym_EventScript_Roxanne::
@@ -244,6 +244,7 @@
 +    faceplayer
 +    fadescreenspeed FADE_TO_BLACK, 0
 +    camera_pair LOCALID_PLAYER, 1
++    camera_height -4
 +    camera_orbit 1, 55, -6, 138
 +    waitcamera
 +    fadescreenspeed FADE_FROM_BLACK, 0

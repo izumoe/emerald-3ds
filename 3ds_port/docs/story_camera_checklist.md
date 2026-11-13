@@ -8,6 +8,11 @@ transitions, updated geometry and hardware still need the review listed below.
 Unchecked entries may still contain partial scripts or recordings. Area-reveal
 boxes separately track a usable arrival sequence, including its trigger.
 
+The later composition refinement is still in progress. Notes in individual
+entries identify the opening shots checked in staged takes; a checked story
+box alone does not mean every dialogue, reverse angle or departure has had
+that refinement. Review remaining shots scene by scene with the textbox shown.
+
 **Environment** is tracked independently of camera work:
 
 - **Captured 3D**: the named scene or location was recorded with the voxel
@@ -81,10 +86,13 @@ the modelling, alternate-branch and hardware notes remain open follow-ups.
   recorded, including battle and departures. Environment: **captured 3D**.
   Check both approach paths and the hidden-then-revealed grunt.
 - [x] **Roxanne** — Rustboro Gym. Camera: greeting, battle transition and
-  rewards prototype recorded. Environment: **captured 3D** for the shown
+  rewards prototype recorded. The opening aim was adjusted and its existing
+  fade and side change checked in a staged take. Environment: **captured 3D** for the shown
   approach. Review alternate approaches and fade/return.
 - [x] **Rusturf rescue** — Rusturf Tunnel. Camera: confrontation, battle
-  return, Peeko reunion and departures prototype recorded. Environment:
+  return, Peeko reunion and departures prototype recorded. A reverse of the
+  initial grunt shot passed visibility checks but showed the speaker's back;
+  retain the original side and review its framing. Environment:
   **captured 3D**. Review alternate approaches and all exits.
 - [x] **Mr. Stone's first meeting** — Devon Corp 3F. Camera: employee escort,
   desk orbit and PokéNav push prototype recorded. Environment: **captured 3D**.
@@ -130,13 +138,17 @@ checked.
   transition.
 
 - [x] **Wally challenges the Gym** — Mauville Gym exterior. Camera: staged
-  encounter and departures recorded. Environment: **assets exist** for some
+  encounter and departures recorded. A reverse-side opening group shot keeps
+  Wally, his uncle and the player visible in a staged take; later shots and
+  alternate branches still need review. Environment: **assets exist** for some
   Mauville buildings; exact scene **check**. Stage Wally, his uncle and the
   player, including the battle and farewell. Wally's uncle is present here;
   Norman is not part of this scene.
 
 - [x] **Wattson** — Mauville Gym. Camera: first battle and reward recorded;
-  alternate approaches need review. Environment: **check** interior and puzzle
+  the opening aim was adjusted and checked in a staged take. The room edge and
+  black beyond it are visible from that angle; alternate approaches and the
+  environment need review. Environment: **check** interior and puzzle
   state. Introduce Wattson and the battle.
 
 ## Meteor Falls to Fortree
@@ -147,7 +159,9 @@ entries remain open because an important shot is rejected, obscured or needs
 recomposition. Checked scenes still need branch and transition review.
 
 - [ ] **Meteor Falls and Mt. Chimney** — Meteor Falls / cable car / Mt. Chimney.
-  Camera: Meteor Falls confrontation recorded. A revised Mt. Chimney pass cuts
+  Camera: Meteor Falls confrontation recorded. Its opening uses the opposite
+  side in a staged take, then moves toward Archie as he arrives; review the
+  full transition and other branches. A revised Mt. Chimney pass cuts
   between two scenic angles for Maxie, returns to the crater after the battle,
   and cuts to Archie; one staged approach was recorded. A closer, more angled
   pass uses 50–55% scenic distance, 34° pitch and headings up to 50° to either
@@ -170,7 +184,9 @@ recomposition. Checked scenes still need branch and transition review.
   Gym interior and rival scene **check**. Separate the victory from the gift.
 
 - [x] **Norman's Gym battle and Surf** — Petalburg Gym / Wally's house. Camera:
-  battle, post-battle exchange and Surf gift recorded. Environment: both
+  battle, post-battle exchange and Surf gift recorded. A reverse-side opening
+  frames Norman over the player's shoulder in a staged take; review the
+  post-battle and Surf shots separately. Environment: both
   rooms **captured 3D** for the shown setups; review alternate entrances and
   the transition to the house.
 

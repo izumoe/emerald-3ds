@@ -13,7 +13,11 @@ with tempfile.TemporaryDirectory() as tmp:
  b=Path(tmp)
  for n in files:
   p=b/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes((u/n).read_bytes())
- subprocess.run(['git','apply','--reverse',str(root/'patches/pokeemerald/0088-woods-roxanne-wally-cameras.patch')],cwd=b,check=True)
+ # Later patches extend the shared macro and specials files. The comparison
+ # below concerns the scene scripts, so leave those shared files intact.
+ subprocess.run(['git','apply','--reverse','--exclude=data/specials.inc',
+                 '--exclude=asm/macros/event.inc',
+                 str(root/'patches/pokeemerald/0088-woods-roxanne-wally-cameras.patch')],cwd=b,check=True)
  for n in files:
   old=(b/n).read_text();new=(u/n).read_text()
   assert cpp(old)==cpp(new),n

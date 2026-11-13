@@ -6,10 +6,10 @@
  PetalburgCity_Gym_EventScript_NormanBattle::
 +#ifdef PORT_BRIDGE
 +    camera_pair LOCALID_PLAYER, LOCALID_PETALBURG_GYM_NORMAN
-+    camera_height 8
-+    camera_orbit 72, 55, -4, 125
++    camera_height -4
++    camera_orbit 72, 55, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 50, -4, 128
++    camera_orbit 1320, 50, -4, 52
 +    camera_reveal MAP_PETALBURG_CITY_GYM, LOCALID_PLAYER, LOCALID_PETALBURG_GYM_NORMAN, 55, -4, -35
 +#endif
  	msgbox PetalburgCity_Gym_Text_NormanIntro, MSGBOX_DEFAULT

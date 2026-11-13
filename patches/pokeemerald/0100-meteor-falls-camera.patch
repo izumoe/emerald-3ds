@@ -7,10 +7,10 @@
 +#ifdef PORT_BRIDGE
 +    @ Establish the theft across the cave before the confrontation.
 +    camera_pair LOCALID_PLAYER, LOCALID_METEOR_FALLS_MAGMA_GRUNT_1
-+    camera_height 8
-+    camera_orbit 72, 70, -4, 125
++    camera_height -4
++    camera_orbit 72, 70, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 60, -4, 145
++    camera_orbit 1320, 60, -4, 35
 +#endif
  	playbgm MUS_ENCOUNTER_MAGMA, FALSE
  	applymovement LOCALID_PLAYER, Common_Movement_FaceDown

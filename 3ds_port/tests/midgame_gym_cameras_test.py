@@ -22,5 +22,5 @@ with tempfile.TemporaryDirectory() as tmp:
         newlines=[x.strip() for x in preprocess(new,True).splitlines() if x.strip().startswith(('trainerbattle_', 'specialvar ', 'goto_if_', 'setflag ', 'clearflag ', 'setvar ', 'call ', 'msgbox ', 'message ', 'release', 'end')) and not x.strip().startswith(f'goto_if_defeated TRAINER_{t}_1, {m}_CameraOriginal')]
         assert oldlines==newlines,m
         section=new.split(f'{m}_EventScript_{n}::',1)[1].split(f'{m}_CameraOriginal{n}:',1)[0]
-        assert 'camera_height 8' in section and 'camera_reveal ' in section and 'waitcamera' in section
+        assert 'camera_height ' in section and 'camera_reveal ' in section and 'waitcamera' in section
 print('PASS midgame Gyms: original GBA scripts, battle and reward actions, first-battle guards')

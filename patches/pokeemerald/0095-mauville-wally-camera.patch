@@ -7,11 +7,11 @@
 +#ifdef PORT_BRIDGE
 +    @ Introduce Wally and his uncle together, giving the group headroom.
 +    camera_pair LOCALID_PLAYER, LOCALID_MAUVILLE_WALLY
-+    camera_height 8
++    camera_height -4
 +    camera_offset 8, -6
-+    camera_orbit 72, 60, -4, 125
++    camera_orbit 72, 60, -4, 55
 +    waitcamera
-+    camera_orbit 1320, 55, -4, 145
++    camera_orbit 1320, 55, -4, 35
 +#endif
  	applymovement LOCALID_MAUVILLE_WALLY, Common_Movement_WalkInPlaceFasterRight
  	waitmovement 0

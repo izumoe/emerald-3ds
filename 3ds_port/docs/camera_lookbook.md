@@ -31,6 +31,21 @@ Let a shot settle when stillness helps a landmark, reveal, entrance or departure
 use the scene’s pace and space to decide. Test quick dialogue advances so a new
 cue starts cleanly from the displayed pose.
 
+## Compose the scene
+
+Give each shot a reason: establish who is involved, make the current speaker
+readable, reveal a reaction, or follow a meaningful change. Let a clear
+two-shot carry an exchange; reserve a closer angle or reverse for a new beat.
+Leave the speaker looking into the frame when possible, and keep the pair on
+consistent sides across cuts unless a visible move establishes the change.
+
+Try both sides of the conversation in the actual map. A reverse angle may
+reveal a more expressive sprite facing or separate the characters, but a wall,
+unmodelled room edge or foreground object may make that side unusable. Review
+the complete camera move and textbox, not just the starting pose. If the
+preferred shot fails visibility checks, review the fallback in context rather
+than assuming it is the intended composition.
+
 ## Shot cards
 
 ### Establishing wide → close conversation
@@ -197,10 +212,11 @@ A standalone conversation preview does not exercise this boundary.
   heading 30–150, with 90 as the front view. Heading 145 gives a -55° yaw;
   heading 35 gives +55°.
 - Scenic shots use `camera_scene`, `camera_anchor` and `camera_view`. Scenic
-  distance is 80–180%; pitch and yaw are absolute angles. Do not copy actor
+  distance is 50–180%; pitch and yaw are absolute angles. Do not copy actor
   pitch or orbit heading numbers directly into a scenic view.
-- `camera_offset` uses sixteenths of a tile. Selecting a pair resets the offset
-  and disables follow; set both again when the next shot requires them.
+- `camera_offset` uses sixteenths of a tile. Selecting a pair or scenic anchor
+  resets the offset; selecting a pair also disables follow. Set them again when
+  the next shot requires them.
 - Durations are rendered frames: 60 frames is about one second at 60 fps.
   Slowdown lengthens the movement.
 - Use the actual macro `waitcamera` when a completed move is required. Without
